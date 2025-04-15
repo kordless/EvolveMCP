@@ -136,14 +136,6 @@ It's the first draft of a system that builds itself.
 
 ---
 
-## 💼 Asset Preview (Evolve Logo Placeholder)
-
-![EvolveMCP Asset](https://raw.githubusercontent.com/kordless/EvolveMCP/main/assets/evolve-logo.png)
-
-> Add an `assets/` folder with `evolve-logo.png` to make this real.
-
----
-
 ## 🏴‍☠️ This Ain’t Your Daddy’s Algorithm
 
 EvolveMCP is part of a future where tools build themselves. If Claude is your AI assistant, this makes it your command center.

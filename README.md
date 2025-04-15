@@ -17,7 +17,7 @@ This tool provides convenient management of Claude Desktop processes and simplif
 
 ```powershell
 # Run the script
-.\claude-manager.ps1
+.\evolve.ps1
 ```
 
 ## 📋 Menu Options

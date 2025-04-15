@@ -45,8 +45,7 @@ evolve calculator
 
 ```
 I'd be happy to help you set up a calculator tool using the evolve system. Let me do that for you.View result from evolve_wizard from evolve-server (local){
-  `command`: `calc`
-}
+
 # Calculator Tool Created Successfully
 
 I've created a calculator tool file at:

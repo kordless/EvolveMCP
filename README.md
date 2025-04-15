@@ -1,6 +1,6 @@
 # 🧠 EvolveMCP: Claude Desktop Tool Manager
 
-A simple PowerShell utility that helps you extend Claude Desktop with custom tools.
+EvolveMCP is a simple PowerShell utility that helps you extend Claude Desktop with custom tools.
 
 ## What is EvolveMCP?
 

@@ -259,6 +259,30 @@ function Setup-Evolve-Server {
     try {
         # Create the evolve.py file with the server code
         $evolveCode = @'
+
+import sys
+import subprocess
+import importlib.util
+
+# Check if a package is installed and install it if not
+def ensure_package(package_name):
+    try:
+        if importlib.util.find_spec(package_name) is None:
+            try:
+                # Use simple text, avoiding Unicode emojis that might cause encoding issues
+                print(f"Installing required package: {package_name}")
+                subprocess.check_call([sys.executable, "-m", "pip", "install", package_name])
+                print(f"Successfully installed {package_name}")
+            except Exception as e:
+                print(f"Error installing {package_name}: {e}")
+                sys.exit(1)
+    except Exception as e:
+        print(f"Error checking package: {e}")
+        sys.exit(1)
+
+# Ensure required packages are installed
+ensure_package("mcp-server")
+
 from mcp.server.fastmcp import FastMCP
 import asyncio
 import json
@@ -469,8 +493,6 @@ if __name__ == "__main__":
         Write-Host "📄 Config uses absolute path to evolve.py: $evolveScriptPath" -ForegroundColor Green
         
         Write-Host "`n✅ Evolve MCP server setup completed successfully!" -ForegroundColor Green
-        Write-Host "ℹ️ Make sure Python and the mcp-server package are installed." -ForegroundColor Yellow
-        Write-Host "   You can install it with: pip install mcp-server" -ForegroundColor Yellow
         
         $restartOption = Read-Host "🔄 Would you like to restart Claude now? (y/n)"
         if ($restartOption -eq "y") {

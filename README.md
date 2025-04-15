@@ -1,4 +1,4 @@
-# Claude Manager Tool
+# Claude Manager & MCP Bootstrapper
 
 A PowerShell utility for managing Claude Desktop, with a focus on log viewing and MCP server configuration.
 

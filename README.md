@@ -1,48 +1,6 @@
-## 🛠️ MCP Setup Basics
+# 🧠 EvolveMCP: Claude Manager & MCP Bootstrapper
 
-### What is MCP?
-
-The [Model Context Protocol (MCP)](https://modelcontextprotocol.io/introduction) is an open "standard" or "protocol" that enables AI models to communicate with external tools and data sources through a standardized interface. "MCP is like a USB-C port for AI applications" - it provides a universal way for AI models to connect with external data sources, tools, and environments.
-
-### Traditional Setup (The Complex Way)
-
-According to the official documentation, setting up MCP typically involves:
-
-1. Installing Claude Desktop (or other client)
-2. Using the uv package manager (which requires global installation for Claude Desktop)
-3. Setting up Node.js (since many MCP servers are Node-based)
-4. Creating complex configuration files with absolute paths (for Claude Desktop)
-5. Manually editing the Claude desktop configuration file
-6. Restarting Claude Desktop to load the tools (servers)
-
-### The EvolveMCP Way (Simplified)
-
-Our approach cuts through this complexity:
-
-1. **One-Click Setup**: Run `evolve.ps1` and select option 3
-2. **Python-Based**: Uses Python instead of Node.js (more developers already have Python)
-3. **No Global Dependencies**: Doesn't require uv or other global package managers
-4. **Automatic Configuration**: Handles all path issues and configuration automatically
-5. **Windows-Optimized**: Specifically designed to work with Windows path structures
-
-## 🔧 Understanding MCP Setup
-
-### The Reality: It's Simpler Than It Looks
-
-MCP is fundamentally a protocol/standard/framework - it's just a way for AI models to communicate with external tools. The apparent complexity comes from:
-
-1. Documentation that covers many possible implementation paths
-2. Different language environments (JavaScript, Python, etc.)
-3. Configuration quirks across operating systems and clients
-
-### Our Approach: Keep It Simple
-
-The `evolve.ps1` tool cuts through this complexity by:
-- Using Python (which many developers already have)
-- Creating a simple server without Node.js dependencies
-- Auto-generating all necessary configuration files
-- Handling the Windows-specific path issues automatically
-apping MCP servers.
+A PowerShell utility for managing Claude Desktop and bootstrapping MCP servers.
 
 ## 🌟 Overview
 
@@ -123,14 +81,13 @@ MCP-Commander handles these issues automatically, making the process accessible 
 
 ## 🧠 Evolve: The Self-Improving Tool
 
-The current evolve.py file is intentionally simple - it's the starting point in an evolutionary journey:
+The Evolve function serves as the foundation for AI-assisted tool creation:
 
-- **Initial Version:** The current implementation provides basic pattern matching and response capabilities
-- **Future Development:** We'll be building and testing different versions to discover which approaches can most effectively bootstrap into more advanced capabilities
-- **Evolutionary Approach:** Each iteration will build upon lessons learned from previous versions
-- **Experimental Platform:** This serves as a testbed for exploring how AI can assist in evolving its own tools
-
-The vision is to create a progression of increasingly sophisticated tools, with each version helping to create the next generation.
+- **Pattern Learning:** Recognizes input patterns and creates customized responses
+- **Multiple Modes:** Supports basic, advanced, and debug operation modes
+- **Memory:** Maintains state between sessions to build on previous interactions
+- **Extensibility:** Designed as a framework for creating more specialized tools
+- **Iteration:** As you build with it, it adapts and improves its capabilities
 
 ## 📋 Requirements
 

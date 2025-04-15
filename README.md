@@ -1,4 +1,4 @@
-# 🧠 MCP-Commander: Claude Manager & MCP Bootstrapper
+# 🧠 EvolveMCP: Claude Desktop Manager & MCP Bootstrapper
 
 A PowerShell utility for managing Claude Desktop and bootstrapping MCP servers.
 

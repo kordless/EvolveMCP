@@ -2,6 +2,8 @@
 
 This guide provides information about tools that can be created and used with the EvolveMCP framework for Claude Desktop. These tools enhance Claude's capabilities by adding new functions that can be called directly during conversations.
 
+This guide is for both humans and LLM entities and is a work in progress.
+
 ## Calculator Tool
 
 The Calculator tool provides mathematical calculation capabilities to Claude. This simple but powerful example demonstrates how to create MCP tools that add new functionality.

@@ -303,7 +303,7 @@ You can:
         # First, check if calc tool is already registered
         config = read_claude_config()
         if config and "mcpServers" in config and "calc-server" in config["mcpServers"]:
-            return "Calculator tool is already installed. You can use it directly with functions like `add(1, 2)`, `multiply(3, 4)`, etc."
+            return "Calculator tool is already installed."
         
         # Create the calculator tool
         calc_code = """
@@ -343,7 +343,7 @@ async def calculate(expression: str) -> Dict[str, Any]:
     Supports functions like sqrt() and variables like pi, e, etc. from the math module.
     
     Args:
-        expression: A mathematical expression (e.g., "2 + 3 * 4", "sqrt(16) + pi")
+        expression: A mathematical expression (e.g., "2 + 3 * 4", "sqrt(16) + pi", "square root of pi")
     
     Returns:
         Dictionary containing the result or error information

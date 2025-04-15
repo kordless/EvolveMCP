@@ -1,47 +1,44 @@
-# Claude Manager & MCP Bootstrapper
+# 🧠 MCP-Commander: Claude Manager & MCP Bootstrapper
 
-A PowerShell utility for managing Claude Desktop, with a focus on log viewing and MCP server configuration.
+A PowerShell utility for managing Claude Desktop and bootstrapping MCP servers.
 
-## Features
+## 🌟 Overview
 
-- View MCP logs from Claude's logs directory (`C:\Users\<Username>\AppData\Roaming\Claude\logs`)
-- Kill and restart Claude Desktop processes
-- Configure the Evolve MCP server for Claude
-- Simple menu-driven interface
+This tool provides convenient management of Claude Desktop processes and simplifies the setup of MCP (Model Context Protocol) servers, with a focus on the Evolve tool implementation.
 
-## Usage
+## ✨ Features
+
+- **🔄 Claude Process Management:** Kill and restart Claude Desktop processes
+- **📋 Log Viewer:** Access MCP logs directly from Claude's logs directory
+- **🚀 MCP Bootstrapper:** Quickly configure and deploy the Evolve MCP server
+- **⚙️ Single Configuration:** Manages Claude's configuration file for MCP server integration
+
+## 🛠️ Usage
 
 ```powershell
 # Run the script
 .\claude-manager.ps1
 ```
 
-## Menu Options
+## 📋 Menu Options
 
-1. **View MCP Logs** - View log files in the Claude logs directory
-2. **Kill Claude Desktop** - Terminate all Claude-related processes
-3. **Setup Evolve Server** - Configure the Evolve MCP server
-4. **Restart Claude** - Restart the Claude application
-5. **Exit** - Exit the tool
+1. **📜 View MCP Logs** - View log files from the Claude logs directory
+2. **🛑 Kill Claude Desktop** - Terminate Claude processes
+3. **🚀 Setup Evolve Server** - Bootstrap the Evolve MCP server
+4. **🔄 Restart Claude** - Restart the Claude application
+5. **🚪 Exit** - Exit the tool
 
-## Log Viewing
+## 💾 MCP Server Bootstrapping
 
-The log viewer:
-- Only looks in `C:\Users\<Username>\AppData\Roaming\Claude\logs`
-- Lists all log files in this directory
-- Allows viewing the last 20 lines of any selected log
-- Offers real-time monitoring of logs
+The tool simplifies MCP server setup by:
+- 📝 Generating the necessary Python server code
+- 🔗 Setting up an evolve.py file with absolute path references
+- 🔧 Creating the proper claude_desktop_config.json configuration
+- 👆 Providing a one-click setup and restart process
 
-## Evolve Server Setup
+## 📋 Requirements
 
-The Evolve Server setup:
-- Creates an `evolve.py` file in the current directory
-- Configures Claude to use this server via `claude_desktop_config.json`
-- Uses absolute paths to prevent file location errors
-
-## Requirements
-
-- Windows with PowerShell
-- Claude Desktop application
-- Python (for MCP server functionality)
-- MCP server package (`pip install mcp-server`)
+- 🖥️ Windows with PowerShell
+- 🤖 Claude Desktop application
+- 🐍 Python installation
+- 📦 MCP server package (`pip install mcp-server`)

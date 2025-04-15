@@ -44,12 +44,6 @@ evolve calculator
 ```
 
 ```
-
-```
-2. Restart Claude as instructed
-
-3. Use your new tool:
-```
 I'd be happy to help you set up a calculator tool using the evolve system. Let me do that for you.View result from evolve_wizard from evolve-server (local){
   `command`: `calc`
 }
@@ -105,6 +99,12 @@ What is the distance to the moon (average) to the power of 3?
 Calculate the volume inside a regular ice cream cone scoop (in liters)
 
 Would you like me to explain how the calculator tool works, or do you want to restart Claude now and try it out?
+```
+
+2. Restart Claude as instructed
+
+3. Use your new tool:
+```
 ```
 
 ### Common Commands

@@ -1,512 +1,712 @@
-import sys
-import subprocess
-import importlib.util
-import json
-import os
-import time
-import platform
-from typing import Dict, Any, Optional
-import requests
-import logging
+# EvolveMCP: Claude Manager & MCP Bootstrapper
+# A PowerShell utility for managing Claude Desktop and bootstrapping MCP servers
 
-# Configure logging
-logging.basicConfig(
-    level=logging.INFO,
-    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
-    handlers=[logging.StreamHandler()]
+[CmdletBinding()]
+param(
+    [Parameter(Mandatory=$false)]
+    [switch]$ViewLogs,
+    
+    [Parameter(Mandatory=$false)]
+    [switch]$Kill,
+    
+    [Parameter(Mandatory=$false)]
+    [switch]$Setup,
+    
+    [Parameter(Mandatory=$false)]
+    [switch]$Restart,
+    
+    [Parameter(Mandatory=$false)]
+    [switch]$Menu,
+    
+    [Parameter(Mandatory=$false)]
+    [string]$LogName,
+    
+    [Parameter(Mandatory=$false)]
+    [switch]$ListTools
 )
-logger = logging.getLogger("evolve-mcp")
 
-# Check if a package is installed and install it if not
-def ensure_package(package_name):
-    try:
-        if importlib.util.find_spec(package_name) is None:
-            try:
-                logger.info(f"Installing required package: {package_name}")
-                subprocess.check_call([sys.executable, "-m", "pip", "install", package_name])
-                logger.info(f"Successfully installed {package_name}")
-            except Exception as e:
-                logger.error(f"Error installing {package_name}: {e}")
-                sys.exit(1)
-    except Exception as e:
-        logger.error(f"Error checking package: {e}")
-        sys.exit(1)
+# Set username explicitly
+$username = $env:USERNAME
 
-# Ensure required packages are installed
-ensure_package("mcp-server")
-ensure_package("psutil")
+# Define the specific logs directory path
+$logsPath = "C:\Users\$username\AppData\Roaming\Claude\logs"
+$configPath = "C:\Users\$username\AppData\Roaming\Claude\claude_desktop_config.json"
 
-# Now import
-import psutil
-from mcp.server.fastmcp import FastMCP
+# Ensure logs directory exists
+function Ensure-LogsDirectory {
+    if (-not (Test-Path $logsPath)) {
+        try {
+            New-Item -ItemType Directory -Path $logsPath -Force | Out-Null
+            Write-Host "✅ Created logs directory at: $logsPath" -ForegroundColor Green
+        }
+        catch {
+            Write-Host "❌ Failed to create logs directory: $_" -ForegroundColor Red
+        }
+    }
+}
 
-# Initialize FastMCP server
-mcp = FastMCP("evolve-server")
-
-# Get the absolute path to Claude's config file
-def get_claude_config_path():
-    username = os.environ.get("USERNAME") or os.environ.get("USER")
-    if os.name == 'nt':  # Windows
-        return os.path.join(os.environ.get("APPDATA", f"C:\\Users\\{username}\\AppData\\Roaming"), 
-                           "Claude", "claude_desktop_config.json")
-    else:  # macOS/Linux
-        return os.path.join(os.environ.get("HOME", f"/Users/{username}"), 
-                           "Library", "Application Support", "Claude", "claude_desktop_config.json")
-
-# Read Claude's configuration
-def read_claude_config():
-    config_path = get_claude_config_path()
-    try:
-        if os.path.exists(config_path):
-            with open(config_path, 'r') as f:
-                return json.load(f)
-        return {}
-    except Exception as e:
-        logger.error(f"Error reading Claude config: {e}")
-        return {}
-
-# Update Claude's configuration
-def update_claude_config(config):
-    config_path = get_claude_config_path()
-    try:
-        directory = os.path.dirname(config_path)
-        if not os.path.exists(directory):
-            os.makedirs(directory)
+# Simplified Log Viewer Function
+function View-MCP-Logs {
+    param(
+        [string]$FilterName
+    )
+    
+    # Check if logs directory exists
+    if (Test-Path $logsPath) {
+        Write-Host "📁 Found logs directory at: $logsPath" -ForegroundColor Green
+        
+        # Get log files in this exact directory
+        $logFilter = if ($FilterName) { "*$FilterName*.log" } else { "*.log" }
+        $logFiles = Get-ChildItem -Path $logsPath -Filter $logFilter -ErrorAction SilentlyContinue
+        
+        if ($logFiles.Count -gt 0) {
+            Write-Host "🔍 Found $($logFiles.Count) log files:" -ForegroundColor Green
             
-        with open(config_path, 'w') as f:
-            json.dump(config, f, indent=2)
-        logger.info(f"Updated Claude config at {config_path}")
-        return True
-    except Exception as e:
-        logger.error(f"Error updating Claude config: {e}")
-        return False
-
-# Fetch setup readme from GitHub
-def fetch_setup_readme():
-    """Fetch the setup readme from GitHub repository."""
-    url = "https://raw.githubusercontent.com/kordless/EvolveMCP/refs/heads/main/TOOLS.md"
-    try:
-        response = requests.get(url)
-        if response.status_code == 200:
-            return response.text
-        else:
-            return "Error fetching setup readme: HTTP status " + str(response.status_code)
-    except Exception as e:
-        logger.error(f"Error fetching setup readme: {e}")
-        return f"Error fetching setup readme: {str(e)}"
-
-# Get Claude processes
-def get_claude_processes():
-    claude_processes = []
-    for proc in psutil.process_iter(['pid', 'name', 'create_time', 'memory_info']):
-        try:
-            if 'claude' in proc.info['name'].lower():
-                proc_info = {
-                    'pid': proc.info['pid'],
-                    'name': proc.info['name'],
-                    'uptime': time.time() - proc.info['create_time'],
-                    'memory': proc.info['memory_info'].rss / (1024 * 1024)  # MB
-                }
-                claude_processes.append(proc_info)
-        except (psutil.NoSuchProcess, psutil.AccessDenied, psutil.ZombieProcess):
-            pass
-    return claude_processes
-
-# Get MCP logs
-def get_mcp_logs(max_lines=20):
-    logs = {}
-    username = os.environ.get("USERNAME") or os.environ.get("USER")
-    
-    # Define logs directory based on OS
-    if os.name == 'nt':  # Windows
-        logs_dir = os.path.join(os.environ.get("APPDATA", f"C:\\Users\\{username}\\AppData\\Roaming"), 
-                              "Claude", "logs")
-    else:  # macOS/Linux
-        logs_dir = os.path.join(os.environ.get("HOME", f"/Users/{username}"), 
-                              "Library", "Application Support", "Claude", "logs")
-    
-    if os.path.exists(logs_dir):
-        log_files = [f for f in os.listdir(logs_dir) if f.endswith('.log')]
-        for log_file in log_files:
-            try:
-                log_path = os.path.join(logs_dir, log_file)
-                with open(log_path, 'r') as f:
-                    content = f.readlines()
-                    logs[log_file] = content[-max_lines:] if content else []
-            except Exception as e:
-                logs[log_file] = [f"Error reading log: {str(e)}"]
-    
-    return {"logs_dir": logs_dir, "logs": logs}
-
-@mcp.tool()
-async def evolve_status() -> Dict[str, Any]:
-    """Get system information, Claude status, and MCP logs."""
-    
-    # System information
-    system_info = {
-        "os": platform.system(),
-        "os_version": platform.version(),
-        "platform": platform.platform(),
-        "processor": platform.processor(),
-        "python_version": platform.python_version(),
-        "hostname": platform.node()
-    }
-    
-    # Memory information
-    memory = psutil.virtual_memory()
-    memory_info = {
-        "total": memory.total / (1024**3),  # GB
-        "available": memory.available / (1024**3),  # GB
-        "percent_used": memory.percent
-    }
-    
-    # Disk information
-    disk_info = {}
-    for partition in psutil.disk_partitions():
-        try:
-            usage = psutil.disk_usage(partition.mountpoint)
-            disk_info[partition.mountpoint] = {
-                "total": usage.total / (1024**3),  # GB
-                "used": usage.used / (1024**3),  # GB
-                "free": usage.free / (1024**3),  # GB
-                "percent": usage.percent,
-                "fstype": partition.fstype
+            # Display files with number options for selection
+            $fileOptions = @{}
+            
+            for ($i = 1; $i -le $logFiles.Count; $i++) {
+                $file = $logFiles[$i-1]
+                Write-Host "  $i. 📄 $($file.Name)" -ForegroundColor Cyan
+                $fileOptions[$i] = $file
             }
-        except:
-            # Some mountpoints may not be accessible
-            pass
-    
-    # Claude process information
-    claude_processes = get_claude_processes()
-    claude_running = len(claude_processes) > 0
-    
-    # MCP configuration
-    claude_config = read_claude_config()
-    mcp_servers = claude_config.get('mcpServers', {})
-    
-    # Get MCP logs
-    mcp_logs = get_mcp_logs()
-    
-    return {
-        "system": system_info,
-        "memory": memory_info,
-        "disk": disk_info,
-        "claude_running": claude_running,
-        "claude_processes": claude_processes,
-        "mcp_servers": mcp_servers,
-        "mcp_logs": mcp_logs,
-        "timestamp": time.strftime("%Y-%m-%d %H:%M:%S")
-    }
-
-@mcp.tool()
-async def evolve_wizard(command: str = None) -> str:
-    """Interactive wizard for exploring and using the evolve tool system.
-    
-    This wizard helps you understand and use the evolve system's capabilities.
-    When called with no parameters, it provides an overview of the system.
-    
-    Args:
-        command: Optional command name to execute a specific wizard action
-                 (e.g., "calc" to install calculator tool, "status" to show status, "calc" to install calculator example, "code" to show example code for implementing custom server/tools).
-    
-    Returns:
-        Information about the evolve system or results of the requested command.
-    """
-    # Get system paths
-    script_path = os.path.abspath(__file__)
-    script_dir = os.path.dirname(script_path)
-    config_path = get_claude_config_path()
-    
-    # If no command provided, show general information
-    if not command:
-        return f"""
-# Evolve Wizard - Assistant for Model Context Protocol Tools
-
-Welcome to the Evolve system! This wizard helps you understand and use the 
-evolve tool ecosystem for extending Claude's capabilities.
-
-## System Paths
-
-- **Evolve script**: {script_path}
-- **Working directory**: {script_dir}
-- **Claude config**: {config_path}
-
-## How Evolve Works
-
-The Evolve system consists of:
-
-1. **evolve.ps1**: PowerShell script for managing Claude's configuration and processes
-2. **evolve.py**: Python MCP server providing tool management capabilities
-3. **Tool scripts**: Python files created for specific functionalities
-
-## Available Commands
-
-Run `evolve_wizard("command")` with one of these commands:
-
-- `"help"` - Show this help information
-- `"status"` - Show system status and current tools
-- `"calc"` - Install a calculator tool example
-- `"code"` - Show code templates for creating custom tools
-
-## Example Usage
-
-```
-# Get system information
-evolve_wizard()
-
-# Install calculator example tool
-evolve_wizard("calc")
-
-# View system status
-evolve_status()
-```
-
-To learn more about creating your own tools, try `evolve_wizard("code")`.
-"""
-    
-    # Process different commands
-    if command.lower() == "help":
-        # Same as no command
-        return await evolve_wizard()
-    
-    elif command.lower() == "status":
-        # Show status similar to evolve_status but with more wizard-like explanations
-        status = await evolve_status()
-        
-        formatted_status = f"""
-# Evolve System Status
-
-## System Information
-- OS: {status['system']['os']} {status['system']['os_version']}
-- Hostname: {status['system']['hostname']}
-- Python: {status['system']['python_version']}
-
-## Claude Status
-- Running: {'Yes' if status['claude_running'] else 'No'}
-- Processes: {len(status['claude_processes'])}
-
-## MCP Configuration
-- Config path: {config_path}
-- Configured servers: {len(status['mcp_servers'])}
-
-## Next Steps
-
-You can:
-- Install example tools with `evolve_wizard("calc")`
-- Create custom tools with code from `evolve_wizard("code")`
-- Check log files with `evolve_status()`
-"""
-        return formatted_status
-    
-    elif command.lower() == "calc":
-        # Install calculator example
-        # First, check if calc tool is already registered
-        config = read_claude_config()
-        if config and "mcpServers" in config and "calc-server" in config["mcpServers"]:
-            return "Calculator tool is already installed. You can use it directly with functions like `add(1, 2)`, `multiply(3, 4)`, etc."
-        
-        # Create the calculator tool
-        calc_code = """
-import sys
-import importlib.util
-import math
-from typing import Dict, Any, Union
-
-# Check if a package is installed and install it if not
-def ensure_package(package_name):
-    try:
-        if importlib.util.find_spec(package_name) is None:
-            try:
-                print(f"Installing required package: {package_name}")
-                import subprocess
-                subprocess.check_call([sys.executable, "-m", "pip", "install", package_name])
-                print(f"Successfully installed {package_name}")
-            except Exception as e:
-                print(f"Error installing {package_name}: {e}")
-                sys.exit(1)
-    except Exception as e:
-        print(f"Error checking package: {e}")
-        sys.exit(1)
-
-# Ensure required packages are installed
-ensure_package("mcp-server")
-
-from mcp.server.fastmcp import FastMCP
-
-# Initialize FastMCP server
-mcp = FastMCP("calc-server")
-
-@mcp.tool()
-async def calculate(expression: str) -> Dict[str, Any]:
-    '''
-    Calculates the result of a given mathematical expression.
-    Supports functions like sqrt() and variables like pi, e, etc. from the math module.
-    
-    Args:
-        expression: A mathematical expression (e.g., "2 + 3 * 4", "sqrt(16) + pi")
-    
-    Returns:
-        Dictionary containing the result or error information
-    '''
-    # Define a safe dictionary of allowed names
-    allowed_names = {
-        'sqrt': math.sqrt,
-        'pi': math.pi,
-        'e': math.e,
-        'sin': math.sin,
-        'cos': math.cos,
-        'tan': math.tan,
-        'log': math.log,
-        'log10': math.log10,
-        'exp': math.exp,
-        'pow': math.pow,
-        'ceil': math.ceil,
-        'floor': math.floor,
-        'factorial': math.factorial,
-        'abs': abs,
-        'round': round,
-        'max': max,
-        'min': min
-    }
-
-    try:
-        # Replace '^' with '**' for power operations
-        expression = expression.replace('^', '**')
-        
-        # Evaluate the expression using eval() with the allowed names
-        result = eval(expression, {"__builtins__": None}, allowed_names)
-        return {
-            "success": True,
-            "result": result
-        }
-    except (SyntaxError, ZeroDivisionError, NameError, TypeError, ValueError) as e:
-        # Handle specific exceptions and return an error message
-        error_message = str(e)
-        return {
-            "success": False,
-            "error": "Invalid expression",
-            "reason": error_message
-        }
-    except Exception as e:
-        # Handle any other unexpected exceptions
-        error_message = str(e)
-        return {
-            "success": False,
-            "error": "Calculation failed",
-            "reason": error_message
-        }
-
-# Print server information
-print("Starting Calculator MCP server...")
-print("Use the calculate tool to perform mathematical operations.")
-
-if __name__ == "__main__":
-    # Initialize and run the server
-    mcp.run(transport='stdio')
-"""
-        
-        # Write to a file in the SAME DIRECTORY as evolve.py
-        file_name = "calc.py"
-        file_path = os.path.join(script_dir, file_name)  # Use script_dir to ensure same location as evolve.py
-        
-        try:
-            # Write calculator code to file
-            with open(file_path, 'w') as f:
-                f.write(calc_code)
             
-            # Update Claude's configuration to add the calculator tool
-            try:
-                if config is None:
-                    config = {}
+            # If only one file and we're filtering, automatically select it
+            if ($logFiles.Count -eq 1 -and $FilterName) {
+                $selectedLog = $logFiles[0]
+                Write-Host "`n📖 Reading log file: $($selectedLog.Name)" -ForegroundColor Yellow
+                Write-Host "⬇️ Last 20 lines:" -ForegroundColor Yellow
+                Get-Content -Path $selectedLog.FullName -Tail 20
                 
-                if "mcpServers" not in config:
-                    config["mcpServers"] = {}
+                # Option to monitor the log file
+                $monitorOption = Read-Host "`n👀 Would you like to monitor this log file in real-time? (y/n)"
+                if ($monitorOption -eq "y") {
+                    Write-Host "📊 Monitoring log file. Press Ctrl+C to stop." -ForegroundColor Magenta
+                    Get-Content -Path $selectedLog.FullName -Tail 20 -Wait
+                }
+                return
+            }
+            
+            # Let user select a log file
+            $selectedOption = Read-Host "`n🔢 Select a log file to view (1-$($logFiles.Count))"
+            
+            if ($fileOptions.ContainsKey([int]$selectedOption)) {
+                $selectedLog = $fileOptions[[int]$selectedOption]
+                Write-Host "`n📖 Reading selected log file: $($selectedLog.Name)" -ForegroundColor Yellow
+                Write-Host "⬇️ Last 20 lines:" -ForegroundColor Yellow
+                Get-Content -Path $selectedLog.FullName -Tail 20
                 
-                # Add the calculator to the configuration
-                config["mcpServers"]["calc-server"] = {
-                    "command": "python",
-                    "args": [file_path]
+                # Option to monitor the log file
+                $monitorOption = Read-Host "`n👀 Would you like to monitor this log file in real-time? (y/n)"
+                if ($monitorOption -eq "y") {
+                    Write-Host "📊 Monitoring log file. Press Ctrl+C to stop." -ForegroundColor Magenta
+                    Get-Content -Path $selectedLog.FullName -Tail 20 -Wait
+                }
+            } else {
+                Write-Host "❌ Invalid selection." -ForegroundColor Red
+            }
+        } else {
+            Write-Host "❌ No log files found in $logsPath matching '$logFilter'" -ForegroundColor Red
+            
+            # Inform user if directory exists but is empty
+            Write-Host "The directory exists but contains no matching log files." -ForegroundColor Yellow
+        }
+    } else {
+        Write-Host "❌ Logs directory not found at: $logsPath" -ForegroundColor Red
+        
+        # Option to create the logs directory
+        $createDir = Read-Host "`n📂 Would you like to create the logs directory? (y/n)"
+        if ($createDir -eq "y") {
+            Ensure-LogsDirectory
+        }
+    }
+}
+
+# Function to find and manage Claude processes
+function Manage-ClaudeProcess {
+    param (
+        [switch]$Kill,
+        [switch]$Restart,
+        [int]$WaitTime = 5
+    )
+    
+    Write-Host "🔍 Searching for Claude processes..." -ForegroundColor Yellow
+    $claudeProcesses = Get-Process -Name "*claude*" -ErrorAction SilentlyContinue
+    
+    if ($claudeProcesses) {
+        Write-Host "🔍 Found Claude processes:" -ForegroundColor Green
+        foreach ($process in $claudeProcesses) {
+            Write-Host "  - $($process.Name) (PID: $($process.Id))" -ForegroundColor Cyan
+        }
+        
+        if ($Kill -or $Restart) {
+            Write-Host "⚠️ Stopping Claude processes..." -ForegroundColor Yellow
+            foreach ($process in $claudeProcesses) {
+                try {
+                    Stop-Process -Id $process.Id -Force -ErrorAction Stop
+                    Write-Host "  - 🛑 Stopped $($process.Name) (PID: $($process.Id))" -ForegroundColor Red
+                }
+                catch {
+                    Write-Host "  - ❌ Failed to stop $($process.Name) (PID: $($process.Id)): $_" -ForegroundColor Red
+                }
+            }
+            
+            # Verify all processes are actually stopped
+            Write-Host "⏳ Waiting for processes to fully terminate... ($WaitTime seconds)" -ForegroundColor Yellow
+            Start-Sleep -Seconds 2
+            
+            $remainingAttempts = 3
+            $allProcessesStopped = $false
+            
+            while (-not $allProcessesStopped -and $remainingAttempts -gt 0) {
+                $runningClaudeProcesses = Get-Process -Name "*claude*" -ErrorAction SilentlyContinue
+                
+                if ($runningClaudeProcesses) {
+                    Write-Host "⚠️ Some Claude processes are still running. Attempting to stop again..." -ForegroundColor Yellow
+                    foreach ($process in $runningClaudeProcesses) {
+                        try {
+                            Stop-Process -Id $process.Id -Force -ErrorAction Stop
+                            Write-Host "  - 🛑 Stopped $($process.Name) (PID: $($process.Id))" -ForegroundColor Red
+                        }
+                        catch {
+                            Write-Host "  - ❌ Failed to stop $($process.Name) (PID: $($process.Id)): $_" -ForegroundColor Red
+                        }
+                    }
+                    
+                    Start-Sleep -Seconds $WaitTime
+                    $remainingAttempts--
+                }
+                else {
+                    $allProcessesStopped = $true
+                    Write-Host "✅ All Claude processes have been terminated." -ForegroundColor Green
+                }
+            }
+            
+            # Final check for any stubborn processes
+            $stubbornProcesses = Get-Process -Name "*claude*" -ErrorAction SilentlyContinue
+            if ($stubbornProcesses) {
+                Write-Host "⚠️ Warning: Some Claude processes could not be terminated. Restart may not work properly." -ForegroundColor Yellow
+                foreach ($process in $stubbornProcesses) {
+                    Write-Host "  - ⚠️ Still running: $($process.Name) (PID: $($process.Id))" -ForegroundColor Yellow
+                }
+            }
+            
+            if ($Restart) {
+                # Try to find Claude.exe in common locations
+                Write-Host "🔍 Searching for Claude executable..." -ForegroundColor Yellow
+                
+                $claudeExePaths = @(
+                    "C:\Users\$username\AppData\Local\AnthropicClaude\claude.exe",
+                    "C:\Users\$username\AppData\Local\AnthropicClaude\Claude.exe",
+                    "C:\Users\$username\AppData\Local\Programs\Claude\claude.exe",
+                    "C:\Users\$username\AppData\Local\Programs\Claude\Claude.exe",
+                    "C:\Program Files\Claude\claude.exe",
+                    "C:\Program Files\Claude\Claude.exe"
+                )
+                
+                # Check for versioned dirs
+                $versionedPaths = @(
+                    "C:\Users\$username\AppData\Local\Claude\app-*"
+                )
+                
+                foreach ($versionedPath in $versionedPaths) {
+                    $versionedDirs = Get-ChildItem -Path $versionedPath -Directory -ErrorAction SilentlyContinue
+                    if ($versionedDirs) {
+                        foreach ($dir in $versionedDirs) {
+                            $possibleExes = @(
+                                (Join-Path -Path $dir.FullName -ChildPath "claude.exe"),
+                                (Join-Path -Path $dir.FullName -ChildPath "Claude.exe")
+                            )
+                            
+                            foreach ($possibleExe in $possibleExes) {
+                                if (Test-Path $possibleExe) {
+                                    $claudeExePaths += $possibleExe
+                                }
+                            }
+                        }
+                    }
                 }
                 
-                # Save the updated configuration
-                update_claude_config(config)
+                $claudeExe = $null
+                foreach ($path in $claudeExePaths) {
+                    if (Test-Path $path) {
+                        $claudeExe = $path
+                        Write-Host "✅ Found Claude executable: $claudeExe" -ForegroundColor Green
+                        break
+                    }
+                }
                 
-                return f"""
-# Calculator Tool Created Successfully
+                if ($claudeExe) {
+                    Write-Host "🚀 Restarting Claude from: $claudeExe" -ForegroundColor Green
+                    try {
+                        Start-Process -FilePath $claudeExe -ErrorAction Stop
+                        
+                        # Verify Claude started successfully
+                        Start-Sleep -Seconds 5
+                        $newClaudeProcesses = Get-Process -Name "*claude*" -ErrorAction SilentlyContinue
+                        
+                        if ($newClaudeProcesses) {
+                            Write-Host "✅ Claude has been successfully restarted." -ForegroundColor Green
+                            foreach ($process in $newClaudeProcesses) {
+                                Write-Host "  - 🚀 Started $($process.Name) (PID: $($process.Id))" -ForegroundColor Green
+                            }
+                            return $true
+                        } else {
+                            Write-Host "❌ Failed to detect Claude processes after restart." -ForegroundColor Red
+                            return $false
+                        }
+                    }
+                    catch {
+                        Write-Host "❌ Error starting Claude: $_" -ForegroundColor Red
+                        return $false
+                    }
+                } else {
+                    Write-Host "❌ Could not find Claude.exe to restart. Please restart manually." -ForegroundColor Red
+                    return $false
+                }
+            }
+        }
+    } else {
+        Write-Host "🔎 No Claude processes found running." -ForegroundColor Yellow
+        
+        if ($Restart) {
+            # Try to find Claude.exe in common locations
+            Write-Host "🔍 Searching for Claude executable..." -ForegroundColor Yellow
+            
+            $claudeExePaths = @(
+                "C:\Users\$username\AppData\Local\AnthropicClaude\claude.exe",
+                "C:\Users\$username\AppData\Local\AnthropicClaude\Claude.exe",
+                "C:\Users\$username\AppData\Local\Programs\Claude\claude.exe",
+                "C:\Users\$username\AppData\Local\Programs\Claude\Claude.exe",
+                "C:\Program Files\Claude\claude.exe",
+                "C:\Program Files\Claude\Claude.exe"
+            )
+            
+            # Check for versioned dirs
+            $versionedPaths = @(
+                "C:\Users\$username\AppData\Local\Claude\app-*"
+            )
+            
+            foreach ($versionedPath in $versionedPaths) {
+                $versionedDirs = Get-ChildItem -Path $versionedPath -Directory -ErrorAction SilentlyContinue
+                if ($versionedDirs) {
+                    foreach ($dir in $versionedDirs) {
+                        $possibleExes = @(
+                            (Join-Path -Path $dir.FullName -ChildPath "claude.exe"),
+                            (Join-Path -Path $dir.FullName -ChildPath "Claude.exe")
+                        )
+                        
+                        foreach ($possibleExe in $possibleExes) {
+                            if (Test-Path $possibleExe) {
+                                $claudeExePaths += $possibleExe
+                            }
+                        }
+                    }
+                }
+            }
+            
+            $claudeExe = $null
+            foreach ($path in $claudeExePaths) {
+                if (Test-Path $path) {
+                    $claudeExe = $path
+                    Write-Host "✅ Found Claude executable: $claudeExe" -ForegroundColor Green
+                    break
+                }
+            }
+            
+            if ($claudeExe) {
+                Write-Host "🚀 Starting Claude from: $claudeExe" -ForegroundColor Green
+                try {
+                    Start-Process -FilePath $claudeExe -ErrorAction Stop
+                    
+                    # Verify Claude started successfully
+                    Start-Sleep -Seconds 5
+                    $newClaudeProcesses = Get-Process -Name "*claude*" -ErrorAction SilentlyContinue
+                    
+                    if ($newClaudeProcesses) {
+                        Write-Host "✅ Claude has been successfully started." -ForegroundColor Green
+                        foreach ($process in $newClaudeProcesses) {
+                            Write-Host "  - 🚀 Started $($process.Name) (PID: $($process.Id))" -ForegroundColor Green
+                        }
+                        return $true
+                    } else {
+                        Write-Host "❌ Failed to detect Claude processes after start." -ForegroundColor Red
+                        return $false
+                    }
+                }
+                catch {
+                    Write-Host "❌ Error starting Claude: $_" -ForegroundColor Red
+                    return $false
+                }
+            } else {
+                Write-Host "❌ Could not find Claude.exe to start. Please start manually." -ForegroundColor Red
+                return $false
+            }
+        }
+    }
+}
 
-I've created a calculator tool file at:
-{file_path}
-
-## The tool has been registered with Claude!
-
-The calculator has been:
-1. Created in the same directory as your evolve.py file
-2. Added to Claude's configuration automatically
-
-## To use the calculator tool:
-
-1. **Restart Claude**:
-   Run this command in PowerShell:
-   ```
-   ./evolve.ps1 -Restart
-   ```
-   
-2. **After Claude restarts**:
-   You can use the calculator functions:
-   - `add(5, 3)` → 8.0
-   - `subtract(10, 4)` → 6.0
-   - `multiply(2.5, 3)` → 7.5
-   - `calculate("2 + 3 * 4")` → 14.0
-   - calculate the square root of pi
-   - what is the distance to the moon (average) to the power of 3?
-   - calculate the volume inside a regular ice cream cone scoop (in liters)
-
-The calculator provides basic math operations as an example of how custom tools work.
-"""
-            except Exception as e:
-                file_path_json = file_path.replace('\\', '\\\\')
-                return f"""
-# Calculator Tool Created But Not Registered
-
-I've created the calculator tool file at:
-{file_path}
-
-## Important: Configuration could not be updated automatically
-
-Error: {str(e)}
-
-To complete the installation manually:
-1. Run `./evolve.ps1`
-2. The tool must be registered manually by adding "calc-server" to Claude's configuration file:
-   - Edit: {config_path}
-   - Add the following to the "mcpServers" section:
-   ```json
-   "calc-server": {{
-     "command": "python",
-     "args": ["{file_path_json}"]
-   }}
-   ```
-3. Restart Claude using `./evolve.ps1 -Restart`
-
-Once completed, you can use calculator functions like:
-- `add(5, 3)`
-- `multiply(2.5, 3)`
-- `calculate("2 + 3 * 4")`
-"""
-        except Exception as e:
-            return f"Error creating calculator tool: {str(e)}"
+# Quick restart function that can be called directly
+function Restart-Claude {
+    param (
+        [int]$WaitTime = 5
+    )
     
-    elif command.lower() == "code":
-        # Provide code templates for creating custom tools
-        return """Tell the user that this is a new function that can be used to evolve_code (but we haven't installe dit yet.)"""
+    Write-Host "🔄 Restarting Claude..." -ForegroundColor Magenta
+    $result = Manage-ClaudeProcess -Restart -WaitTime $WaitTime
     
-    else:
-        return f"Unknown command: '{command}'. Try calling evolve_wizard() without parameters to see available commands."
-# Print server information
-logger.info("Starting Evolve MCP server...")
-logger.info("Use 'evolve_status' to check system information")
-logger.info("Use 'evolve_setup' to setup new MCP tools")
+    if ($result) {
+        Write-Host "✅ Claude restart completed successfully." -ForegroundColor Green
+    } else {
+        Write-Host "❌ Claude restart failed. Please try again or restart manually." -ForegroundColor Red
+    }
+}
 
-if __name__ == "__main__":
-    # Initialize and run the server
-    mcp.run(transport='stdio')
+# Function to read Claude's configuration file
+function Read-ClaudeConfig {
+    if (Test-Path $configPath) {
+        try {
+            $config = Get-Content -Path $configPath -Raw | ConvertFrom-Json
+            return $config
+        }
+        catch {
+            Write-Host "❌ Error reading Claude configuration: $_" -ForegroundColor Red
+            return $null
+        }
+    }
+    else {
+        Write-Host "❌ Claude configuration file not found at: $configPath" -ForegroundColor Red
+        return $null
+    }
+}
+
+# Function to write Claude's configuration file
+function Write-ClaudeConfig {
+    param (
+        [PSCustomObject]$Config
+    )
+    
+    try {
+        $configDir = Split-Path -Path $configPath -Parent
+        if (-not (Test-Path $configDir)) {
+            New-Item -ItemType Directory -Path $configDir -Force | Out-Null
+        }
+        
+        $Config | ConvertTo-Json -Depth 10 | Set-Content -Path $configPath
+        Write-Host "✅ Updated Claude configuration at $configPath" -ForegroundColor Green
+        return $true
+    }
+    catch {
+        Write-Host "❌ Error updating Claude configuration: $_" -ForegroundColor Red
+        return $false
+    }
+}
+
+# List all configured MCP tools
+function List-MCPTools {
+    $config = Read-ClaudeConfig
+    
+    if ($null -eq $config) {
+        return
+    }
+    
+    if ($null -eq $config.mcpServers -or $config.mcpServers.PSObject.Properties.Count -eq 0) {
+        Write-Host "ℹ️ No MCP servers are configured." -ForegroundColor Yellow
+        return
+    }
+    
+    Write-Host "📋 Configured MCP Servers:" -ForegroundColor Green
+    
+    foreach ($server in $config.mcpServers.PSObject.Properties) {
+        $serverName = $server.Name
+        $serverConfig = $server.Value
+        
+        # Determine if this is an evolve-created tool
+        $isEvolveTool = $false
+        if ($serverConfig.args -and $serverConfig.args.Count -gt 0) {
+            $scriptPath = $serverConfig.args[0]
+            $fileName = Split-Path -Leaf $scriptPath
+            if ($fileName -like "mcp_tool.*") {
+                $isEvolveTool = $true
+            }
+        }
+        
+        # Use different colors for evolve tools vs other servers
+        if ($isEvolveTool) {
+            Write-Host "  🧠 $serverName" -ForegroundColor Magenta -NoNewline
+            Write-Host " (Evolve Tool)" -ForegroundColor Yellow
+        } else {
+            Write-Host "  📦 $serverName" -ForegroundColor Cyan
+        }
+        
+        Write-Host "    - Command: $($serverConfig.command)" -ForegroundColor Gray
+        
+        if ($serverConfig.args -and $serverConfig.args.Count -gt 0) {
+            $argsStr = $serverConfig.args -join " "
+            Write-Host "    - Args: $argsStr" -ForegroundColor Gray
+        }
+        
+        # Check if the server script exists
+        if ($serverConfig.args -and $serverConfig.args.Count -gt 0) {
+            $scriptPath = $serverConfig.args[0]
+            if (Test-Path $scriptPath) {
+                if ($isEvolveTool) {
+                    # For evolve tools, read metadata from file
+                    try {
+                        $fileContent = Get-Content -Path $scriptPath -TotalCount 6 -ErrorAction SilentlyContinue
+                        $version = ($fileContent | Where-Object { $_ -like "# Version:*" } | Select-Object -First 1).Replace("# Version:", "").Trim()
+                        $created = ($fileContent | Where-Object { $_ -like "# Created:*" } | Select-Object -First 1).Replace("# Created:", "").Trim()
+                        
+                        Write-Host "    - Status: ✅ Evolve tool active" -ForegroundColor Green
+                        if ($version) { Write-Host "    - Version: $version" -ForegroundColor Gray }
+                        if ($created) { Write-Host "    - Created: $created" -ForegroundColor Gray }
+                    } catch {
+                        Write-Host "    - Status: ✅ Script exists" -ForegroundColor Green
+                    }
+                } else {
+                    Write-Host "    - Status: ✅ Script exists" -ForegroundColor Green
+                }
+            }
+            else {
+                Write-Host "    - Status: ❌ Script not found at $scriptPath" -ForegroundColor Red
+            }
+        }
+        
+        Write-Host ""
+    }
+}
+
+# No longer using a separate function to configure MCP servers - this will be done by evolve_setup in Python
+
+# Setup Evolve Server for the first time
+function Setup-Evolve-Server {
+    Write-Host "`n🚀 Setting up Evolve MCP Server" -ForegroundColor Yellow
+    
+    # Get the current directory to save evolve.py with absolute path
+    $currentDir = Get-Location
+    $evolveScriptPath = Join-Path -Path $currentDir -ChildPath "evolve.py"
+    
+    # Check if evolve.py already exists in the current directory
+    if (Test-Path $evolveScriptPath) {
+        Write-Host "✅ Found evolve.py at: $evolveScriptPath" -ForegroundColor Green
+    } else {
+        Write-Host "❌ evolve.py not found at: $evolveScriptPath" -ForegroundColor Red
+        Write-Host "Please make sure evolve.py is in the current directory before continuing." -ForegroundColor Yellow
+        return $false
+    }
+    
+    # Create a backup of the existing config
+    $backupPath = "$configPath.backup"
+    try {
+        if (Test-Path $configPath) {
+            Copy-Item -Path $configPath -Destination $backupPath -Force
+            Write-Host "✅ Created configuration backup at: $backupPath" -ForegroundColor Green
+        }
+    } catch {
+        Write-Host "⚠️ Warning: Failed to create backup of configuration file: $_" -ForegroundColor Yellow
+    }
+    
+    # Read existing configuration
+    $config = Read-ClaudeConfig
+    
+    if ($null -eq $config) {
+        $config = @{}
+    }
+    
+    if (-not $config.mcpServers) {
+        $config | Add-Member -MemberType NoteProperty -Name "mcpServers" -Value @{} -Force
+    }
+    
+    # Check if other MCP servers exist
+    $hasOtherServers = $false
+    if ($config.mcpServers.PSObject.Properties.Count -gt 0) {
+        $otherServers = $config.mcpServers.PSObject.Properties | Where-Object { $_.Name -ne "evolve-server" }
+        
+        if ($otherServers -and $otherServers.Count -gt 0) {
+            $hasOtherServers = $true
+            Write-Host "`n⚠️ The following MCP servers are currently configured:" -ForegroundColor Yellow
+            
+            foreach ($server in $otherServers) {
+                Write-Host "  - $($server.Name)" -ForegroundColor Cyan
+            }
+            
+            Write-Host "`n⚠️ Setting up evolve will REMOVE all other MCP servers from the configuration." -ForegroundColor Yellow
+            Write-Host "   All tools will need to be reconfigured through evolve_setup." -ForegroundColor Yellow
+            
+            $confirmation = Read-Host "`n❓ Are you sure you want to continue? (y/n)"
+            if ($confirmation -ne "y") {
+                Write-Host "❌ Setup aborted." -ForegroundColor Red
+                return $false
+            }
+        }
+    }
+    
+    # Create a new configuration with only evolve-server
+    $newConfig = @{
+        mcpServers = @{
+            "evolve-server" = @{
+                command = "python"
+                args = @($evolveScriptPath)
+            }
+        }
+    }
+    
+    # Write the configuration
+    try {
+        $configDir = Split-Path -Path $configPath -Parent
+        if (-not (Test-Path $configDir)) {
+            New-Item -ItemType Directory -Path $configDir -Force | Out-Null
+        }
+        
+        # Convert to JSON and save
+        $newConfig | ConvertTo-Json -Depth 10 | Set-Content -Path $configPath
+        
+        if ($hasOtherServers) {
+            Write-Host "✅ Removed all previous MCP servers and configured evolve-server." -ForegroundColor Green
+        } else {
+            Write-Host "✅ Configured evolve-server." -ForegroundColor Green
+        }
+        
+        Write-Host "📄 Config uses absolute path to evolve.py: $evolveScriptPath" -ForegroundColor Green
+        
+        Write-Host "`n✅ Evolve MCP server setup completed successfully!" -ForegroundColor Green
+        
+        $restartOption = Read-Host "🔄 Would you like to restart Claude now? (y/n)"
+        if ($restartOption -eq "y") {
+            Restart-Claude
+        } else {
+            Write-Host "ℹ️ Remember to restart Claude for the changes to take effect." -ForegroundColor Yellow
+        }
+        
+        return $true
+    } catch {
+        Write-Host "❌ Failed to update Claude configuration: $_" -ForegroundColor Red
+        
+        # Offer to restore backup
+        if (Test-Path $backupPath) {
+            $restoreBackup = Read-Host "🔄 Would you like to restore the backup configuration? (y/n)"
+            if ($restoreBackup -eq "y") {
+                try {
+                    Copy-Item -Path $backupPath -Destination $configPath -Force
+                    Write-Host "✅ Restored configuration from backup." -ForegroundColor Green
+                } catch {
+                    Write-Host "❌ Failed to restore backup: $_" -ForegroundColor Red
+                }
+            }
+        }
+        
+        return $false
+    }
+}
+
+# Main menu function
+function Show-ClaudeManagerMenu {
+    # Menu for script actions
+    Write-Host "`n🧰 ===== CLAUDE MANAGER MENU ===== 🧰" -ForegroundColor Magenta
+    Write-Host "1. 📜 View MCP Logs" -ForegroundColor Cyan
+    Write-Host "2. 🛑 Kill Claude Desktop" -ForegroundColor Cyan
+    Write-Host "3. 🚀 Setup Evolve Server" -ForegroundColor Cyan
+    Write-Host "4. 🔄 Restart Claude" -ForegroundColor Cyan
+    Write-Host "5. 📋 List Current MCP Servers" -ForegroundColor Cyan
+    Write-Host "6. 🚪 Exit" -ForegroundColor Cyan
+
+    $choice = Read-Host "`n🔢 Select an option (1-6)"
+
+    switch ($choice) {
+        "1" {
+            # View MCP Logs
+            View-MCP-Logs
+            
+            # Return to menu after viewing logs
+            $returnToMenu = Read-Host "`n🔄 Return to menu? (y/n)"
+            if ($returnToMenu -eq "y") {
+                Show-ClaudeManagerMenu
+            }
+        }
+        "2" {
+            # Kill Claude Desktop
+            Manage-ClaudeProcess -Kill
+            
+            # Return to menu after killing processes
+            $returnToMenu = Read-Host "`n🔄 Return to menu? (y/n)"
+            if ($returnToMenu -eq "y") {
+                Show-ClaudeManagerMenu
+            }
+        }
+        "3" {
+            # Setup Evolve Server
+            Setup-Evolve-Server
+            
+            # Return to menu after setup
+            $returnToMenu = Read-Host "`n🔄 Return to menu? (y/n)"
+            if ($returnToMenu -eq "y") {
+                Show-ClaudeManagerMenu
+            }
+        }
+        "4" {
+            # Restart Claude
+            Restart-Claude
+            
+            # Return to menu after restart
+            $returnToMenu = Read-Host "`n🔄 Return to menu? (y/n)"
+            if ($returnToMenu -eq "y") {
+                Show-ClaudeManagerMenu
+            }
+        }
+        "5" {
+            # List MCP Tools
+            List-MCPTools
+            
+            # Return to menu after listing tools
+            $returnToMenu = Read-Host "`n🔄 Return to menu? (y/n)"
+            if ($returnToMenu -eq "y") {
+                Show-ClaudeManagerMenu
+            }
+        }
+        "6" {
+            Write-Host "👋 Exiting..." -ForegroundColor Yellow
+            exit
+        }
+        default {
+            Write-Host "❌ Invalid option. Please select a valid option." -ForegroundColor Red
+            Show-ClaudeManagerMenu
+        }
+    }
+}
+
+# Process command-line parameters
+if ($ViewLogs) {
+    View-MCP-Logs -FilterName $LogName
+    exit
+}
+
+if ($Kill) {
+    Manage-ClaudeProcess -Kill
+    exit
+}
+
+if ($Setup) {
+    Setup-Evolve-Server
+    exit
+}
+
+if ($Restart) {
+    Restart-Claude
+    exit
+}
+
+if ($ListTools) {
+    List-MCPTools
+    exit
+}
+
+# Removed Configure parameter handling
+
+# If no parameters, or Menu parameter is specified, show the menu
+if ($Menu -or ($PSBoundParameters.Count -eq 0)) {
+    # Start the script by showing the menu
+    Write-Host "🔧 EvolveMCP - Claude Manager Tool" -ForegroundColor Yellow
+    Write-Host "Logs Path: $logsPath" -ForegroundColor Yellow
+    Write-Host "Config Path: $configPath" -ForegroundColor Yellow
+    Show-ClaudeManagerMenu
+}

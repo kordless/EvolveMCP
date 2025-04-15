@@ -105,7 +105,7 @@ The `Setup Evolve Server` option automates a whole messy chain:
 Before running, make sure you have:
 
 - ✅ Windows with PowerShell
-- ✅ [Claude Desktop](https://www.anthropic.com/index/claude-desktop](https://claude.ai/download)
+- ✅ [Claude Desktop](https://claude.ai/download)
 - ✅ Python installed (`python` in your path)
 - ✅ MCP Server installed:
   ```bash

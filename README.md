@@ -80,6 +80,10 @@ The calculator has been:
 calculate the square root of pi
 ```
 
+```
+The square root of pi is 1.7724538509055159.
+```
+
 ### Common Commands for the Evolve Configuration Tool
 
 ```powershell

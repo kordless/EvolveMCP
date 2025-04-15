@@ -67,37 +67,10 @@ The calculator has been:
    
 2. **After Claude restarts**:
    You can use the calculator functions:
-   - `add(5, 3)` → 8.0
-   - `subtract(10, 4)` → 6.0
-   - `multiply(2.5, 3)` → 7.5
-   - `calculate("2 + 3 * 4")` → 14.0
    - calculate the square root of pi
    - what is the distance to the moon (average) to the power of 3?
    - calculate the volume inside a regular ice cream cone scoop (in liters)
 
-The calculator provides basic math operations as an example of how custom tools work.
-Great! I've successfully created a calculator tool for you. The tool has been created and registered with Claude.
-To start using the calculator, you'll need to restart Claude. Here's what to do:
-
-Run this command in PowerShell:
-./evolve.ps1 -Restart
-
-After Claude restarts, you'll be able to use the calculator functions like:
-
-add(5, 3) → 8.0
-subtract(10, 4) → 6.0
-multiply(2.5, 3) → 7.5
-calculate("2 + 3 * 4") → 14.0
-
-
-
-You can also ask natural language math questions like:
-
-Calculate the square root of pi
-What is the distance to the moon (average) to the power of 3?
-Calculate the volume inside a regular ice cream cone scoop (in liters)
-
-Would you like me to explain how the calculator tool works, or do you want to restart Claude now and try it out?
 ```
 
 2. Restart Claude as instructed

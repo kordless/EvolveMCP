@@ -103,11 +103,12 @@ Would you like me to explain how the calculator tool works, or do you want to re
 
 2. Restart Claude as instructed
 
-3. Use your new tool:
+3. Use your new tool (in Claude Desktop):
 ```
+calculate the square root of pi
 ```
 
-### Common Commands
+### Common Commands for the Evolve Configuration Tool
 
 ```powershell
 # Show menu with all options

@@ -1,10 +1,52 @@
-# 🧠 EvolveMCP: Claude Manager & MCP Bootstrapper
+## 🛠️ MCP Setup Basics
 
-A PowerShell utility for managing Claude Desktop and bootstrapping MCP servers.
+### What is MCP?
+
+The [Model Context Protocol (MCP)](https://modelcontextprotocol.io/introduction) is an open "standard" or "protocol" that enables AI models to communicate with external tools and data sources through a standardized interface. "MCP is like a USB-C port for AI applications" - it provides a universal way for AI models to connect with external data sources, tools, and environments.
+
+### Traditional Setup (The Complex Way)
+
+According to the official documentation, setting up MCP typically involves:
+
+1. Installing Claude Desktop (or other client)
+2. Using the uv package manager (which requires global installation for Claude Desktop)
+3. Setting up Node.js (since many MCP servers are Node-based)
+4. Creating complex configuration files with absolute paths (for Claude Desktop)
+5. Manually editing the Claude desktop configuration file
+6. Restarting Claude Desktop to load the tools (servers)
+
+### The EvolveMCP Way (Simplified)
+
+Our approach cuts through this complexity:
+
+1. **One-Click Setup**: Run `evolve.ps1` and select option 3
+2. **Python-Based**: Uses Python instead of Node.js (more developers already have Python)
+3. **No Global Dependencies**: Doesn't require uv or other global package managers
+4. **Automatic Configuration**: Handles all path issues and configuration automatically
+5. **Windows-Optimized**: Specifically designed to work with Windows path structures
+
+## 🔧 Understanding MCP Setup
+
+### The Reality: It's Simpler Than It Looks
+
+MCP is fundamentally a protocol/standard/framework - it's just a way for AI models to communicate with external tools. The apparent complexity comes from:
+
+1. Documentation that covers many possible implementation paths
+2. Different language environments (JavaScript, Python, etc.)
+3. Configuration quirks across operating systems and clients
+
+### Our Approach: Keep It Simple
+
+The `evolve.ps1` tool cuts through this complexity by:
+- Using Python (which many developers already have)
+- Creating a simple server without Node.js dependencies
+- Auto-generating all necessary configuration files
+- Handling the Windows-specific path issues automatically
+apping MCP servers.
 
 ## 🌟 Overview
 
-This tool provides convenient management of Claude Desktop processes and simplifies the setup of MCP (Model Context Protocol) servers, with a focus on the Evolve tool implementation.
+This tool (`evolve.ps1`) provides convenient management of Claude Desktop processes and simplifies the setup of MCP (Model Context Protocol) servers, with a focus on the Evolve tool implementation.
 
 MCP (Model Context Protocol) is a powerful interface for extending AI capabilities, but setting it up—especially on Windows using Python or PowerShell—can be challenging due to limited documentation. This tool bridges that gap by automating the configuration process and providing a streamlined experience for developers.
 
@@ -37,10 +79,23 @@ This creates a feedback loop where the AI helps build better tools for working w
 
 ```powershell
 # Run the script
-.\claude-manager.ps1
+.\evolve.ps1
 ```
 
 ## 📋 Menu Options
+
+Here's what you'll see when running `evolve.ps1`:
+
+```
+🧰 ===== CLAUDE MANAGER MENU ===== 🧰
+1. 📜 View MCP Logs
+2. 🛑 Kill Claude Desktop
+3. 🚀 Setup Evolve Server
+4. 🔄 Restart Claude
+5. 🚪 Exit
+```
+
+Each option provides the following functionality:
 
 1. **📜 View MCP Logs** - View log files from the Claude logs directory
 2. **🛑 Kill Claude Desktop** - Terminate Claude processes
@@ -68,13 +123,14 @@ MCP-Commander handles these issues automatically, making the process accessible 
 
 ## 🧠 Evolve: The Self-Improving Tool
 
-The Evolve function serves as the foundation for AI-assisted tool creation:
+The current evolve.py file is intentionally simple - it's the starting point in an evolutionary journey:
 
-- **Pattern Learning:** Recognizes input patterns and creates customized responses
-- **Multiple Modes:** Supports basic, advanced, and debug operation modes
-- **Memory:** Maintains state between sessions to build on previous interactions
-- **Extensibility:** Designed as a framework for creating more specialized tools
-- **Iteration:** As you build with it, it adapts and improves its capabilities
+- **Initial Version:** The current implementation provides basic pattern matching and response capabilities
+- **Future Development:** We'll be building and testing different versions to discover which approaches can most effectively bootstrap into more advanced capabilities
+- **Evolutionary Approach:** Each iteration will build upon lessons learned from previous versions
+- **Experimental Platform:** This serves as a testbed for exploring how AI can assist in evolving its own tools
+
+The vision is to create a progression of increasingly sophisticated tools, with each version helping to create the next generation.
 
 ## 📋 Requirements
 

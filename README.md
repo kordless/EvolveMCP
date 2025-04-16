@@ -76,9 +76,11 @@ After setup and Claude restart:
 .\evolve.ps1 -ListTools
 ```
 
-## Troubleshooting or Need Help?
+## Support and Troubleshooting
 
-### Installing Python on Windows in 2025: The Best Approach
+If you encounter issues, check the logs with `.\evolve.ps1 -ViewLogs` or open an issue on GitHub.
+
+### Don't Have Python on Windows?
 As of February 2025, Python 3.13.2 is the latest stable release with significant improvements over previous versions, including a new interactive interpreter with multi-line editing and color support, an experimental free-threaded build mode that disables the Global Interpreter Lock, and preliminary JIT functionality for performance improvements.
 
 #### Installation Methods
@@ -98,4 +100,4 @@ There are three primary methods to install Python on Windows:
    python --version
    ```
    
-If you encounter issues, check the logs with `.\evolve.ps1 -ViewLogs` or open an issue on GitHub.
+

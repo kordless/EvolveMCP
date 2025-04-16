@@ -20,7 +20,7 @@ EvolveMCP makes it easy to:
 - Python installed (see bottom for how to install)
 
 ### Installation
-The fastest way to install is to downlaod Evolve and unzip it in a directory. It can also be installed using 'git' if that is available on your computer.
+The fastest way to install is to download Evolve and unzip it in a directory. It can also be installed using 'git' if that is available on your computer.
 
 #### Option 1: Using Git
 ```powershell

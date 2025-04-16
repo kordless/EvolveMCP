@@ -2,8 +2,8 @@
 
 # 🧠 EvolveMCP: Claude Desktop Tool Manager
 <strong>The fast, Pythonic way to build MCP servers and clients.</strong>
-
-[![PyPI - Version](https://img.shields.io/pypi/v/fastmcp.svg)](https://pypi.org/project/fastmcp)
+https://img.shields.io/badge/any_text-you_like-green
+[![PyPI - Version](https://img.shields.io/badge/any_text-you_like-green)](https://pypi.org/project/evolvemcp)
 [![License]()](https://github.com/kordless/EvolveMCP/blob/main/LICENSE)
 
 </div>

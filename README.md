@@ -8,11 +8,9 @@
 <h1>🧠</h1>
 </div>
 
-EvolveMCP is a PowerShell utility and MCP server that helps you extend Claude Desktop with custom tools it writes for you and itself. 
-
 # Complete Beginner's Guide to Installing Evolve
 
-This guide walks you through installing Evolve step by step, even if you're new to programming tools.
+This guide walks you through installing Evolve step by step, even if you're new to programming tools. EvolveMCP is a PowerShell utility and MCP server that helps you extend Claude Desktop with custom tools it writes for you and itself. 
 
 ## Prerequisites
 

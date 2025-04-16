@@ -17,9 +17,10 @@ EvolveMCP makes it easy to:
 - Windows
 - PowerShell
 - [Claude Desktop](https://claude.ai/download) installed
-- Python installed
+- Python installed (see bottom for how to install)
 
 ### Installation
+The fastest way to install is to downlaod Evolve and unzip it in a directory. It can also be installed using 'git' if that is available on your computer.
 
 #### Option 1: Using Git
 ```powershell
@@ -102,6 +103,26 @@ The square root of pi is 1.7724538509055159.
 .\evolve.ps1 -ListTools
 ```
 
-## Need Help?
+## Troubleshooting or Need Help?
 
+### Installing Python on Windows in 2025: The Best Approach
+As of February 2025, Python 3.13.2 is the latest stable release with significant improvements over previous versions, including a new interactive interpreter with multi-line editing and color support, an experimental free-threaded build mode that disables the Global Interpreter Lock, and preliminary JIT functionality for performance improvements.
+
+#### Installation Methods
+There are three primary methods to install Python on Windows:
+
+1. **Official Python Installer (Recommended)**: This involves downloading the installer directly from Python.org and is best for developers who need more control during setup. 
+2. **Microsoft Store**: The quickest installation option, recommended for beginners looking for an easy-to-set-up interactive experience.
+3. **Windows Subsystem for Linux (WSL)**: Allows you to run a Linux environment on Windows.
+
+#### Step-by-Step Guide (Official Installer)
+1. Visit the [official Python website](https://www.python.org/downloads/)
+2. Download the latest Windows installer (Python 3.13.2)
+3. Run the installer (.exe file) and make sure to check "Add Python to PATH" during installation to avoid having to set environment variables manually
+4. Complete the installation process
+5. Verify the installation by opening Command Prompt or PowerShell and typing:
+   ```
+   python --version
+   ```
+   
 If you encounter issues, check the logs with `.\evolve.ps1 -ViewLogs` or open an issue on GitHub.

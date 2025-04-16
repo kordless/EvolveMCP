@@ -11,7 +11,7 @@
 
 EvolveMCP is a PowerShell utility and MCP server that helps you extend LLMs with custom tools. 
 
-EvolveMCP uses [FastMCP](https://github.com/jlowin/fastmcp) under the hood. You can read more about MCP [here](https://modelcontextprotocol.io/introduction).
+For now, EvolveMCP uses [FastMCP](https://github.com/jlowin/fastmcp) under the hood. You can read more about MCP [here](https://modelcontextprotocol.io/introduction).
 
 ## What can you do with EvolveMCP?
 

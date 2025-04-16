@@ -2,6 +2,8 @@
 
 EvolveMCP is a simple PowerShell utility that helps you extend Claude Desktop with custom tools.
 
+See more about MCP [here](https://modelcontextprotocol.io/introduction).
+
 ## What is EvolveMCP?
 
 EvolveMCP makes it easy to:

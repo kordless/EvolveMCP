@@ -63,7 +63,7 @@ I'll help you install the calculator tool for the evolve system. Let me use the 
 
 Great! The calculator tool has been installed and is ready to use. You will need to restart Claude Desktop.
 
-You can restart using `./evolve.ps1 --Restart`
+You can restart using `./evolve.ps1 -Restart`
 ```
 
 2. Restart Claude as instructed

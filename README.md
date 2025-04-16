@@ -1,6 +1,7 @@
 <div align="center">
 
-# 🧠 EvolveMCP: Build. Extend. Evolve.
+<h1>🧠 EvolveMCP: Build. Extend. Evolve.</h1>
+
 <strong>Pythonic MCP development, supercharged by AI intelligence and your will to build something new.</strong>
 
 [![PyPI - Version](https://img.shields.io/badge/pipy-_v1.0.0-blue)](https://pypi.org/project/evolvemcp)

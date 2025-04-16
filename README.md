@@ -42,50 +42,12 @@ cd EvolveMCP
 After setup and Claude restart:
 
 1. Ask Claude to evolve a calculator tool:
-```
-evolve calculator
-```
-
-```
-I'd be happy to help you set up a calculator tool using the evolve system. Let me do that for you.View result from evolve_wizard from evolve-server (local){
-
-# Calculator Tool Created Successfully
-
-I've created a calculator tool file at:
-C:\Users\kord\Code\mcptest\calc.py
-
-## The tool has been registered with Claude!
-
-The calculator has been:
-1. Created in the same directory as your evolve.py file
-2. Added to Claude's configuration automatically
-
-## To use the calculator tool:
-
-1. **Restart Claude**:
-   Run this command in PowerShell:
-   """
-   ./evolve.ps1 -Restart
-   """
-   
-2. **After Claude restarts**:
-   You can use the calculator functions:
-   - calculate the square root of pi
-   - what is the distance to the moon (average) to the power of 3?
-   - calculate the volume inside a regular ice cream cone scoop (in liters)
-
-```
+![evolve_image]()
 
 2. Restart Claude as instructed
 
 3. Use your new tool (in Claude Desktop):
-```
-calculate the square root of pi
-```
-
-```
-The square root of pi is 1.7724538509055159.
-```
+![calc_image]()
 
 ### Common Commands for the Evolve Configuration Tool
 

@@ -35,6 +35,7 @@ def ensure_package(package_name):
 # Ensure required packages are installed
 ensure_package("mcp-server")
 ensure_package("psutil")
+ensure_package("requests")
 
 # Now import
 import psutil

@@ -4,7 +4,7 @@
 <strong>The fast, Pythonic way to build MCP servers and clients.</strong>
 
 [![PyPI - Version](https://img.shields.io/pypi/v/fastmcp.svg)](https://pypi.org/project/fastmcp)
-[![License](https://img.shields.io/github/license/jlowin/fastmcp.svg)](https://github.com/jlowin/fastmcp/blob/main/LICENSE)
+[![License]()](https://github.com/kordless/EvolveMCP/blob/main/LICENSE)
 
 </div>
 

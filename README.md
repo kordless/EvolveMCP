@@ -1,23 +1,34 @@
+<div align="center">
+
 # 🧠 EvolveMCP: Claude Desktop Tool Manager
+<strong>The fast, Pythonic way to build MCP servers and clients.</strong>
 
-EvolveMCP is a simple PowerShell utility that helps you extend Claude Desktop with custom tools.
+[![PyPI - Version](https://img.shields.io/pypi/v/fastmcp.svg)](https://pypi.org/project/fastmcp)
+[![License](https://img.shields.io/github/license/jlowin/fastmcp.svg)](https://github.com/jlowin/fastmcp/blob/main/LICENSE)
 
-See more about MCP [here](https://modelcontextprotocol.io/introduction).
+<a href="https://trendshift.io/repositories/13266" target="_blank"><img src="https://trendshift.io/api/badge/repositories/13266" alt="jlowin%2Ffastmcp | Trendshift" style="width: 250px; height: 55px;" width="250" height="55"/></a>
+</div>
 
-## What is EvolveMCP?
+EvolveMCP is a PowerShell utility and MCP server that helps you extend LLMs with custom tools.
+
+You can read more about MCP [here](https://modelcontextprotocol.io/introduction).
+
+## What can you do with EvolveMCP?
 
 EvolveMCP makes it easy to:
 - Manage Claude Desktop processes (restart, view logs)
 - Create and install custom tools for Claude
-- Set up MCP servers without complex configuration
+- Set up MCP servers without complex configurations (or coding)
 
 ## Quick Start
 
 ### Requirements
+Ensure you have or have installed these dependencies before starting.
+
 - Windows
 - PowerShell (comes with Windows)
 - [Claude Desktop](https://claude.ai/download) installed
-- Python installed (see bottom for how to install)
+- Python installed (see troubleshooting for how to install)
 
 ### Installation
 The fastest way to install is to [download Evolve](https://github.com/kordless/EvolveMCP/releases/tag/new) and unzip it in a directory. It can also be installed using 'git' if that is available on your computer.

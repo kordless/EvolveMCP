@@ -44,7 +44,7 @@ cd EvolveMCP
 ```
 
 #### Option 2: From Release
-1. Download and unzip the latest release
+1. Download and unzip the latest [release](https://github.com/kordless/EvolveMCP/releases/tag/new) 
 2. Open PowerShell in the extracted folder
 3. Run `.\evolve.ps1 -Setup`
 
@@ -53,12 +53,30 @@ cd EvolveMCP
 After setup and Claude restart:
 
 1. Ask Claude to evolve a calculator tool:
-![evolve_image]()
+```
+evolve calculator
+```
+
+Sample output:
+```
+I'll help you install the calculator tool for the evolve system. Let me use the wizard command for this...
+
+Great! The calculator tool has been installed and is ready to use. You will need to restart Claude Desktop.
+
+You can restart using `./evolve.ps1 --Restart`
+```
 
 2. Restart Claude as instructed
 
 3. Use your new tool (in Claude Desktop):
-![calc_image]()
+```
+use calculate to calculate the distance to the moon divided by the square root of pi
+```
+
+Sample output:
+```
+The distance to the moon (on average) is approximately 384,400 kilometers. When divided by the square root of pi, the result is approximately 216,874.48 kilometers.
+```
 
 ### Common Commands for the Evolve Configuration Tool
 

@@ -4,7 +4,7 @@
 <strong>Pythonic MCP development, supercharged by AI intelligence.</strong>
 
 [![PyPI - Version](https://img.shields.io/badge/pipy-_v1.0.0-blue)](https://pypi.org/project/evolvemcp)
-[![License](https://img.shields.io/badge/license-_sovereign-purple)](https://github.com/kordless/EvolveMCP/blob/main/LICENSE)
+[![License](https://img.shields.io/badge/license-_sovereign-purple)](https://github.com/kordless/EvolveMCP/blob/main/LICENSE.md)
 
 </div>
 

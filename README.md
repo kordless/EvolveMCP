@@ -15,7 +15,7 @@ EvolveMCP makes it easy to:
 
 ### Requirements
 - Windows
-- PowerShell
+- PowerShell (comes with Windows)
 - [Claude Desktop](https://claude.ai/download) installed
 - Python installed (see bottom for how to install)
 

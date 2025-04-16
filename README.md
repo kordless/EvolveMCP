@@ -6,10 +6,9 @@
 [![PyPI - Version](https://img.shields.io/pypi/v/fastmcp.svg)](https://pypi.org/project/fastmcp)
 [![License](https://img.shields.io/github/license/jlowin/fastmcp.svg)](https://github.com/jlowin/fastmcp/blob/main/LICENSE)
 
-<a href="https://trendshift.io/repositories/13266" target="_blank"><img src="https://trendshift.io/api/badge/repositories/13266" alt="jlowin%2Ffastmcp | Trendshift" style="width: 250px; height: 55px;" width="250" height="55"/></a>
 </div>
 
-EvolveMCP is a PowerShell utility and MCP server that helps you extend LLMs with custom tools.
+EvolveMCP is a PowerShell utility and MCP server that helps you extend LLMs with custom tools. It uses [FastMCP](https://github.com/jlowin/fastmcp) under the hood.
 
 You can read more about MCP [here](https://modelcontextprotocol.io/introduction).
 

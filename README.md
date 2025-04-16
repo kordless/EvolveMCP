@@ -8,11 +8,11 @@
 <h1>🧠</h1>
 </div>
 
-EvolveMCP is a PowerShell utility and MCP server that helps you extend LLMs with custom tools. 
+EvolveMCP is a PowerShell utility and MCP server that helps you extend Claude Desktop with custom tools it writes for you and itself. 
 
 For now, EvolveMCP uses [FastMCP](https://github.com/jlowin/fastmcp) under the hood. You can read more about MCP [here](https://modelcontextprotocol.io/introduction).
 
-## What can you do with EvolveMCP?
+## So, what can you do with EvolveMCP?
 
 EvolveMCP makes it easy to:
 - Manage Claude Desktop processes (restart, view logs)
@@ -47,23 +47,58 @@ cd EvolveMCP
 2. Open PowerShell in the extracted folder
 3. Run `.\evolve.ps1 -Setup`
 
-### Creating Your First Tool
+Quick Installation
+Option 2: From Release
 
-After setup and Claude restart:
+Download and unzip the latest release
+Open PowerShell in the extracted folder
+Run .\evolve.ps1 -Setup
 
-1. Ask Claude to evolve a calculator tool:
-```
-evolve calculator
-```
+Creating Your First Tool
 
-Sample output:
-```
-I'll help you install the calculator tool for the evolve system. Let me use the wizard command for this...
+⚠️ IMPORTANT SECURITY NOTICE
+Before proceeding, please review the code provided in this repository. You should never run code you haven't personally reviewed. The tools created with this system will have the same access and permissions as any Python script running on your machine.
+MCP tools can:
 
-Great! The calculator tool has been installed and is ready to use. You will need to restart Claude Desktop.
+Access your file system
+Install Python packages via pip
+Execute system commands
+Access the internet
 
-You can restart using `./evolve.ps1 -Restart`
-```
+While an AI can help review code, you maintain ultimate responsibility for what runs on your system.
+
+Setting Up the Calculator Tool
+
+Install your first tool by asking Claude:
+evolve_wizard("calc")
+
+Claude will create a calculator tool and register it with the system. The response will look similar to:
+# Calculator Tool Created Successfully
+
+I've created a calculator tool file at:
+C:\path\to\your\folder\calculate.py
+
+## The tool has been registered with Claude!
+
+The calculator has been:
+1. Created in the same directory as your evolve.py file
+2. Added to Claude's configuration automatically
+
+Restart Claude to apply the changes:
+.\evolve.ps1 -Restart
+
+After Claude restarts, you can use the calculator tool:
+calculate("2 + 3 * 4")
+calculate("sqrt(16) + pi")
+calculate("sin(45) * 2")
+
+
+Next Steps
+Once you've successfully created your first tool, you can:
+
+Check the system status with evolve_status()
+Learn how to build your own tools with evolve_wizard("code")
+Create custom tools with evolve_build()
 
 2. Restart Claude as instructed
 

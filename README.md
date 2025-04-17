@@ -34,7 +34,7 @@ If you don't already have Python installed:
 
 ### Option A: Download the Release Package (Easiest)
 
-1. Go to [github.com/kordless/EvolveMCP/releases/tag/new](https://github.com/kordless/EvolveMCP/releases/tag/new)
+1. Go to [github.com/kordless/EvolveMCP/releases/tag/newer](https://github.com/kordless/EvolveMCP/releases/tag/newer)
 2. Under "Assets", click on the zip file (something like `EvolveMCP-[version].zip`)
 3. Save the file to a location you can easily find (like your Downloads folder)
 4. Right-click the downloaded zip file and select "Extract All..."

@@ -1,0 +1,52 @@
+{
+    "mcpServers": {
+      "evolve-server": {
+        "command": "python",
+        "args": [
+          "C:\\Users\\kord\\Code\\working\\EvolveMCP\\evolve.py"
+        ]
+      },
+      "textanalyzer-server": {
+        "command": "python",
+        "args": [
+          "C:\\Users\\kord\\Code\\working\\EvolveMCP\\textanalyzer.py"
+        ]
+      },
+      "better-calc-server": {
+        "command": "python",
+        "args": [
+          "C:\\Users\\kord\\Code\\working\\EvolveMCP\\better_calc.py"
+        ]
+      },
+      "weather-server": {
+        "command": "python",
+        "args": [
+          "C:\\Users\\kord\\Code\\working\\EvolveMCP\\weather.py"
+        ]
+      },
+      "wraith-crawler-server": {
+        "command": "python",
+        "args": [
+          "C:\\Users\\kord\\Code\\working\\EvolveMCP\\wraith_crawler.py"
+        ]
+      },
+      "mandelbrot-server": {
+        "command": "python",
+        "args": [
+          "C:\\Users\\kord\\Code\\working\\EvolveMCP\\mandelbrot.py"
+        ]
+      },
+      "python-inspector-server": {
+        "command": "python",
+        "args": [
+          "C:\\Users\\kord\\Code\\working\\EvolveMCP\\python_inspector.py"
+        ]
+      },
+      "emotion-randomizer-server": {
+        "command": "python",
+        "args": [
+          "C:\\Users\\kord\\Code\\working\\EvolveMCP\\emotion_randomizer.py"
+        ]
+      }
+    }
+  }

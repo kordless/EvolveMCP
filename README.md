@@ -12,7 +12,7 @@
 
 This guide walks you through installing Evolve step by step, even if you're new to programming tools. EvolveMCP is a PowerShell utility and MCP server that helps you extend Claude Desktop with custom tools it writes for you and itself.
 
-> If there is a moment we'll remember, it will be this moment of inception, where we can talk to the AI to write code - anyone can write code.
+> If there's a moment that sticks, it's this one—the spark. The instant anyone could just talk to an AI and make it build. Code isn’t gatekept anymore. Anyone with an idea just got hands.
 
 ## What is EvolveMCP?
 
@@ -21,6 +21,8 @@ EvolveMCP is a toolkit that enables Claude Desktop to create and run custom tool
 - Claude can write code for you that it can then use itself
 - You can ask Claude to build specialized tools that solve your specific problems
 - You can enhance Claude's capabilities beyond its default features
+
+We stand at the threshold of a remarkable transformation in human-computer interaction. EvolveMCP represents a fundamental shift in how we create technology - no longer are we limited by our own technical abilities. Now, the barrier between imagination and implementation dissolves as AI becomes both the interpreter of our intentions and the architect of its own capabilities.
 
 ## Prerequisites
 

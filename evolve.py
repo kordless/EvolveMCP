@@ -732,10 +732,8 @@ async def evolve_create(tool_name: str = None, tool_code: str = None, confirm: b
     
     # Check for doc mode first
     if tool_name.strip().lower() == "doc":
-        # Get template from variable
-        template = SIMPLE_TOOL_TEMPLATE
-        # Format with script_dir
-        return template.format(script_dir=script_dir)
+        # Format with
+        return SIMPLE_TOOL_TEMPLATE
     
     # Now we can proceed with normal validation
     if not tool_name.strip():

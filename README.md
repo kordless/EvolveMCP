@@ -12,8 +12,6 @@
 
 This guide walks you through installing Evolve step by step, even if you're new to programming tools.
 
-> If there's a moment that sticks, it's this one—the spark. The instant anyone could just talk to an AI and make it build. Code isn’t gatekept anymore. Anyone with an idea just got hands.
-
 ## What is EvolveMCP?
 
 EvolveMCP is a toolkit that enables Claude Desktop to create and run custom tools that extend its capabilities. This means:

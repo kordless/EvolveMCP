@@ -20,7 +20,7 @@ Before starting, you'll need:
 2. **Internet Connection**: For downloading necessary files
 3. **Claude Desktop**: The desktop application for Claude
 
-## Step 1: Insall Calude Desktop
+## Step 1: Insall Claude Desktop
 1. Visit the official Anthropic website to download Claude Desktop
 2. Run the installer and follow the on-screen instructions
 3. Launch Claude Desktop at least once to create initial configuration files

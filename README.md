@@ -33,7 +33,7 @@ Before starting, you'll need:
 3. **Claude Desktop**: The desktop application for Claude
 
 ## Step 1: Insall Claude Desktop
-1. Visit the official Anthropic website to download Claude Desktop
+1. Visit the official Anthropic website to [download Claude Desktop](https://claude.ai/download)
 2. Run the installer and follow the on-screen instructions
 3. Launch Claude Desktop at least once to create initial configuration files
 

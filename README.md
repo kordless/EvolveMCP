@@ -35,7 +35,7 @@ We stand at the threshold of a remarkable transformation in human-computer inter
 4. **Recommended Precautions**:
    - Run EvolveMCP in a dedicated user account with limited permissions
    - Backup important data before using new tools
-   - Consider using a virtual machine or container for additional isolation
+   - Consider using a virtual machine or container for additional isolation (we'll be working on making this easier soon)
    - Keep your operating system and security software up to date
 
 5. **For Developers**: If you're extending EvolveMCP, follow secure coding practices and avoid giving tools unnecessary system access.

@@ -18,17 +18,12 @@ Before starting, you'll need:
 
 1. **Windows Computer**: Evolve is designed to work on Windows
 2. **Internet Connection**: For downloading necessary files
-3. **Python**: The programming language Evolve is built with (installation instructions below)
+3. **Claude Desktop**: The desktop application for Claude
 
-## Step 1: Install Python
-
-If you don't already have Python installed:
-
-1. Go to [python.org/downloads](https://www.python.org/downloads/)
-2. Click the yellow "Download Python" button (choose the latest version)
-3. Run the installer after it downloads
-4. **IMPORTANT**: Check the box that says "Add Python to PATH" before clicking Install
-5. Click "Install Now"
+## Step 1: Insall Calude Desktop
+1. Visit the official Anthropic website to download Claude Desktop
+2. Run the installer and follow the on-screen instructions
+3. Launch Claude Desktop at least once to create initial configuration files
 
 ## Step 2: Download Evolve
 

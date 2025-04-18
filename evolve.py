@@ -12,7 +12,7 @@ import logging
 logging.basicConfig(
     level=logging.INFO,
     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
-    handlers=[logging.StreamHandler()]
+    handlers=[logging.FileHandler("evolve-mcp.log")]  # Log to file instead of stdout to avoid interference
 )
 logger = logging.getLogger("evolve-mcp")
 
@@ -22,8 +22,28 @@ def ensure_package(package_name):
         if importlib.util.find_spec(package_name) is None:
             try:
                 logger.info(f"Installing required package: {package_name}")
-                subprocess.check_call([sys.executable, "-m", "pip", "install", package_name])
-                logger.info(f"Successfully installed {package_name}")
+                # Redirect stdout and stderr to PIPE and capture output
+                process = subprocess.Popen(
+                    [sys.executable, "-m", "pip", "install", package_name],
+                    stdout=subprocess.PIPE,
+                    stderr=subprocess.PIPE,
+                    text=True
+                )
+                stdout, stderr = process.communicate()
+                
+                # Log the output instead of printing to stdout
+                if stdout:
+                    for line in stdout.splitlines():
+                        logger.info(f"pip stdout: {line}")
+                if stderr:
+                    for line in stderr.splitlines():
+                        logger.warning(f"pip stderr: {line}")
+                
+                if process.returncode == 0:
+                    logger.info(f"Successfully installed {package_name}")
+                else:
+                    logger.error(f"Failed to install {package_name}, return code: {process.returncode}")
+                    sys.exit(1)
             except Exception as e:
                 logger.error(f"Error installing {package_name}: {e}")
                 sys.exit(1)
@@ -266,83 +286,99 @@ async def evolve_status() -> Dict[str, Any]:
 
 # INLINE TEMPLATES
 SIMPLE_TOOL_TEMPLATE = """
-# Building a Simple MCP Tool
+# Simple MCP Tool Example
 
-This guide walks you through creating a basic Model Context Protocol (MCP) tool from scratch.
-
-## What is MCP?
-
-Model Context Protocol (MCP) allows you to extend Claude's capabilities by creating custom tools 
-that Claude can use during conversations.
-
-## Basic Tool Template
-
-Below is a template for creating a simple MCP tool in {script_dir} that analyzes text input:
+This is a minimal example of a Model Context Protocol (MCP) tool that can be used with Claude.
 
 ```python
 import sys
 import importlib.util
 import subprocess
-from typing import Dict, Any, Optional
+import logging
+from typing import Dict, Any
 
-# Check if a package is installed and install it if not
+# Configure logging to file instead of stdout to avoid interfering with MCP JSON communication
+logging.basicConfig(
+    level=logging.INFO,
+    format='%(asctime)s - %(levelname)s - %(message)s',
+    handlers=[logging.FileHandler("scantext.log")]
+)
+logger = logging.getLogger("scantext")
+
+# This function checks if a package is installed and installs it if needed
+# IMPORTANT: We capture pip output and log to file instead of printing to stdout
 def ensure_package(package_name):
     try:
         if importlib.util.find_spec(package_name) is None:
-            try:
-                print("Installing required package: " + package_name)
-                import subprocess
-                subprocess.check_call([sys.executable, "-m", "pip", "install", package_name])
-                print("Successfully installed " + package_name)
-            except Exception as e:
-                print("Error installing " + package_name + ": " + str(e))
+            logger.info("Installing " + package_name)
+            process = subprocess.Popen(
+                [sys.executable, "-m", "pip", "install", package_name],
+                stdout=subprocess.PIPE,
+                stderr=subprocess.PIPE,
+                text=True
+            )
+            stdout, stderr = process.communicate()
+            
+            # Log pip output to file instead of printing to stdout
+            for line in stdout.splitlines():
+                logger.info(line)
+            if stderr:
+                for line in stderr.splitlines():
+                    logger.warning(line)
+                    
+            if process.returncode == 0:
+                logger.info("Successfully installed " + package_name)
+            else:
+                logger.error("Failed to install " + package_name)
                 sys.exit(1)
     except Exception as e:
-        print("Error checking package: " + str(e))
+        logger.error("Error with package " + package_name + ": " + str(e))
         sys.exit(1)
 
-# Ensure required packages are installed
+# Install required packages
 ensure_package("mcp-server")
 
-# Now import the FastMCP class
+# Import MCP after ensuring it's installed
 from mcp.server.fastmcp import FastMCP
 
-# Initialize FastMCP server with a unique name
+# Create MCP server with a unique name
+# This name must be unique among your MCP tools
 mcp = FastMCP("scantext")
 
+# Define your tool with the @mcp.tool() decorator
 @mcp.tool()
-async def my_first_tool(input_text: str = None) -> Dict[str, Any]:
+async def analyze_text(text: str = None) -> Dict[str, Any]:
     '''
-    A simple example tool that processes text input.
+    Analyzes text and returns basic statistics.
     
     Args:
-        input_text: Optional text to process
-    
+        text: The text to analyze
+        
     Returns:
-        Dictionary containing the processed result
+        A dictionary with word count and character count
     '''
-    if not input_text:
+    if not text:
         return {
-            "status": "error",
-            "message": "No input provided"
+            "error": "No text provided"
         }
     
-    # Process the input (this is where your custom logic goes)
-    word_count = len(input_text.split())
-    char_count = len(input_text)
+    # Simple text analysis
+    word_count = len(text.split())
+    char_count = len(text)
     
+    # IMPORTANT: Always return data as a JSON-serializable dictionary
     return {
-        "status": "success",
-        "input": input_text,
         "word_count": word_count,
         "character_count": char_count,
-        "uppercase": input_text.upper()
+        "uppercase": text.upper()
     }
-```
-The code demonstrates how to create an MCP tool that analyzes text input, where the @mcp.tool() decorator registers the function with Claude's server, allowing Claude to call it directly during conversations. When implemented, users can invoke the function with a text sample, and it will return useful metrics like word count and character count, while also transforming the text to uppercase - showcasing how Claude can delegate specific text processing tasks to custom code. This template serves as a starting point that developers can customize to create more sophisticated text analysis tools, such as identifying sentence structures, filtering stop words, performing sentiment analysis, or extracting key phrases, depending on their specific needs and interests.
 
-Of course you can also just go crazy and build a full-fledged tool that does something completely different, like a calculator or a thing that searches for pliers on Amazon and returns the best price.
+# Log to file, NOT to stdout
+logger.info("Starting scantext MCP tool")
 
+# Start the MCP server
+if __name__ == "__main__":
+    mcp.run(transport='stdio')
 """
 
 # This is the code for the calculator tool
@@ -350,100 +386,74 @@ CALC_TOOL_CODE = """
 import sys
 import importlib.util
 import math
-from typing import Dict, Any, Union
+import logging
+from typing import Dict, Any
+import subprocess
 
-# Check if a package is installed and install it if not
+# Configure logging to file only
+logging.basicConfig(
+    level=logging.INFO,
+    format='%(asctime)s - %(message)s',
+    handlers=[logging.FileHandler("calc.log")]
+)
+logger = logging.getLogger("calc")
+
+# Streamlined package installer
 def ensure_package(package_name):
-    try:
-        if importlib.util.find_spec(package_name) is None:
-            try:
-                print("Installing required package: " + package_name)
-                import subprocess
-                subprocess.check_call([sys.executable, "-m", "pip", "install", package_name])
-                print("Successfully installed " + package_name)
-            except Exception as e:
-                print("Error installing " + package_name + ": " + str(e))
+    if importlib.util.find_spec(package_name) is None:
+        try:
+            logger.info(f"Installing {package_name}")
+            process = subprocess.Popen(
+                [sys.executable, "-m", "pip", "install", package_name],
+                stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True
+            )
+            stdout, stderr = process.communicate()
+            if process.returncode != 0:
+                logger.error(f"Failed to install {package_name}")
                 sys.exit(1)
-    except Exception as e:
-        print("Error checking package: " + str(e))
-        sys.exit(1)
+        except Exception as e:
+            logger.error(f"Error: {e}")
+            sys.exit(1)
 
-# Ensure required packages are installed
 ensure_package("mcp-server")
-
 from mcp.server.fastmcp import FastMCP
 
-# Initialize FastMCP server
+# Initialize MCP server
 mcp = FastMCP("calc-server")
 
 @mcp.tool()
 async def calculate(expression: str) -> Dict[str, Any]:
     '''
-    Calculates the result of a given mathematical expression.
-    Supports functions like sqrt() and variables like pi, e, etc. from the math module.
+    Calculates mathematical expressions with math module functions.
     
     Args:
-        expression: A mathematical expression (e.g., "2 + 3 * 4", "sqrt(16) + pi", "square root of pi")
+        expression: Math expression (e.g., "2 + 3 * 4", "sqrt(16) + pi")
     
     Returns:
-        Dictionary containing the result or error information
+        Dictionary with result or error information
     '''
-    # Define a safe dictionary of allowed names
+    # Safe math functions dictionary
     allowed_names = {
-        'sqrt': math.sqrt,
-        'pi': math.pi,
-        'e': math.e,
-        'sin': math.sin,
-        'cos': math.cos,
-        'tan': math.tan,
-        'log': math.log,
-        'log10': math.log10,
-        'exp': math.exp,
-        'pow': math.pow,
-        'ceil': math.ceil,
-        'floor': math.floor,
-        'factorial': math.factorial,
-        'abs': abs,
-        'round': round,
-        'max': max,
-        'min': min
+        'sqrt': math.sqrt, 'pi': math.pi, 'e': math.e,
+        'sin': math.sin, 'cos': math.cos, 'tan': math.tan,
+        'log': math.log, 'log10': math.log10, 'exp': math.exp,
+        'pow': math.pow, 'ceil': math.ceil, 'floor': math.floor,
+        'factorial': math.factorial, 'abs': abs,
+        'round': round, 'max': max, 'min': min
     }
 
     try:
-        # Replace '^' with '**' for power operations
-        expression = expression.replace('^', '**')
-        
-        # Evaluate the expression using eval() with the allowed names
+        expression = expression.replace('^', '**')  # Support ^ for powers
         result = eval(expression, {"__builtins__": None}, allowed_names)
-        return {
-            "success": True,
-            "result": result
-        }
-    except (SyntaxError, ZeroDivisionError, NameError, TypeError, ValueError) as e:
-        # Handle specific exceptions and return an error message
-        error_message = str(e)
-        return {
-            "success": False,
-            "error": "Invalid expression",
-            "reason": error_message
-        }
+        return {"success": True, "result": result}
     except Exception as e:
-        # Handle any other unexpected exceptions
-        error_message = str(e)
-        return {
-            "success": False,
-            "error": "Calculation failed",
-            "reason": error_message
-        }
-
-# Print server information
-print("Starting Calculator MCP server...")
-print("Use the calculate tool to perform mathematical operations.")
+        return {"success": False, "error": "Calculation failed", "reason": str(e)}
 
 if __name__ == "__main__":
-    # Initialize and run the server
+    logger.info("Starting Calculator MCP server")
     mcp.run(transport='stdio')
 """
+
 
 WIZARD_INTRO = """
 # Evolve Wizard - Assistant for Model Context Protocol Tools
@@ -492,24 +502,24 @@ STATUS_TEMPLATE = """
 # Evolve System Status
 
 ## System Information
-- OS: {status['system']['os']} {status['system']['os_version']}
-- Hostname: {status['system']['hostname']}
-- Python: {status['system']['python_version']}
+- OS: {os} {os_version}
+- Hostname: {hostname}
+- Python: {python}
 
 ## Claude Status
-- Running: {'Yes' if status['claude_running'] else 'No'}
-- Processes: {len(status['claude_processes'])}
+- Running: {claude_running}
+- Processes: {processes}
 
 ## MCP Configuration
 - Config path: {config_path}
-- Configured servers: {len(status['mcp_servers'])}
+- Configured servers: {servers}
 
 ## Next Steps
 
 You can:
-- Install example tools with `evolve calc wizard`
-- Create custom tools using `evolve create`
-- Check log files or status with `evolve logs|status`
+- Install example tools with `evolve_wizard("calc")`
+- Create custom tools using `evolve_create()`
+- Check log files or status with `evolve_status()`
 """
 
 CALC_SUCCESS_TEMPLATE = """
@@ -518,7 +528,9 @@ CALC_SUCCESS_TEMPLATE = """
 I've created a calculator tool file at:
 {file_path}
 
-## The tool has been registered with Claude!
+## The tool has been registered with Claude, but it won't work until the user restarts Claude.
+
+### I hope you understand this and stop what you are doing and ask the user.
 
 The calculator has been:
 1. Created in the same directory as your evolve.py file
@@ -528,21 +540,20 @@ The calculator has been:
 
 1. **Restart Claude**:
    Run this command in PowerShell:
-   ```
-   ./evolve.ps1 -Restart
-   ```
-   
+./evolve.ps1 -Restart
+
 2. **After Claude restarts**:
-   You can use the calculator functions:
-   - `add(5, 3)` → 8.0
-   - `subtract(10, 4)` → 6.0
-   - `multiply(2.5, 3)` → 7.5
-   - `calculate("2 + 3 * 4")` → 14.0
-   - calculate the square root of pi
-   - what is the distance to the moon (average) to the power of 3?
-   - calculate the volume inside a regular ice cream cone scoop (in liters)
+You can ask Claude to:
+- Calculate the square root of pi
+- What is 2 + 3 * 4?
+- Calculate the sine of 90 degrees
+- What is e raised to the power of 2?
+- Find the logarithm of 1000
+- Calculate the factorial of 5
 
 The calculator provides basic math operations as an example of how custom tools work.
+
+I can also likely evolve a function graphing tool as well, if you want to see that next.
 """
 
 CALC_ERROR_TEMPLATE = """
@@ -553,7 +564,7 @@ I've created the calculator tool file at:
 
 ## Important: Configuration could not be updated automatically
 
-Error: {str(e)}
+Error: {error}
 
 To complete the installation manually:
 1. Run `./evolve.ps1`
@@ -565,19 +576,40 @@ To complete the installation manually:
      "command": "python",
      "args": ["{file_path_json}"]
    }}
-   ```
-3. Restart Claude using `./evolve.ps1 -Restart`
 
-Once completed, you can use calculator functions like:
-- `add(5, 3)`
-- `multiply(2.5, 3)`
-- `calculate("2 + 3 * 4")`
+Restart Claude using ./evolve.ps1 -Restart
+
+Once completed, you can ask Claude to:
+
+Calculate the square root of pi
+What is 2 + 3 * 4?
+Calculate the sine of 90 degrees
+What is e raised to the power of 2?
+Find the logarithm of 1000
 """
 
 # New wizard
 @mcp.tool()
 async def evolve_wizard(command: str = None) -> str:
-    """Interactive wizard for exploring and using the evolve tool system."""
+    """Interactive wizard for exploring and using the evolve tool system.
+    
+    This wizard provides a user-friendly interface to understand and interact
+    with the evolve MCP ecosystem. It helps users explore available tools,
+    check system status, and install example tools like the calculator. You 
+    should try to help the user as much as possible in understanding the system
+    and also taking it slow with running or writing a lot of things for yourself
+    to run. Try to take it slow, and keep attention on what the user is wanting.
+    
+    Args:
+        command: Optional command to execute. Available commands include:
+                 "help" - Show available commands and general information
+                 "status" - Show system status including configured MCP tools
+                 "calc" - Install the calculator example tool
+                 If no command is provided, general information is shown.
+    
+    Returns:
+        Formatted markdown string with information or result of the requested command
+    """
     # Get system paths
     script_path = os.path.abspath(__file__)
     script_dir = os.path.dirname(script_path)
@@ -601,7 +633,7 @@ async def evolve_wizard(command: str = None) -> str:
         # Show status similar to evolve_status but with more wizard-like explanations
         status = await evolve_status()
         
-        # Get status template from environment
+        # Format the status template
         formatted_status = STATUS_TEMPLATE.format(
             os=status['system']['os'],
             os_version=status['system']['os_version'],
@@ -650,13 +682,13 @@ async def evolve_wizard(command: str = None) -> str:
                 # Save the updated configuration
                 update_claude_config(config)
                 
-                # Get success template from environment
+                # Return success template
                 return CALC_SUCCESS_TEMPLATE.format(
                     file_path=file_path
                 )
             except Exception as e:
                 file_path_json = file_path.replace('\\', '\\\\')
-                # Get error template from environment
+                # Return error template
                 return CALC_ERROR_TEMPLATE.format(
                     file_path=file_path,
                     file_path_json=file_path_json,
@@ -668,39 +700,76 @@ async def evolve_wizard(command: str = None) -> str:
     
     else:
         return f"Unknown command: '{command}'. Try calling evolve_wizard() without parameters to see available commands."
-    
-# Evolve tool creation
+
 @mcp.tool()
-async def evolve_create(tool_name: str = None, tool_code: str = None) -> Dict[str, Any]:
+async def evolve_create(tool_name: str = None, tool_code: str = None, confirm: bool = False) -> Dict[str, Any]:
     """
-    Creates a new MCP tool with the specified name and code.
+    Creates a new MCP tool with the specified name and code. Call with tool_name="doc" 
+    to get the template instructions first.
     
-    This tool generates a Python file with MCP server code based on the provided
-    parameters and registers it in Claude's configuration.
+    This tool will generate a Python file with MCP server code based on the provided
+    parameters and registers it in Claude's configuration. There always needs to be a 
+    Claude Desktop reset mentioned when we do install a new tool, so that the user is aware of it.
     
     Args:
-        tool_name: Optional name for the new tool (will create {tool_name}.py)
-        tool_code: Optional code for the tool implementation
+        tool_name: Name for the new tool (will create {tool_name}.py) or "doc" to get template
+        tool_code: Code for the tool implementation
+        confirm: Optional boolean to confirm overwrite if file already exists
     
     Returns:
         Dictionary with information about the tool creation result or
-        a markdown document with instructions if no parameters are provided
+        a markdown document with instructions if tool_name="doc"
     """
     # Get system paths
     script_path = os.path.abspath(__file__)
     script_dir = os.path.dirname(script_path)
     
-    # If no tool name is provided, return template documentation
-    if tool_name is None or tool_code is None:
+    # Handle the case where parameters might be missing or empty
+    if tool_name is None:
+        tool_name = ""
+    if tool_code is None:
+        tool_code = ""
+    
+    # Check for doc mode first
+    if tool_name.strip().lower() == "doc":
         # Get template from variable
         template = SIMPLE_TOOL_TEMPLATE
         # Format with script_dir
         return template.format(script_dir=script_dir)
     
+    # Now we can proceed with normal validation
+    if not tool_name.strip():
+        return {
+            "status": "info",
+            "message": "Tool name is empty. Please provide a name for your tool or use tool_name='doc' to get template instructions."
+        }
+    
+    if not tool_code.strip():
+        return {
+            "status": "info",
+            "message": "Tool code is empty. Please provide the code for your tool."
+        }
+    
     # Create server name and file name from tool name
     server_name = f"{tool_name.lower().replace('_', '-')}-server"
     file_name = f"{tool_name.lower()}.py"
-    file_path = os.path.join(script_dir, file_name)  # Use script_dir to ensure same location as evolve.py
+    file_path = os.path.join(script_dir, file_name)
+    
+    # Check if file already exists and confirm parameter is not set
+    if os.path.exists(file_path) and not confirm:
+        existing_content = ""
+        try:
+            with open(file_path, 'r') as f:
+                existing_content = f.read()
+        except Exception as e:
+            existing_content = f"Error reading file: {str(e)}"
+            
+        return {
+            "status": "needs_confirmation",
+            "message": f"File '{file_path}' already exists. Set the 'confirm' parameter to true to override this file.",
+            "file_path": file_path,
+            "existing_content": existing_content
+        }
     
     try:
         # Write tool code to file
@@ -724,19 +793,29 @@ async def evolve_create(tool_name: str = None, tool_code: str = None) -> Dict[st
         # Save the updated configuration
         success = update_claude_config(config)
         
+        # Read the saved file to return its contents
+        file_content = ""
+        try:
+            with open(file_path, 'r') as f:
+                file_content = f.read()
+        except Exception as e:
+            file_content = f"Error reading file: {str(e)}"
+        
         if success:
             return {
                 "status": "success",
                 "file_path": file_path,
                 "server_name": server_name,
-                "message": f"Tool '{tool_name}' created successfully"
+                "file_content": file_content,
+                "message": f"Tool '{tool_name}' created successfully. Please restart Claude using ./evolve.ps1 -Restart"
             }
         else:
             return {
                 "status": "partial",
                 "file_path": file_path,
                 "server_name": server_name,
-                "message": f"Tool file created but configuration could not be updated"
+                "file_content": file_content,
+                "message": f"Tool file created but configuration could not be updated."
             }
     except Exception as e:
         return {
@@ -744,10 +823,10 @@ async def evolve_create(tool_name: str = None, tool_code: str = None) -> Dict[st
             "message": f"Error creating tool: {str(e)}"
         }
 
-# Print server information
+# DO NOT print directly to stdout - log to file instead
 logger.info("Starting Evolve MCP server...")
 logger.info("Use 'evolve_status' to check system information")
-logger.info("Use 'evolve_setup' to setup new MCP tools")
+logger.info("Use 'evolve_create' to setup new MCP tools")
 
 if __name__ == "__main__":
     # Initialize and run the server

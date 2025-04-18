@@ -121,19 +121,105 @@ Claude will interpret your natural language requests and translate them into the
 
 ## Troubleshooting
 
-If you encounter issues during installation:
+### Viewing Logs
 
-- **"Python is not recognized"**: Make sure you checked "Add Python to PATH" during Python installation. You may need to restart your computer.
+The EvolveMCP utility provides several ways to view logs, which can be helpful for troubleshooting issues with Claude Desktop and MCP servers.
 
-- **PowerShell errors**: See our [PowerShell Guide](powershell-guide.md) for help with common PowerShell issues.
+#### Using the Command Line
 
-- **Permission errors**: Try running PowerShell as Administrator (right-click PowerShell in the Start menu and select "Run as administrator").
+You can view logs directly from the command line using the `-ViewLogs` parameter:
 
-- **Package installation errors**: Make sure you have a good internet connection, and try running:
-  ```powershell
-  python -m pip install --upgrade pip
-  ```
+```powershell
+.\EvolveMCP.ps1 -ViewLogs
+```
 
-## Need More Help?
+This will list all available log files in the logs directory (`C:\Users\<username>\AppData\Roaming\Claude\logs`). You can then select a specific log file to view by entering its number.
 
-If you're having trouble with Python environments or want to use advanced tools like uv or Conda, see our [Advanced Environment Setup Guide](advanced-environment-setup.md).
+To filter logs by name, use the `-LogName` parameter:
+
+```powershell
+.\EvolveMCP.ps1 -ViewLogs -LogName evolve
+```
+
+This will show only log files that contain "evolve" in their filename.
+
+#### Using the Menu Interface
+
+If you prefer a menu-based approach:
+
+1. Run the script without parameters (or with `-Menu`):
+   ```powershell
+   .\EvolveMCP.ps1
+   ```
+
+2. Select option `1. View MCP Logs` from the menu
+3. Choose a log file from the displayed list
+
+#### Log Monitoring
+
+When viewing a log file, the tool will initially show the last 20 lines. You'll then be prompted if you want to monitor the log file in real-time. Selecting `y` will continuously display new log entries as they are written, which is particularly useful when debugging active issues.
+
+To stop monitoring, press `Ctrl+C`.
+
+#### Log Location
+
+Logs are stored in the following location:
+```
+C:\Users\<username>\AppData\Roaming\Claude\logs
+```
+
+If this directory doesn't exist, the tool will offer to create it for you.
+
+### Common Issues
+
+#### Claude Desktop Not Starting
+
+If Claude Desktop fails to start after configuring MCP servers:
+
+1. Check the logs for any error messages:
+   ```powershell
+   .\EvolveMCP.ps1 -ViewLogs
+   ```
+
+2. Verify that your configuration file is correct:
+   ```
+   C:\Users\<username>\AppData\Roaming\Claude\claude_desktop_config.json
+   ```
+
+3. Ensure the paths to your MCP server scripts are valid and accessible
+
+#### Evolve Server Issues
+
+If you're experiencing issues with the Evolve server:
+
+1. View the Evolve-specific logs:
+   ```powershell
+   .\EvolveMCP.ps1 -ViewLogs -LogName evolve
+   ```
+
+2. Verify that `evolve.py` exists in the location specified in your configuration
+3. Make sure Python is properly installed and accessible from the command line
+
+#### Restarting Claude Desktop
+
+If Claude Desktop becomes unresponsive or you need to apply configuration changes:
+
+```powershell
+.\EvolveMCP.ps1 -Restart
+```
+
+This will gracefully stop and restart Claude Desktop.
+
+### Checking Tool Configuration
+
+To verify which MCP tools are currently configured:
+
+```powershell
+.\EvolveMCP.ps1 -ListTools
+```
+
+This will display all configured MCP servers, including:
+- Server name
+- Command and arguments
+- Whether the script exists
+- For Evolve tools: version and creation date (if available)

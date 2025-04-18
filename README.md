@@ -8,9 +8,21 @@
 <h1>🧠</h1>
 </div>
 
-# Complete Beginner's Guide to Installing Evolve
+# EvolveMCP: Claude Manager & MCP Bootstrapper
 
-This guide walks you through installing Evolve step by step, even if you're new to programming tools. EvolveMCP is a PowerShell utility and MCP server that helps you extend Claude Desktop with custom tools it writes for you and itself. 
+**Complete Beginner's Guide to Installing Evolve**
+
+This guide walks you through installing Evolve step by step, even if you're new to programming tools. EvolveMCP is a PowerShell utility and MCP server that helps you extend Claude Desktop with custom tools it writes for you and itself.
+
+> If there is a moment we'll remember, it will be this moment of inception, where we can talk to the AI to write code - anyone can write code.
+
+## What is EvolveMCP?
+
+EvolveMCP is a toolkit that enables Claude Desktop to create and run custom tools that extend its capabilities. This means:
+
+- Claude can write code for you that it can then use itself
+- You can ask Claude to build specialized tools that solve your specific problems
+- You can enhance Claude's capabilities beyond its default features
 
 ## Prerequisites
 

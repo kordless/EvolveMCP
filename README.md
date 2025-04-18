@@ -10,7 +10,8 @@
 
 # 🚀 Beginner’s Guide to Installing EvolveMCP
 
-Even if you've never wrangled a script before, you got this.
+## 📺 Demo Video
+[![EvolveMCP Demo](https://img.youtube.com/vi/rI7ZOnKAJi0/0.jpg)](https://www.youtube.com/watch?v=rI7ZOnKAJi0)
 
 ## 🧠 What is EvolveMCP?
 
@@ -26,23 +27,7 @@ Claude is the first client supported by the system, but EvolveMCP is built with 
 
 ## ⚠️ Security Warning
 
-**IMPORTANT:** EvolveMCP allows Claude to create and execute Python code on your local machine. Before using this software, please understand the following security implications:
-
-1. **Code Execution Risk**: Any code that runs on your computer has access to your system at the same permission level as the user running it. This includes your files, network, and potentially sensitive information.
-
-2. **Review Generated Code**: While Evolve (and Claude) aim to create safe and useful tools, you should review any code that it generates before allowing it to run, especially if you're using it in a professional or sensitive environment.
-
-3. **No Warranty**: This software is provided "as is" without warranty of any kind. The creators are not responsible for any damages or security incidents resulting from its use.
-
-4. **Recommended Precautions**:
-   - Run EvolveMCP in a dedicated user account with limited permissions
-   - Backup important data before using new tools
-   - Consider using a virtual machine or container for additional isolation (we'll be working on making this easier soon)
-   - Keep your operating system and security software up to date
-
-5. **For Developers**: If you're extending EvolveMCP, follow secure coding practices and avoid giving tools unnecessary system access.
-
-By installing and using EvolveMCP, you acknowledge these risks and take responsibility for the code executed on your system.
+**IMPORTANT:** EvolveMCP allows Claude to create and execute Python code on your local machine. Before using this software, please understand the following security implications in the Security Implications section.
 
 ## Prerequisites
 
@@ -340,6 +325,24 @@ This will display all configured MCP servers, including:
 - Command and arguments
 - Whether the script exists
 - For Evolve tools: version and creation date (if available)
+
+## ⚠️ Security Implications
+
+1. **Code Execution Risk**: Any code that runs on your computer has access to your system at the same permission level as the user running it. This includes your files, network, and potentially sensitive information.
+
+2. **Review Generated Code**: While Evolve (and Claude) aim to create safe and useful tools, you should review any code that it generates before allowing it to run, especially if you're using it in a professional or sensitive environment.
+
+3. **No Warranty**: This software is provided "as is" without warranty of any kind. The creators are not responsible for any damages or security incidents resulting from its use.
+
+4. **Recommended Precautions**:
+   - Run EvolveMCP in a dedicated user account with limited permissions
+   - Backup important data before using new tools
+   - Consider using a virtual machine or container for additional isolation (we'll be working on making this easier soon)
+   - Keep your operating system and security software up to date
+
+5. **For Developers**: If you're extending EvolveMCP, follow secure coding practices and avoid giving tools unnecessary system access.
+
+By installing and using EvolveMCP, you acknowledge these risks and take responsibility for the code executed on your system.
 
 ## License Explanation: Sovereign v1.1
 

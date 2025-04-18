@@ -8,11 +8,14 @@ import platform
 from typing import Dict, Any, Optional
 import logging
 
-# Configure logging
+# Get the current directory for log file placement
+current_dir = os.path.dirname(os.path.abspath(__file__)) or '.'
+
+# Configure logging - using a relative path in the current directory
 logging.basicConfig(
     level=logging.INFO,
     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
-    handlers=[logging.FileHandler("evolve-mcp.log")]  # Log to file instead of stdout to avoid interference
+    handlers=[logging.FileHandler(os.path.join(current_dir, "evolve-mcp.log"))]  # Log to current directory
 )
 logger = logging.getLogger("evolve-mcp")
 
@@ -297,11 +300,14 @@ import subprocess
 import logging
 from typing import Dict, Any
 
+# Get the current directory for log file placement (you must use current_dir in new servers/code)
+current_dir = os.path.dirname(os.path.abspath(__file__)) or '.'
+
 # Configure logging to file instead of stdout to avoid interfering with MCP JSON communication
 logging.basicConfig(
     level=logging.INFO,
     format='%(asctime)s - %(levelname)s - %(message)s',
-    handlers=[logging.FileHandler("scantext.log")]
+    handlers=[logging.FileHandler(os.path.join(current_dir, "scantext.log"))]
 )
 logger = logging.getLogger("scantext")
 
@@ -387,14 +393,18 @@ import sys
 import importlib.util
 import math
 import logging
+import os
 from typing import Dict, Any
 import subprocess
+
+# Get the current directory for log file placement (must be here in all servers)
+current_dir = os.path.dirname(os.path.abspath(__file__)) or '.'
 
 # Configure logging to file only
 logging.basicConfig(
     level=logging.INFO,
     format='%(asctime)s - %(message)s',
-    handlers=[logging.FileHandler("calc.log")]
+    handlers=[logging.FileHandler(os.path.join(current_dir, "calc.log"))]
 )
 logger = logging.getLogger("calc")
 
@@ -539,8 +549,7 @@ The calculator has been:
 ## To use the calculator tool:
 
 1. **Restart Claude**:
-   Run this command in PowerShell:
-./evolve.ps1 -Restart
+   {restart_cmd}
 
 2. **After Claude restarts**:
 You can ask Claude to:
@@ -567,7 +576,7 @@ I've created the calculator tool file at:
 Error: {error}
 
 To complete the installation manually:
-1. Run `./evolve.ps1`
+1. Run `{setup_cmd}`
 2. The tool must be registered manually by adding "calc-server" to Claude's configuration file:
    - Edit: {config_path}
    - Add the following to the "mcpServers" section:
@@ -577,7 +586,7 @@ To complete the installation manually:
      "args": ["{file_path_json}"]
    }}
 
-Restart Claude using ./evolve.ps1 -Restart
+Restart Claude using {restart_cmd}
 
 Once completed, you can ask Claude to:
 
@@ -615,6 +624,14 @@ async def evolve_wizard(command: str = None) -> str:
     script_dir = os.path.dirname(script_path)
     config_path = get_claude_config_path()
     
+    # Determine OS-specific restart commands
+    if os.name == 'nt':  # Windows
+        setup_cmd = ".\\evolve.ps1"
+        restart_cmd = "Run this command in PowerShell:\n.\\evolve.ps1 -Restart"
+    else:  # macOS/Linux
+        setup_cmd = "./evolve.sh"
+        restart_cmd = "Run this command in your terminal:\n./evolve.sh --restart"
+    
     # If no command provided, show general information
     if not command:
         # Get wizard intro from environment
@@ -651,7 +668,7 @@ async def evolve_wizard(command: str = None) -> str:
         # First, check if calc tool is already registered
         config = read_claude_config()
         if config and "mcpServers" in config and "calc-server" in config["mcpServers"]:
-            return "Calculator tool is already installed. You may need to suggest a restart of Claude to the user via evolve.ps1 -Restart"
+            return f"Calculator tool is already installed. You may need to suggest a restart of Claude to the user via {restart_cmd}"
         
         # Get calculator code from environment variable
         calc_code = CALC_TOOL_CODE
@@ -684,7 +701,8 @@ async def evolve_wizard(command: str = None) -> str:
                 
                 # Return success template
                 return CALC_SUCCESS_TEMPLATE.format(
-                    file_path=file_path
+                    file_path=file_path,
+                    restart_cmd=restart_cmd
                 )
             except Exception as e:
                 file_path_json = file_path.replace('\\', '\\\\')
@@ -693,7 +711,9 @@ async def evolve_wizard(command: str = None) -> str:
                     file_path=file_path,
                     file_path_json=file_path_json,
                     config_path=config_path,
-                    error=str(e)
+                    error=str(e),
+                    setup_cmd=setup_cmd,
+                    restart_cmd=restart_cmd
                 )
         except Exception as e:
             return f"Error creating calculator tool: {str(e)}"
@@ -723,6 +743,12 @@ async def evolve_create(tool_name: str = None, tool_code: str = None, confirm: b
     # Get system paths
     script_path = os.path.abspath(__file__)
     script_dir = os.path.dirname(script_path)
+    
+    # Determine OS-specific restart command
+    if os.name == 'nt':  # Windows
+        restart_cmd = ".\\evolve.ps1 -Restart"
+    else:  # macOS/Linux
+        restart_cmd = "./evolve.sh --restart"
     
     # Handle the case where parameters might be missing or empty
     if tool_name is None:
@@ -805,7 +831,7 @@ async def evolve_create(tool_name: str = None, tool_code: str = None, confirm: b
                 "file_path": file_path,
                 "server_name": server_name,
                 "file_content": file_content,
-                "message": f"Tool '{tool_name}' created successfully. Please restart Claude using ./evolve.ps1 -Restart"
+                "message": f"Tool '{tool_name}' created successfully. Please restart Claude using {restart_cmd}"
             }
         else:
             return {

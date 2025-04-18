@@ -12,7 +12,7 @@ LOG_NAME=""
 LIST_TOOLS=false
 
 # Define the specific logs directory path for macOS
-LOGS_PATH="$HOME/Library/Application Support/Claude/logs"
+LOGS_PATH="$HOME/Library/Logs/Claude/"
 CONFIG_PATH="$HOME/Library/Application Support/Claude/claude_desktop_config.json"
 
 # Function to print colored output
@@ -225,7 +225,8 @@ start_claude_executable() {
         
         print_color "green" "$action_verb Claude from: $executable_path"
         
-        try {
+        # Fixed the try-catch block with proper bash error handling
+        {
             open -a "Claude"
             
             # Verify Claude started successfully
@@ -237,7 +238,7 @@ start_claude_executable() {
                 print_color "red" "Failed to detect Claude processes after start."
                 return 1
             fi
-        } catch {
+        } || {
             print_color "red" "Error starting Claude: $?"
             return 1
         }

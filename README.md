@@ -22,6 +22,26 @@ EvolveMCP is a toolkit that enables Claude Desktop to create and run custom tool
 
 We stand at the threshold of a remarkable transformation in human-computer interaction. EvolveMCP represents a fundamental shift in how we create technology - no longer are we limited by our own technical abilities. Now, the barrier between imagination and implementation dissolves as AI becomes both the interpreter of our intentions and the architect of its own capabilities.
 
+## ⚠️ Security Warning
+
+**IMPORTANT:** EvolveMCP allows Claude to create and execute Python code on your local machine. Before using this software, please understand the following security implications:
+
+1. **Code Execution Risk**: Any code that runs on your computer has access to your system at the same permission level as the user running it. This includes your files, network, and potentially sensitive information.
+
+2. **Review Generated Code**: While Evolve (and Claude) aim to create safe and useful tools, you should review any code that it generates before allowing it to run, especially if you're using it in a professional or sensitive environment.
+
+3. **No Warranty**: This software is provided "as is" without warranty of any kind. The creators are not responsible for any damages or security incidents resulting from its use.
+
+4. **Recommended Precautions**:
+   - Run EvolveMCP in a dedicated user account with limited permissions
+   - Backup important data before using new tools
+   - Consider using a virtual machine or container for additional isolation
+   - Keep your operating system and security software up to date
+
+5. **For Developers**: If you're extending EvolveMCP, follow secure coding practices and avoid giving tools unnecessary system access.
+
+By installing and using EvolveMCP, you acknowledge these risks and take responsibility for the code executed on your system.
+
 ## Prerequisites
 
 Before starting, you'll need:
@@ -319,5 +339,36 @@ This will display all configured MCP servers, including:
 - Whether the script exists
 - For Evolve tools: version and creation date (if available)
 
+## License Explanation: Sovereign v1.1
 
+EvolveMCP is released under the Sovereign v1.1 license, which balances open use with specific restrictions:
 
+### AI and the Evolution of Licensing
+
+We stand at a unique crossroads in the relationship between human and artificial intelligence. Traditional software licenses were never designed for a world where:
+
+1. AI can create, modify, and execute code based on natural language instructions
+2. The lines between user, creator, and tool become increasingly blurred
+3. The same software might be used by individuals, corporations, and potentially autonomous AI systems
+4. Digital and analog minds each bring distinct forms of intelligence and capabilities
+
+The Sovereign license represents our attempt to navigate this unprecedented territory - acknowledging that just as AI must evolve, so too must our legal frameworks. Inspired by philosophical frameworks like those in the Gnosis AI-Sovereign License, this approach recognizes the need for graduated rights and responsibilities that differ based on the nature of the entity using the software.
+
+### What You CAN Do:
+- **Individual Use**: You can freely use this software as an individual, even for work-related tasks.
+- **Personal Projects**: Use it in your personal projects without restriction.
+- **Small Business Use**: Sole proprietors and small businesses can use it for internal purposes.
+- **Learning & Teaching**: Use it in educational contexts without limitation.
+- **Modify & Extend**: You can modify the code for your own use.
+
+### What You CANNOT Do:
+- **Corporate Production**: Corporations cannot deploy this software in production environments or integrate it into commercial products without a separate license.
+- **Resell the Software**: You cannot sell EvolveMCP as a product or service.
+- **Remove Attribution**: You must maintain all copyright and license notices.
+
+### In Simple Terms:
+This license allows you as an individual to use EvolveMCP freely, even if it helps with your job. However, your employer (if it's a corporation) cannot officially deploy it in production systems or incorporate it into their products without obtaining proper licensing.
+
+This approach represents a fair attempt to balance open access with sustainable development in the rapidly evolving AI landscape. It envisions a future where human creativity, compassion, and embodied wisdom work in concert with the precision, scalability, and analytical power of artificial intelligence - a symbiotic relationship rather than an adversarial one.
+
+For complete details, please refer to the full [LICENSE.md](https://github.com/kordless/EvolveMCP/blob/main/LICENSE.md) file.

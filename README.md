@@ -27,7 +27,7 @@ Claude is the first client supported by the system, but EvolveMCP is built with 
 
 ## ⚠️ Security Warning
 
-**IMPORTANT:** EvolveMCP allows Claude to create and execute Python code on your local machine. Before using this software, please understand the following security implications in the Security Implications section.
+**IMPORTANT:** EvolveMCP allows Claude to create and execute Python code on your local machine. Before using this software, please understand the security implications by referring to the Security Implications section at the bottom.
 
 ## Prerequisites
 

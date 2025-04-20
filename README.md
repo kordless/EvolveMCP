@@ -4,6 +4,7 @@
 <strong>Pythonic MCP development, supercharged by AI intelligence and your will to build something new.</strong>
 
 [![License](https://img.shields.io/badge/license-_Sovereign_v1.1-purple)](https://github.com/kordless/EvolveMCP/blob/main/LICENSE.md)
+![GitHub issues](https://img.shields.io/github/issues/kordless/evolveMCP.svg)
 
 <h1>🧠</h1>
 </div>

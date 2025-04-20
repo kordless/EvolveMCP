@@ -14,7 +14,7 @@
 
 ## 📺 Demo Video
 
-[![evolveMCP Bitcoin App Demo](https://img.youtube.com/vi/KsHngo05WIY/0.jpg)](https://www.youtube.com/watch?v=KsHngo05WIY)
+<img src="https://github.com/kordless/EvolveMCP/blob/main/price.png?raw=true" width="400" alt="Bitcoin Price">
 
 Watch a demonstration of the Bitcoin price tracking app created with evolveMCP, showing how Claude can build and use its own tools to fetch and visualize real-time cryptocurrency data.
 

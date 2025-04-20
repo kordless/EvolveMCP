@@ -18,8 +18,6 @@
 
 Watch a demonstration of the Bitcoin price tracking app created with evolveMCP, showing how Claude can build and use its own tools to fetch and visualize real-time cryptocurrency data.
 
-Watch a demonstration of the Bitcoin price tracking app created with evolveMCP, showing how Claude can build and use its own tools to fetch and visualize real-time cryptocurrency data.
-
 <!-- Small (250px wide) -->
 <img src="https://github.com/kordless/EvolveMCP/blob/main/price.png" width="250" alt="Bitcoin Price">
 

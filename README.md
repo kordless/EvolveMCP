@@ -11,7 +11,7 @@
 # 🚀 Beginner’s Guide to Installing EvolveMCP
 
 ## 📺 Demo Video
-[![EvolveMCP Demo](https://img.youtube.com/vi/rI7ZOnKAJi0/0.jpg)](https://www.youtube.com/watch?v=rI7ZOnKAJi0)
+[![EvolveMCP Demo](https://img.youtube.com/vi/KsHngo05WIY/0.jpg)]([https://www.youtube.com/watch?v=KsHngo05WIY)
 
 ## 🧠 What is EvolveMCP?
 

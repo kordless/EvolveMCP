@@ -18,6 +18,8 @@
 
 Watch a demonstration of the Bitcoin price tracking app created with evolveMCP, showing how Claude can build and use its own tools to fetch and visualize real-time cryptocurrency data.
 
+![Bitcoin Price](https://github.com/kordless/EvolveMCP/blob/main/price.png?raw=true)
+
 ## 🧠 What is EvolveMCP?
 
 EvolveMCP gives Claude Desktop the ability to build, install, and use its own tools—expanding what it can actually do, not just talk about: 

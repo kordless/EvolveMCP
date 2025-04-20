@@ -4,7 +4,8 @@
 <strong>Pythonic MCP development, supercharged by AI intelligence and your will to build something new.</strong>
 
 [![License](https://img.shields.io/badge/license-_Sovereign_v1.1-purple)](https://github.com/kordless/EvolveMCP/blob/main/LICENSE.md)
-[![GitHub issues](https://img.shields.io/github/issues/kordless/EvolveMCP.svg)](https://github.com/kordless/EvolveMCP/issues)
+[![GitHub stars](https://img.shields.io/github/stars/kordless/EvolveMCP.svg?style=social)](https://github.com/kordless/EvolveMCP/stargazers)
+[![GitHub issues](https://img.shields.io/github/issues/kordless/EvolveMCP?color=purple)](https://github.com/kordless/EvolveMCP/issues)
 
 <h1>🧠</h1>
 </div>

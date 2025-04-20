@@ -11,7 +11,10 @@
 # 🚀 Beginner’s Guide to Installing EvolveMCP
 
 ## 📺 Demo Video
-[![EvolveMCP Demo](https://img.youtube.com/vi/KsHngo05WIY/0.jpg)]([https://www.youtube.com/watch?v=KsHngo05WIY)
+
+[![evolveMCP Bitcoin App Demo](https://img.youtube.com/vi/KsHngo05WIY/0.jpg)](https://www.youtube.com/watch?v=KsHngo05WIY)
+
+Watch a demonstration of the Bitcoin price tracking app created with evolveMCP, showing how Claude can build and use its own tools to fetch and visualize real-time cryptocurrency data.
 
 ## 🧠 What is EvolveMCP?
 

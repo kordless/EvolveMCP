@@ -1,0 +1,26 @@
+# Specific files to ignore
+evolve.log
+
+# Directories to ignore
+tools/
+docs/
+logs/
+
+# Common files to ignore
+*.log
+*.tmp
+*.temp
+.DS_Store
+Thumbs.db
+
+# Node modules if applicable
+node_modules/
+
+# Environment files
+.env
+.env.local
+.env.*.local
+
+# Build directories if applicable
+/dist/
+/build/

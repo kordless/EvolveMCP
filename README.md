@@ -54,7 +54,7 @@ Before starting, you'll need:
 
 ### Option A: Download the Release Package (Easiest)
 
-1. Go to [github.com/kordless/EvolveMCP/releases/tag/v1.0.4](https://github.com/kordless/EvolveMCP/releases/tag/v1.0.4)
+1. Go to [github.com/kordless/EvolveMCP/releases/tag/v1.0.5](https://github.com/kordless/EvolveMCP/releases/tag/v1.0.5)
 2. Under "Assets", click on the .zip file (top source code file)
 3. Save the file to a location you can easily find (like your Downloads folder)
 4. Extract the archive:

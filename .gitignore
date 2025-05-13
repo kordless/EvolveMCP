@@ -1,10 +1,13 @@
 # Specific files to ignore
 evolve.log
+.path_history.json
 
 # Directories to ignore
 tools/
 docs/
 logs/
+*_versions/
+.*_versions/
 
 # Common files to ignore
 *.log

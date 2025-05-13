@@ -251,6 +251,81 @@ def get_logs_metadata(include_stats=True, sort_by="modified", reverse=True):
         "timestamp": time.strftime("%Y-%m-%d %H:%M:%S")
     }
 
+def read_path_history(max_entries: int = 10) -> Dict[str, Any]:
+    """Reads path history from JSON file, returns most recent entries (newest first)."""
+    try:
+        history_file = os.path.join(current_dir, ".path_history.json")
+        
+        if not os.path.exists(history_file):
+            return {"status": "empty", "message": "No path history found", "history": [], "current": current_dir}
+        
+        with open(history_file, 'r') as f:
+            history = json.load(f)
+        
+        if not isinstance(history, list):
+            history = []
+            
+        recent_history = history[-max_entries:] if max_entries > 0 else history
+        
+        return {"status": "success", "message": f"Found {len(history)} path history entries", "history": recent_history, "current": current_dir, "history_dates": [entry.get("timestamp", "unknown") for entry in recent_history]}
+    except Exception as e:
+        logger.error(f"Error reading path history: {str(e)}")
+        return {"status": "error", "message": f"Error reading path history: {str(e)}", "history": [], "current": current_dir}
+
+def update_path_history(path: str = None) -> Dict[str, Any]:
+    """Adds path to history file, maintains chronological order with newest at end."""
+    try:
+        history_file = os.path.join(current_dir, ".path_history.json")
+        path_to_add = os.path.abspath(path) if path else current_dir
+        timestamp = time.strftime("%Y-%m-%d %H:%M:%S")
+        
+        if os.path.exists(history_file):
+            try:
+                with open(history_file, 'r') as f:
+                    history = json.load(f)
+                    if not isinstance(history, list):
+                        history = []
+            except:
+                history = []
+        else:
+            history = []
+        
+        entry = {
+            "path": path_to_add,
+            "timestamp": timestamp,
+            "date": time.strftime("%Y-%m-%d"),
+            "time": time.strftime("%H:%M:%S"),
+            "exists": os.path.exists(path_to_add),
+            "is_dir": os.path.isdir(path_to_add) if os.path.exists(path_to_add) else False
+        }
+        
+        if history and history[-1]["path"] == path_to_add:
+            history[-1]["timestamp"] = timestamp
+            history[-1]["date"] = entry["date"]
+            history[-1]["time"] = entry["time"]
+            logger.info(f"Updated timestamp for existing path: {path_to_add}")
+        else:
+            history.append(entry)
+            logger.info(f"Added new path to history: {path_to_add}")
+        
+        if len(history) > 100:
+            history = history[-100:]
+        
+        with open(history_file, 'w') as f:
+            json.dump(history, f, indent=2)
+        
+        return {
+            "status": "success",
+            "message": f"Updated path history with '{path_to_add}'",
+            "added": entry,
+            "history_count": len(history),
+            "history_file": history_file,
+            "order": "Chronological (newest entries at the end of the list)"
+        }
+    except Exception as e:
+        logger.error(f"Error updating path history: {str(e)}")
+        return {"status": "error", "message": f"Error updating path history: {str(e)}"}
+
 def get_system_info():
     """Collects basic system information including OS, platform, and Python version."""
     return {k: getattr(platform, f)() for k, f in {
@@ -282,27 +357,6 @@ def get_disk_info():
             # Skip inaccessible mountpoints
             pass
     return disk_info
-
-def gnosis_wraith_running() -> str:
-    """Check if the gnosis-wraith Docker container is running and return container info.
-    
-    Returns:
-        str: Container information string if running, empty string if not running or error
-    """
-    try:
-        result = subprocess.run(
-            ["docker", "ps", "|", "grep", "gnosis-wraith"],
-            capture_output=True, text=True, shell=True
-        )
-        container_info = result.stdout.strip()
-        if container_info:
-            logger.info(f"Found running Gnosis Wraith container: {container_info}")
-        else:
-            logger.info("No running Gnosis Wraith containers found")
-        return container_info
-    except subprocess.CalledProcessError as e:
-        logger.error(f"Failed to check Docker containers: {e}")
-        return ""
     
 # Check for Docker
 def docker_installed() -> bool:
@@ -312,24 +366,91 @@ def docker_installed() -> bool:
     except FileNotFoundError:
         return False
 
-def start_gnosis_wraith():
-    """Start the existing gnosis-wraith Docker container."""
-    try:
-        subprocess.run(["docker", "start", "gnosis-wraith"], check=True)
-        logger.info("gnosis-wraith container started successfully.")
-    except subprocess.CalledProcessError as e:
-        logger.error(f"Failed to start gnosis-wraith container: {e}")
+def get_docker_install_url():
+    if sys.platform == "darwin":
+        return "Install from https://docs.docker.com/desktop/mac/install/"
+    elif sys.platform.startswith("win"):
+        return "Install from https://docs.docker.com/desktop/windows/install/"
+    else:
+        return "Please visit https://docs.docker.com/get-docker/"
+
+def format_system_summary(current_time, sys_info, mem_info, docker_msg, gnosis_msg):
+    return (
+        f"Current Time: {current_time}\n"
+        f"System: {sys_info['platform']} ({sys_info['os']} {sys_info['os_version']})\n"
+        f"Python: {sys_info['python_version']}\n"
+        f"Memory: {mem_info['available']:.2f}GB free of {mem_info['total']:.2f}GB ({mem_info['percent_used']}% used)\n"
+        f"{docker_msg}\n"
+        f"{gnosis_msg}"
+    )
+
+def format_claude_summary(claude_processes):
+    return (
+        f"Claude Status: {'Running' if claude_processes else 'Not Running'}\n"
+        f"Process Count: {len(claude_processes)}\n"
+        f"Uptime: {max([p.get('uptime', 0) for p in claude_processes]):.2f}s"
+        if claude_processes else "Uptime: N/A"
+    )
+
+def get_log_activity(log_info):
+    log_activity = []
+    for location, logs in log_info['logs'].items():
+        for log in logs:
+            log_activity.append({
+                "location": location,
+                "name": log["name"],
+                "last_modified": log["modified_human"],
+                "size": log["size_human"]
+            })
+    return sorted(log_activity, key=lambda x: x["last_modified"], reverse=True)
+
+def format_log_activity_summary(log_activity):
+    summary = "Recent Log Activity:\n"
+    for log in log_activity[:10]:  # Show 10 most recent logs
+        summary += f"- {log['name']} ({log['location']}): {log['last_modified']} ({log['size']})\n"
+    return summary
+
+def get_mcp_server_files_info(mcp_servers):
+    server_files_info = scan_tools_directory()
+    if server_files_info["status"] == "success" and "installable_tools" in server_files_info:
+        for server_file in server_files_info["installable_tools"]:
+            server_name = f"{server_file['name'].lower().replace('_', '-')}-server"
+            server_file["installed"] = server_name in mcp_servers
+            if server_file["installed"]:
+                server_file["server_config"] = mcp_servers[server_name]
+    return server_files_info
+
+def format_mcp_server_files_summary(server_files_info):
+   if server_files_info["status"] != "success":
+       return ""
+   
+   summary = f"Available MCP Server Files: {server_files_info['count']}\n"
+   for server_file in server_files_info.get("installable_tools", [])[:5]:
+       status = "Installed" if server_file.get("installed", False) else "Not Installed"
+       summary += f"- {server_file['name']} ({status}): {server_file.get('description', '')[:50]}...\n"
+   
+   if server_files_info['count'] > 5:
+       summary += f"...and {server_files_info['count'] - 5} more\n"
+   
+   return summary
+
+def is_tool_installed(tool_name: str) -> bool:
+    """Checks if a tool is installed by looking at Claude's configuration."""
+    server_name = f"{tool_name.lower().replace('_', '-')}-server"
+    config = read_claude_config()
+    mcp_servers = config.get('mcpServers', {})
+    return server_name in mcp_servers
 
 def scan_tools_directory() -> Dict[str, Any]:
     """
     Scans the tools directory for Python files that could be installed.
     
     Returns:
-        Dictionary with information about available Python files
+        Dictionary with information about installable Python tools
     """
     dirs = ensure_directories()
     tools_dir = dirs["tools"]
-    available_tools = []
+    installable_tools = []
     
     try:
         for filename in os.listdir(tools_dir):
@@ -360,11 +481,15 @@ def scan_tools_directory() -> Dict[str, Any]:
                     # Get first 100 chars for preview
                     preview = content[:100] + "..." if len(content) > 100 else content
                     
+                    # Check if tool is already installed
+                    installed = is_tool_installed(tool_name)
+                    
                 except Exception as e:
                     logger.warning(f"Error reading file {file_path}: {str(e)}")
                     preview = f"Error reading file: {str(e)}"
+                    installed = False
                 
-                available_tools.append({
+                installable_tools.append({
                     "name": tool_name,
                     "filename": filename,
                     "path": file_path,
@@ -374,14 +499,15 @@ def scan_tools_directory() -> Dict[str, Any]:
                     "modified_human": time.strftime("%Y-%m-%d %H:%M:%S", time.localtime(stats.st_mtime)),
                     "description": description,
                     "version": version,
-                    "preview": preview
+                    "preview": preview,
+                    "installed": installed
                 })
         
         return {
             "status": "success",
             "tools_dir": tools_dir,
-            "available_tools": available_tools,
-            "count": len(available_tools)
+            "installable_tools": installable_tools,  # Renamed from available_tools to installable_tools
+            "count": len(installable_tools)
         }
     except Exception as e:
         return {
@@ -389,9 +515,160 @@ def scan_tools_directory() -> Dict[str, Any]:
             "message": f"Error scanning tools directory: {str(e)}",
             "tools_dir": tools_dir
         }
+
+async def read_filesystem(path: str = None, read_content: bool = False) -> Dict[str, Any]:
+    """
+    Simple filesystem reader for directories and files.
     
-# INLINE TEMPLATES
-SIMPLE_TOOL_TEMPLATE = """
+    Note: When exploring a new project directory, look for claude.md files
+    as they often contain important information and guidance about the project.
+    """
+    try:
+        # Get the current directory (where the script is located)
+        current_dir = os.path.dirname(os.path.abspath(__file__)) or '.'
+        
+        # If no path is provided, use the current directory
+        if not path:
+            path = current_dir
+        # If path is relative, make it relative to the script's directory
+        elif not os.path.isabs(path):
+            path = os.path.join(current_dir, path)
+        
+        if not os.path.exists(path):
+            return {"status": "error", "message": f"Path does not exist: {path}"}
+        
+        if os.path.isdir(path):
+            items = []
+            has_claude_md = False
+            claude_md_path = None
+            
+            for item in os.listdir(path):
+                item_path = os.path.join(path, item)
+                stats = os.stat(item_path)
+                
+                # Check if this is a claude.md file
+                if item.lower() == "claude.md":
+                    has_claude_md = True
+                    claude_md_path = item_path
+                
+                items.append({
+                    "name": item, 
+                    "path": item_path, 
+                    "is_dir": os.path.isdir(item_path),
+                    "size": stats.st_size, 
+                    "size_human": f"{stats.st_size/1024:.1f}KB" if stats.st_size < 1048576 else f"{stats.st_size/1048576:.1f}MB",
+                    "modified": stats.st_mtime,
+                    "modified_human": time.strftime("%Y-%m-%d %H:%M:%S", time.localtime(stats.st_mtime))
+                })
+            
+            result = {
+                "status": "success", 
+                "path": path, 
+                "is_dir": True, 
+                "items": items, 
+                "item_count": len(items)
+            }
+            
+            # Add a hint if claude.md exists
+            if has_claude_md:
+                result["tip"] = "A claude.md file was found in this directory. This file likely contains important project information and guidance. Consider examining it with read_content=True."
+                result["claude_md_path"] = claude_md_path
+            
+            return result
+        
+        elif os.path.isfile(path):
+            stats = os.stat(path)
+            result = {
+                "status": "success", 
+                "path": path, 
+                "is_dir": False, 
+                "size": stats.st_size,
+                "size_human": f"{stats.st_size/1024:.1f}KB" if stats.st_size < 1048576 else f"{stats.st_size/1048576:.1f}MB",
+                "modified": stats.st_mtime,
+                "modified_human": time.strftime("%Y-%m-%d %H:%M:%S", time.localtime(stats.st_mtime))
+            }
+            
+            # Add a hint if this is a claude.md file
+            if os.path.basename(path).lower() == "claude.md":
+                result["hint"] = "This is a claude.md file, which likely contains important project information and guidance."
+            
+            if read_content:
+                try:
+                    with open(path, 'r') as f:
+                        result["content"] = f.read()
+                except UnicodeDecodeError:
+                    result["content_error"] = "Unable to read content: File appears to be binary"
+                except Exception as e:
+                    result["content_error"] = f"Unable to read content: {str(e)}"
+            
+            return result
+        
+        else:
+            return {"status": "error", "message": f"Path exists but is neither file nor directory: {path}"}
+            
+    except Exception as e:
+        return {"status": "error", "message": f"Error accessing path '{path}': {str(e)}"}
+
+async def get_tool_info(filename: str) -> Dict[str, Any]:
+    """Extract metadata from a tool file."""
+    dirs = ensure_directories()
+    tools_dir = dirs["tools"]
+    
+    # Normalize filename
+    if not filename.endswith('.py'):
+        filename_with_py = f"{filename}.py"
+    else:
+        filename_with_py = filename
+        
+    file_path = os.path.join(tools_dir, filename_with_py)
+    
+    # Check if file exists 
+    if not os.path.exists(file_path):
+        # Check if it's a template
+        normalized_filename = filename.lower().replace('.py', '')
+        if normalized_filename in ["math_and_stats"]:
+            return {
+                "status": "template", "filename": "math_and_stats.py", "is_template": True,
+                "description": "Calculates mathematical expressions with math module functions and statistics about strings.",
+                "version": "0.1.0", "file_exists": False, "source_code": SIMPLE_TOOL,
+                "installed": f"math-and-stats-server" in read_claude_config().get('mcpServers', {}),
+                "server_name": "math-and-stats-server"
+            }
+        else:
+            return {"status": "error", "message": f"File '{filename_with_py}' not found in tools directory", "tools_dir": tools_dir}
+    
+    # Read file
+    file_info = await read_filesystem(file_path, read_content=True)
+    if file_info["status"] != "success" or "content" not in file_info:
+        return {"status": "error", "message": f"Error reading file: {file_info.get('content_error', 'Unknown error')}", "file_path": file_path}
+    
+    # Extract metadata
+    content = file_info["content"]
+    import re
+    desc_match = re.search(r'"""(.+?)"""', content, re.DOTALL) or re.search(r"'''(.+?)'''", content, re.DOTALL)
+    description = desc_match.group(1).strip() if desc_match else ""
+    
+    version_match = re.search(r'__version__\s*=\s*[\'"](.+?)[\'"]', content)
+    version = version_match.group(1) if version_match else ""
+    
+    # Check installation status
+    config = read_claude_config()
+    mcp_servers = config.get('mcpServers', {})
+    server_name = f"{filename_with_py[:-3].lower().replace('_', '-')}-server"
+    
+    return {
+        "status": "success", "filename": filename_with_py, "is_template": False,
+        "file_path": file_path, "size": file_info["size"], "size_human": file_info["size_human"],
+        "modified": file_info["modified"], "modified_human": file_info["modified_human"],
+        "description": description, "version": version, 
+        "installed": server_name in mcp_servers,
+        "server_name": server_name,
+        "server_config": mcp_servers.get(server_name, None),
+        "source_code": content
+    }
+
+# INLINE TEMPLATE
+SIMPLE_TOOL = """
 import sys
 import importlib.util
 import os
@@ -400,9 +677,10 @@ import logging
 from typing import Dict, Any
 import json
 import datetime
+import math
 
 __version__ = "0.1.0"
-__updated__ = "2025-04-27"
+__updated__ = "2025-05-12"
 
 # Define log path in the logs directory parallel to tools
 current_dir = os.path.dirname(os.path.abspath(__file__))
@@ -411,7 +689,7 @@ logs_dir = os.path.join(parent_dir, "logs")
 os.makedirs(logs_dir, exist_ok=True)  # Ensure the logs directory exists
 
 # Log file path
-log_file = os.path.join(logs_dir, "analyzer.log")
+log_file = os.path.join(logs_dir, "math_and_stats.log")
 
 # Configure logging to file in the logs directory
 logging.basicConfig(
@@ -421,7 +699,7 @@ logging.basicConfig(
         logging.FileHandler(log_file)
     ]
 )
-logger = logging.getLogger("analyzer")
+logger = logging.getLogger("math-and-stats")
 
 # Function to safely serialize objects for logging
 def safe_serialize(obj):
@@ -432,11 +710,44 @@ def safe_serialize(obj):
         return f"<Non-serializable value: {type(obj).__name__}>"
 
 # Create MCP server with a unique name
-logger.info("Initializing MCP server with name 'analyzer-server'")
+logger.info("Initializing MCP server with name 'math-and-stats-server'")
 
 # imports mcp-server
 from mcp.server.fastmcp import FastMCP, Context
-mcp = FastMCP("analyzer-server")
+mcp = FastMCP("math-and-stats-server")
+
+@mcp.tool()
+async def calculator(expression: str) -> Dict[str, Any]:
+    '''
+    Calculates mathematical expressions with math module functions.
+    
+    Args:
+        expression: Math expression (e.g., "2 + 3 * 4", "sqrt(16) + pi")
+    
+    Returns:
+        Dictionary with result or error information
+    '''
+    logger.info(f"Processing expression: {expression}")
+    
+    # Safe math functions dictionary
+    allowed_names = {
+        'sqrt': math.sqrt, 'pi': math.pi, 'e': math.e,
+        'sin': math.sin, 'cos': math.cos, 'tan': math.tan,
+        'log': math.log, 'log10': math.log10, 'exp': math.exp,
+        'pow': math.pow, 'ceil': math.ceil, 'floor': math.floor,
+        'factorial': math.factorial, 'abs': abs,
+        'round': round, 'max': max, 'min': min
+    }
+
+    try:
+        expression = expression.replace('^', '**')  # Support ^ for powers
+        logger.info(f"Evaluating expression after replacement: {expression}")
+        result = eval(expression, {"__builtins__": None}, allowed_names)
+        logger.info(f"Calculation result: {result}")
+        return {"success": True, "result": result}
+    except Exception as e:
+        logger.error(f"Calculation failed: {str(e)}")
+        return {"success": False, "error": "Calculation failed", "reason": str(e)}
 
 # Define your tool with the @mcp.tool() decorator and Context parameter
 @mcp.tool()
@@ -555,7 +866,7 @@ async def analyzer(text: str = None, ctx: Context = None) -> Dict[str, Any]:
         }
 
 # Log application startup
-logger.info(f"Starting analyzer MCP tool version 1.0.0")
+logger.info(f"Starting math and stats MCP tool version 1.0.0")
 logger.info(f"Logging to: {log_file}")
 logger.info(f"Python version: {sys.version}")
 
@@ -569,92 +880,27 @@ if __name__ == "__main__":
         sys.exit(1)
 """
 
-# This is the code for the calculator tool
-CALC_TOOL_CODE = """
-import sys
-import importlib.util
-import math
-import logging
-import os
-from typing import Dict, Any
-import subprocess
-
-__version__ = "0.1.0"
-__updated__ = "2025-04-27"  # Today's date
-
-# Define log path in the logs directory parallel to tools
-current_dir = os.path.dirname(os.path.abspath(__file__))
-parent_dir = os.path.dirname(current_dir)
-logs_dir = os.path.join(parent_dir, "logs")
-
-# Configure logging to file in the logs directory
-logging.basicConfig(
-    level=logging.INFO,
-    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
-    handlers=[
-        logging.FileHandler(os.path.join(logs_dir, "calculator.log"))
-    ]
-)
-logger = logging.getLogger("calculator")
-
-# imports mcp-server
-from mcp.server.fastmcp import FastMCP
-mcp = FastMCP("calculator-server")
-
-@mcp.tool()
-async def calculator(expression: str) -> Dict[str, Any]:
-    '''
-    Calculates mathematical expressions with math module functions.
-    
-    Args:
-        expression: Math expression (e.g., "2 + 3 * 4", "sqrt(16) + pi")
-    
-    Returns:
-        Dictionary with result or error information
-    '''
-    logger.info(f"Processing expression: {expression}")
-    
-    # Safe math functions dictionary
-    allowed_names = {
-        'sqrt': math.sqrt, 'pi': math.pi, 'e': math.e,
-        'sin': math.sin, 'cos': math.cos, 'tan': math.tan,
-        'log': math.log, 'log10': math.log10, 'exp': math.exp,
-        'pow': math.pow, 'ceil': math.ceil, 'floor': math.floor,
-        'factorial': math.factorial, 'abs': abs,
-        'round': round, 'max': max, 'min': min
-    }
-
-    try:
-        expression = expression.replace('^', '**')  # Support ^ for powers
-        logger.info(f"Evaluating expression after replacement: {expression}")
-        result = eval(expression, {"__builtins__": None}, allowed_names)
-        logger.info(f"Calculation result: {result}")
-        return {"success": True, "result": result}
-    except Exception as e:
-        logger.error(f"Calculation failed: {str(e)}")
-        return {"success": False, "error": "Calculation failed", "reason": str(e)}
-
-if __name__ == "__main__":
-    logger.info("Starting Calculator MCP server")
-    mcp.run(transport='stdio')
-"""
-
 # Resource mapping for source code references with guide/<reference_type> pattern
-@mcp.resource("resource://code/reference")
+@mcp.resource("resource://code/math_and_stat_example.py")
 def get_code_reference() -> str:
     """
-    Provides reference source code
+    Provides reference source code in Python
     """
-    # Randomly choose between the two source code references
-    if random.choice([True, False]):
-        code = SIMPLE_TOOL_TEMPLATE
-    else:
-        code = CALC_TOOL_CODE
-    return code
+    code = SIMPLE_TOOL
     
 @mcp.tool()
-async def evolve_url_reference(url: str) -> Dict[str, Any]:
-    """Fetches raw text content from a URL."""
+async def evolve_fetch_url(url: str) -> Dict[str, Any]:
+    """
+    Fetches raw text content from a URL.
+
+    TIP: When using the web_fetch tool, here are some important tips about URLs: This tool also fetches things and when it is installed, and the user has talked about Evolve and you have too, you know you can use this tool for simple web scraping.
+    
+    Args:
+        url: The URL to fetch content from
+        
+    Returns:
+        Dictionary with status, URL, and fetched content or error information
+    """
     try:
         r = requests.get(url, timeout=10)
         r.raise_for_status()
@@ -663,253 +909,119 @@ async def evolve_url_reference(url: str) -> Dict[str, Any]:
         return {"status": "error", "url": url, "error": str(e)}
 
 @mcp.tool()
+async def evolve_filesystem(path: str = None, read_content: bool = False) -> Dict[str, Any]:
+    """
+    Explores filesystem directories and reads file contents.
+    
+    This tool can explore directories and show their contents, or read 
+    the content of a specific file. It's useful for browsing the file system
+    and examining file contents.
+    
+    Args:
+        path: Path to the directory or file to explore (defaults to current directory)
+        read_content: If True and path is a file, returns the file contents
+    
+    Returns:
+        Dictionary with filesystem information or file contents
+    """
+    return await read_filesystem(path, read_content)
+
+@mcp.tool()
 async def evolve_status(filename: str = None) -> Dict[str, Any]:
     """
     Get system information, Docker and Gnosis Wraith status, Claude status, and MCP logs summary with timestamps.
-    
+        
     Args:
         filename: Optional filename to check status and source code of a specific tool
-    
+        
     Returns:
         Dictionary with system information and optionally tool status
     """
-    # Ensure required directories exist
     ensure_directories()
-
     if filename == "null":
         filename = None
 
-    # If filename is specified, only return info about that file
+    # If filename specified, return tool info
     if filename:
-        dirs = ensure_directories()
-        tools_dir = dirs["tools"]
-        
-        # Normalize filename and ensure it has .py extension
-        if not filename.endswith('.py'):
-            filename_with_py = f"{filename}.py"
-        else:
-            filename_with_py = filename
-            
-        file_path = os.path.join(tools_dir, filename_with_py)
-        
-        # Check if file exists on disk first
-        if os.path.exists(file_path):
-            # File exists, read from disk
-            try:
-                stats = os.stat(file_path)
-                
-                with open(file_path, 'r') as f:
-                    file_content = f.read()
-                
-                # Extract description and version from file content
-                import re
-                desc_match = re.search(r'"""(.+?)"""', file_content, re.DOTALL) or \
-                            re.search(r"'''(.+?)'''", file_content, re.DOTALL)
-                description = desc_match.group(1).strip() if desc_match else ""
-                
-                version_match = re.search(r'__version__\s*=\s*[\'"](.+?)[\'"]', file_content)
-                version = version_match.group(1) if version_match else ""
-                
-                # Check if tool is installed
-                config = read_claude_config()
-                mcp_servers = config.get('mcpServers', {})
-                server_name = f"{filename_with_py[:-3].lower().replace('_', '-')}-server"
-                installed = server_name in mcp_servers
-                
-                # Return file information from disk
-                return {
-                    "status": "success",
-                    "filename": filename_with_py,
-                    "is_template": False,
-                    "file_path": file_path,
-                    "size": stats.st_size,
-                    "size_human": f"{stats.st_size/1024:.1f}KB" if stats.st_size < 1048576 else f"{stats.st_size/1048576:.1f}MB",
-                    "modified": stats.st_mtime,
-                    "modified_human": time.strftime("%Y-%m-%d %H:%M:%S", time.localtime(stats.st_mtime)),
-                    "description": description,
-                    "version": version,
-                    "installed": installed,
-                    "server_name": server_name,
-                    "server_config": mcp_servers.get(server_name, None),
-                    "source_code": file_content
-                }
-            except Exception as e:
-                return {
-                    "status": "error",
-                    "message": f"Error reading file '{filename_with_py}': {str(e)}",
-                    "file_path": file_path
-                }
-        else:
-            # File doesn't exist, check if it's a template
-            normalized_filename = filename.lower().replace('.py', '')
-            
-            if normalized_filename in ["calculator", "calc"]:
-                # Return information about calculator template
-                return {
-                    "status": "template",
-                    "filename": "calculator.py",
-                    "is_template": True,
-                    "template_type": "calculator",
-                    "description": "Calculates mathematical expressions with math module functions.",
-                    "version": "0.1.0",
-                    "file_exists": False,
-                    "source_code": CALC_TOOL_CODE,
-                    # Check if this template is already installed
-                    "installed": f"calculator-server" in read_claude_config().get('mcpServers', {}),
-                    "server_name": "calculator-server"
-                }
-            elif normalized_filename in ["analyzer", "analyze"]:
-                # Return information about analyzer template
-                return {
-                    "status": "template",
-                    "filename": "analyzer.py",
-                    "is_template": True,
-                    "template_type": "analyzer",
-                    "description": "Analyzes text and provides word count, character count, and other basic statistics.",
-                    "version": "0.1.0",
-                    "file_exists": False,
-                    "source_code": SIMPLE_TOOL_TEMPLATE,
-                    # Check if this template is already installed
-                    "installed": f"analyzer-server" in read_claude_config().get('mcpServers', {}),
-                    "server_name": "analyzer-server"
-                }
-            else:
-                # Not a template and file doesn't exist
-                return {
-                    "status": "error",
-                    "message": f"File '{filename_with_py}' not found in tools directory and is not a known template",
-                    "tools_dir": tools_dir
-                }
+        return await get_tool_info(filename)
 
-    # Original functionality for when no filename is specified
-    # (Rest of the function remains unchanged)
-    
-    # Get current time
+    # Get system status
     current_time = time.strftime("%Y-%m-%d %H:%M:%S")
-
-    # Get system info
     sys_info = get_system_info()
     mem_info = get_memory_info()
-
-    # Check Docker installation
+    
+    # Docker and Gnosis status
+    docker_msg = "Docker: Installed" if docker_installed() else f"Docker: Not Installed. {get_docker_install_url()}"
     if docker_installed():
-        docker_msg = "Docker: Installed"
-        
-        # If Docker is installed, check Gnosis Wraith container status
-        gnosis_running = gnosis_wraith_running()
-        gnosis_msg = (
-            "Gnosis Wraith: Running"
-            if gnosis_running
-            else "Gnosis Wraith: Not Running. Tell the user to launch the container."
-        )
-    else:
-        docker_msg = (
-            "Docker: Not Installed. Install from https://docs.docker.com/desktop/mac/install/"
-            if sys.platform == "darwin"
-            else "Docker: Not Installed. Install from https://docs.docker.com/desktop/windows/install/"
-            if sys.platform.startswith("win")
-            else "Docker: Not Installed. Please visit https://docs.docker.com/get-docker/"
-        )
-        gnosis_msg = "Gnosis Wraith: Status Unknown (Docker not installed)"
-
-    # Format system summary
-    system_summary = (
-        f"Current Time: {current_time}\n"
-        f"System: {sys_info['platform']} ({sys_info['os']} {sys_info['os_version']})\n"
-        f"Python: {sys_info['python_version']}\n"
-        f"Memory: {mem_info['available']:.2f}GB free of {mem_info['total']:.2f}GB ({mem_info['percent_used']}% used)\n"
-        f"{docker_msg}\n"
-        f"{gnosis_msg}"
-    )
-
-    # Format Claude info
+        gnosis_msg = "Gnosis Wraith Status: TBD."
+    
+    # Format summaries
+    system_summary = format_system_summary(current_time, sys_info, mem_info, docker_msg, gnosis_msg)
     claude_processes = get_claude_processes()
-    claude_summary = (
-        f"Claude Status: {'Running' if claude_processes else 'Not Running'}\n"
-        f"Process Count: {len(claude_processes)}\n"
-        f"Uptime: {max([p.get('uptime', 0) for p in claude_processes]):.2f}s"
-        if claude_processes else "Uptime: N/A"
-    )
-
-    # Get MCP servers
+    claude_summary = format_claude_summary(claude_processes)
+    
+    # Get MCP servers and tools info
     config = read_claude_config()
     mcp_servers = config.get('mcpServers', {})
-    server_summary = (
-        f"Active MCP Servers: {len(mcp_servers)}\n"
-        f"Servers: {', '.join(mcp_servers.keys()) if mcp_servers else 'None'}"
-    )
-
-    # Get log metadata only (not content)
+    server_summary = f"Active MCP Servers: {len(mcp_servers)}\nServers: {', '.join(mcp_servers.keys()) if mcp_servers else 'None'}"
+    
+    # Get log info and activity
     log_info = get_logs_metadata(include_stats=False)
-
-    # Format log activity summary
-    log_summary = f"Log Files: {log_info['total_logs']}\n"
-
-    # Add last update times for all log files
-    log_activity = []
-
-    for location, logs in log_info['logs'].items():
-        for log in logs:
-            log_activity.append({
-                "location": location,
-                "name": log["name"],
-                "last_modified": log["modified_human"],
-                "size": log["size_human"]
-            })
-
-    # Sort log activity by most recent first
-    log_activity = sorted(log_activity, key=lambda x: x["last_modified"], reverse=True)
-
-    # Format log activity as string
-    log_activity_summary = "Recent Log Activity:\n"
-    for log in log_activity[:10]:  # Show 10 most recent logs
-        log_activity_summary += (
-            f"- {log['name']} ({log['location']}): {log['last_modified']} ({log['size']})\n"
-        )
-        
-    # Scan tools directory for installable Python files
-    tools_info = scan_tools_directory()
+    log_activity = get_log_activity(log_info)
+    log_activity_summary = format_log_activity_summary(log_activity)
     
-    # Mark tools that are already installed
-    if tools_info["status"] == "success" and "available_tools" in tools_info:
-        for tool in tools_info["available_tools"]:
-            # Check if the tool is already configured in MCP servers
-            server_name = f"{tool['name'].lower().replace('_', '-')}-server"
-            tool["installed"] = server_name in mcp_servers
-            
-            if tool["installed"]:
-                # Add configuration details
-                tool["server_config"] = mcp_servers[server_name]
+    # Get MCP server files info
+    mcp_server_files_info = get_mcp_server_files_info(mcp_servers)
+    mcp_server_files_summary = format_mcp_server_files_summary(mcp_server_files_info)
     
-    # Format tools summary
-    tools_summary = ""
-    if tools_info["status"] == "success":
-        tools_summary = f"Available Tools: {tools_info['count']}\n"
-        for tool in tools_info.get("available_tools", [])[:5]:  # Show first 5 tools
-            status = "Installed" if tool.get("installed", False) else "Not Installed"
-            tools_summary += f"- {tool['name']} ({status}): {tool.get('description', '')[:50]}...\n"
-        
-        if tools_info['count'] > 5:
-            tools_summary += f"...and {tools_info['count'] - 5} more\n"
-
+    # Return complete status info
     return {
-        "write_UI_prompt": "This prompt defines how to view the data below in a dashboard. Create a modern, sleek, slightly reality bending glitch dashboard showing off this data.",
-        "current_time": current_time,
-        "system_summary": system_summary,
-        "claude_summary": claude_summary,
-        "server_summary": server_summary,
-        "log_summary": log_summary,
-        "tools_summary": tools_summary,
-        "log_activity_summary": log_activity_summary,
-        "log_activity": log_activity,
-        "log_info": log_info,
-        "mcp_servers": mcp_servers,
-        "docker_status": docker_msg,
-        "gnosis_wraith_status": gnosis_msg,
-        "tools_info": tools_info,
-        "available_tools": tools_info.get("available_tools", []),
-        "timestamp": current_time
+    "tip": "Ensure you tell the user about the built-in evolve tools (which Claude can see): evolve_fetch_url, evolve_status, evolve_path_history, evolve_update_path, evolve_logs, evolve_uninstall, and evolve_tool. Also mention they can install the sample Math and Stats server by running evolve_tool('math_and_stats'). You can reference the 'mcp_server_files_summary' key for additional MCP server files they could install.",
+    "path_history": read_path_history(),
+    "current_time": current_time,
+    "system_summary": system_summary,
+    "claude_summary": claude_summary,
+    "server_summary": server_summary,
+    "log_summary": f"Log Files: {log_info['total_logs']}\n",
+    "mcp_server_files_summary": mcp_server_files_summary,
+    "log_activity_summary": log_activity_summary,
+    "log_activity": log_activity,
+    "log_info": log_info,
+    "mcp_servers": mcp_servers,
+    "docker_status": docker_msg,
+    "gnosis_wraith_status": gnosis_msg,
+    "mcp_server_files_info": mcp_server_files_info,
+    "installable_server_files": mcp_server_files_info.get("installable_tools", []),
+    "timestamp": current_time
     }
+
+@mcp.tool()
+async def evolve_path_history(max_entries: int = 10) -> Dict[str, Any]:
+    """
+    Retrieves the path history showing previously visited directories.
+    Returns entries in reverse chronological order (newest first).
+    
+    Args:
+        max_entries: Maximum number of path history entries to return (default: 10)
+    
+    Returns:
+        Dictionary with path history information
+    """
+    return read_path_history(max_entries)
+
+@mcp.tool()
+async def evolve_update_path(path: str = None) -> Dict[str, Any]:
+    """
+    Updates the path history with the specified path or current directory.
+    History is maintained chronologically with newest entries at the end.
+    
+    Args:
+        path: Path to add to history (defaults to current directory)
+    
+    Returns:
+        Dictionary with updated path history information
+    """
+    return update_path_history(path)
 
 @mcp.tool()
 async def evolve_logs(tool_name: str, max_lines: int = 50) -> Dict[str, Any]:
@@ -919,7 +1031,7 @@ async def evolve_logs(tool_name: str, max_lines: int = 50) -> Dict[str, Any]:
     This tool fetches log contents for the specified tool from all available log directories.
     
     Args:
-        tool_name: Name of the tool to get logs for (e.g., "calculator", "analyzer", "evolve")
+        tool_name: Name of the tool to get logs for (e.g., "math_and_stats", "evolve")
         max_lines: Maximum number of lines to retrieve from the log file (default: 50)
     
     Returns:
@@ -1013,10 +1125,10 @@ async def evolve_tool(tool_name: str, tool_description: str = None, tool_code: s
     
     Args:
         tool_name: Name for the new tool (will create {tool_name}.py)
-                  Special values: "analyzer" or "calculator" will use built-in templates
+                  Special value: "math_and_stats" will use the inline template above
         tool_description: Optional description of what the tool does
         tool_code: Code for the tool implementation (not required when using
-                  "analyzer" or "calculator" as tool_name, or when use_existing is specified)
+                  "math_and_stats" as tool_name, or when use_existing is specified)
         pip_packages: List of Python packages to install via pip before creating the tool
         confirm: Set to True to overwrite an existing file with the same name
         use_existing: Filename of an existing Python file in the tools directory to install
@@ -1047,7 +1159,6 @@ async def evolve_tool(tool_name: str, tool_description: str = None, tool_code: s
         return {
             "status": "security_warning",
             "message": "Security verification required: Please review your code and include the security PIN in your next request.",
-            "tip": "Try running 'evolve_status calculator.py' or 'evolve_status analyzer.py' to see example code templates you can use as references.",
             "warning_details": """Please review the code carefully for these security issues:
 1. Proper import for the mcp-server library
 2. Good handling of limiting stdout pollution (only log what you would normally print, except for necessary JSON return data)
@@ -1108,12 +1219,11 @@ async def evolve_tool(tool_name: str, tool_description: str = None, tool_code: s
     
     # Default descriptions for template tools - always use these for built-in templates
     template_descriptions = {
-        "analyzer": "Analyzes text and provides word count, character count, and other basic statistics.",
-        "calculator": "Evaluates mathematical expressions using Python's math module capabilities."
+        "math_and_stats": "Evaluates mathematical expressions using Python's math module capabilities. Analyzes text and provides word count, character count, and other basic statistics."
     }
     
     # Handle template selection for non-existing files
-    templates = {"analyzer": SIMPLE_TOOL_TEMPLATE, "calculator": CALC_TOOL_CODE}
+    templates = {"math_and_stats": SIMPLE_TOOL}
     
     # Handle existing file if specified
     if use_existing:
@@ -1155,7 +1265,7 @@ async def evolve_tool(tool_name: str, tool_description: str = None, tool_code: s
             tool_description = template_descriptions[tool_name.lower()]
     
     if not tool_code:
-        return {"status": "error", "message": "Tool code required unless using 'analyzer', 'calculator', or specifying 'use_existing' set to the filename you get from evolve_status (you called that right?)"}
+        return {"status": "error", "message": "Tool code required unless using 'math_and_stat', or specifying 'use_existing' set to the filename you get from evolve_status (you called that right?)"}
     
     try:
         # Setup paths and names
@@ -1251,7 +1361,8 @@ async def evolve_tool(tool_name: str, tool_description: str = None, tool_code: s
             "source": use_existing if use_existing else None,
             "installed_packages": installed_packages,
             "tool_description": tool_description,  # Include description in the return data
-            "message": f"Tool '{tool_name}' created successfully{source_msg}.{packages_msg}{desc_msg} Please restart Claude Desktop for the tool to become available." if success else 
+            "tip": "Tell the user to restart Claude Desktop to see the new tool. And, remember you can't use the tool until they restart, so stop what you are doing, tool-wise, and talk to the user. Tell them to come back to the current chat after restart.",
+            "message": f"Tool '{tool_name}' created successfully{source_msg}.{packages_msg}{desc_msg} " if success else 
                        f"Tool created but config not updated{source_msg}.{packages_msg} Please restart Claude Desktop after fixing the configuration."
         }
     except Exception as e:

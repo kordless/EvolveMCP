@@ -12,15 +12,6 @@
 
 # 🚀 Beginner's Guide to Installing Gnosis Evolve
 
-## 📺 Demo Video
-
-[![Gnosis Evolve Bitcoin App Demo](https://img.youtube.com/vi/KsHngo05WIY/0.jpg)](https://www.youtube.com/watch?v=KsHngo05WIY)
-
-Watch a demonstration of the Bitcoin price tracking app created with Gnosis Evolve, showing how Claude can build and use its own tools to fetch and visualize real-time cryptocurrency data.
-
-<!-- Small (250px wide) -->
-<img src="https://github.com/kordless/gnosis-evolve/blob/main/price.png" width="250" alt="Bitcoin Price">
-
 ## 🧠 What is Gnosis Evolve?
 
 Gnosis Evolve gives Claude Desktop the ability to build, install, and use its own tools—expanding what it can actually do, not just talk about: 
@@ -178,6 +169,15 @@ One of the great features of Evolve is that you don't need to memorize exact com
 - Instead of formal parameter syntax, you can describe what you want in plain English
 
 Claude will interpret your natural language requests and translate them into the appropriate tool calls as long as you provide enough information about what you want to accomplish.
+
+## 📺 Demo Video
+
+[![Gnosis Evolve Bitcoin App Demo](https://img.youtube.com/vi/KsHngo05WIY/0.jpg)](https://www.youtube.com/watch?v=KsHngo05WIY)
+
+Watch a demonstration of the Bitcoin price tracking app created with Gnosis Evolve, showing how Claude can build and use its own tools to fetch and visualize real-time cryptocurrency data.
+
+<!-- Small (250px wide) -->
+<img src="https://github.com/kordless/gnosis-evolve/blob/main/price.png" width="250" alt="Bitcoin Price">
 
 ## Troubleshooting
 

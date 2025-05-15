@@ -25,26 +25,27 @@ Gnosis Evolve turns Claude Desktop from a passive assistant into an active devel
 
 ### Install
 
+**Quick Start (Recommended)**
+1. **[Download the ZIP file directly](https://github.com/kordless/gnosis-evolve/archive/refs/tags/v1.0.6.zip)**
+2. Extract the ZIP:
+   - **Windows**: Right-click the ZIP and select "Extract All..."
+   - **macOS**: Double-click the ZIP file
+3. Open Terminal/PowerShell in the extracted folder
+
 **Windows**
 ```powershell
-# Clone the repo
-git clone https://github.com/kordless/gnosis-evolve.git
-cd gnosis-evolve
-
 # Setup
 .\evolve.ps1 -Setup
 ```
 
 **macOS**
 ```bash
-# Clone the repo
-git clone https://github.com/kordless/gnosis-evolve.git
-cd gnosis-evolve
-
 # Setup
 chmod +x ./evolve.sh
 ./evolve.sh --setup
 ```
+
+For detailed installation instructions, see [INSTALLATION.md](INSTALLATION.md)
 
 ### Launch
 

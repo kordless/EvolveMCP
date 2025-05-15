@@ -1,41 +1,41 @@
 <div align="center">
 
-# EvolveMCP: Build. Extend. Evolve.
+# Gnosis Evolve: Build. Extend. Evolve.
 <strong>Pythonic MCP development, supercharged by AI intelligence and your will to build something new.</strong>
 
-[![License](https://img.shields.io/badge/license-_Sovereign_v1.1-purple)](https://github.com/kordless/EvolveMCP/blob/main/LICENSE.md)
-[![GitHub stars](https://img.shields.io/github/stars/kordless/EvolveMCP.svg?style=social)](https://github.com/kordless/EvolveMCP/stargazers)
-[![GitHub issues](https://img.shields.io/github/issues/kordless/EvolveMCP?color=green)](https://github.com/kordless/EvolveMCP/issues)
+[![License](https://img.shields.io/badge/license-_Sovereign_v1.1-purple)](https://github.com/kordless/gnosis-evolve/blob/main/LICENSE.md)
+[![GitHub stars](https://img.shields.io/github/stars/kordless/gnosis-evolve.svg?style=social)](https://github.com/kordless/gnosis-evolve/stargazers)
+[![GitHub issues](https://img.shields.io/github/issues/kordless/gnosis-evolve?color=green)](https://github.com/kordless/gnosis-evolve/issues)
 
 <h1>🧠</h1>
 </div>
 
-# 🚀 Beginner’s Guide to Installing EvolveMCP
+# 🚀 Beginner's Guide to Installing Gnosis Evolve
 
 ## 📺 Demo Video
 
-[![evolveMCP Bitcoin App Demo](https://img.youtube.com/vi/KsHngo05WIY/0.jpg)](https://www.youtube.com/watch?v=KsHngo05WIY)
+[![Gnosis Evolve Bitcoin App Demo](https://img.youtube.com/vi/KsHngo05WIY/0.jpg)](https://www.youtube.com/watch?v=KsHngo05WIY)
 
-Watch a demonstration of the Bitcoin price tracking app created with EvolveMCP, showing how Claude can build and use its own tools to fetch and visualize real-time cryptocurrency data.
+Watch a demonstration of the Bitcoin price tracking app created with Gnosis Evolve, showing how Claude can build and use its own tools to fetch and visualize real-time cryptocurrency data.
 
 <!-- Small (250px wide) -->
-<img src="https://github.com/kordless/EvolveMCP/blob/main/price.png" width="250" alt="Bitcoin Price">
+<img src="https://github.com/kordless/gnosis-evolve/blob/main/price.png" width="250" alt="Bitcoin Price">
 
-## 🧠 What is EvolveMCP?
+## 🧠 What is Gnosis Evolve?
 
-EvolveMCP gives Claude Desktop the ability to build, install, and use its own tools—expanding what it can actually do, not just talk about: 
+Gnosis Evolve gives Claude Desktop the ability to build, install, and use its own tools—expanding what it can actually do, not just talk about: 
 
 - Claude can write code for you that it can then use itself
 - You can ask Claude to build specialized tools that solve your specific problems
 - You can enhance Claude's capabilities beyond its default features
 
-It turns Claude from a passive assistant into an active developer, capable of creating solutions as you need them.
+It turns Claude Desktop from a passive assistant into an active developer, capable of creating solutions as you need them.
 
-Claude is the first client supported by the system, but EvolveMCP is built with a modular design. Support for other clients, tools and document collections is on the roadmap.
+Claude is the first client supported by the system, but Gnosis Evolve is built with a modular design. Support for other clients, tools and document collections is on the roadmap.
 
 ## ⚠️ Security Warning
 
-**IMPORTANT:** EvolveMCP allows Claude to create and execute Python code on your local machine. Before using this software, please understand the security implications by referring to the Security Implications section at the bottom.
+**IMPORTANT:** Gnosis Evolve allows Claude to create and execute Python code on your local machine. Before using this software, please understand the security implications by referring to the Security Implications section at the bottom.
 
 ## Prerequisites
 
@@ -54,7 +54,7 @@ Before starting, you'll need:
 
 ### Option A: Download the Release Package (Easiest)
 
-1. Go to [github.com/kordless/EvolveMCP/releases/tag/v1.0.5](https://github.com/kordless/EvolveMCP/releases/tag/v1.0.5)
+1. Go to [github.com/kordless/gnosis-evolve/releases/tag/v1.0.5](https://github.com/kordless/gnosis-evolve/releases/tag/v1.0.5)
 2. Under "Assets", click on the .zip file (top source code file)
 3. Save the file to a location you can easily find (like your Downloads folder)
 4. Extract the archive:
@@ -71,8 +71,8 @@ If you're familiar with Git:
 3. Navigate to where you want to install Evolve
 4. Run these commands:
    ```
-   git clone https://github.com/kordless/EvolveMCP.git
-   cd EvolveMCP
+   git clone https://github.com/kordless/gnosis-evolve.git
+   cd gnosis-evolve
    ```
 
 ## Step 3: Open Terminal/PowerShell
@@ -183,18 +183,18 @@ Claude will interpret your natural language requests and translate them into the
 
 ### Viewing Logs
 
-The EvolveMCP utility provides several ways to view logs, which can be helpful for troubleshooting issues with Claude Desktop and MCP servers.
+The Gnosis Evolve utility provides several ways to view logs, which can be helpful for troubleshooting issues with Claude Desktop and MCP servers.
 
 #### Using the Command Line
 
 ##### Windows
 ```powershell
-.\EvolveMCP.ps1 -ViewLogs
+.\evolve.ps1 -ViewLogs
 ```
 
 To filter logs by name:
 ```powershell
-.\EvolveMCP.ps1 -ViewLogs -LogName evolve
+.\evolve.ps1 -ViewLogs -LogName evolve
 ```
 
 ##### macOS
@@ -215,12 +215,12 @@ If you prefer a menu-based approach:
 
 ##### Windows
 ```powershell
-.\EvolveMCP.ps1
+.\evolve.ps1
 ```
 
 ##### macOS
 ```bash
-./evolve-mcp.sh
+./evolve.sh
 ```
 
 Then select option `1. View MCP Logs` from the menu and choose a log file from the displayed list.
@@ -257,12 +257,12 @@ If Claude Desktop fails to start after configuring MCP servers:
    
    **Windows**:
    ```powershell
-   .\EvolveMCP.ps1 -ViewLogs
+   .\evolve.ps1 -ViewLogs
    ```
    
    **macOS**:
    ```bash
-   ./evolve-mcp.sh --view-logs
+   ./evolve.sh --view-logs
    ```
 
 2. Verify that your configuration file is correct:
@@ -287,12 +287,12 @@ If you're experiencing issues with the Evolve server:
    
    **Windows**:
    ```powershell
-   .\EvolveMCP.ps1 -ViewLogs -LogName evolve
+   .\evolve.ps1 -ViewLogs -LogName evolve
    ```
    
    **macOS**:
    ```bash
-   ./evolve-mcp.sh --view-logs --log-name evolve
+   ./evolve.sh --view-logs --log-name evolve
    ```
 
 2. Verify that `evolve.py` exists in the location specified in your configuration
@@ -304,12 +304,12 @@ If Claude Desktop becomes unresponsive or you need to apply configuration change
 
 **Windows**:
 ```powershell
-.\EvolveMCP.ps1 -Restart
+.\evolve.ps1 -Restart
 ```
 
 **macOS**:
 ```bash
-./evolve-mcp.sh --restart
+./evolve.sh --restart
 ```
 
 This will gracefully stop and restart Claude Desktop.
@@ -320,7 +320,7 @@ To verify which MCP tools are currently configured:
 
 **Windows**:
 ```powershell
-.\EvolveMCP.ps1 -ListTools
+.\evolve.ps1 -ListTools
 ```
 
 **macOS**:
@@ -343,18 +343,18 @@ This will display all configured MCP servers, including:
 3. **No Warranty**: This software is provided "as is" without warranty of any kind. The creators are not responsible for any damages or security incidents resulting from its use.
 
 4. **Recommended Precautions**:
-   - Run EvolveMCP in a dedicated user account with limited permissions
+   - Run Gnosis Evolve in a dedicated user account with limited permissions
    - Backup important data before using new tools
    - Consider using a virtual machine or container for additional isolation (we'll be working on making this easier soon)
    - Keep your operating system and security software up to date
 
-5. **For Developers**: If you're extending EvolveMCP, follow secure coding practices and avoid giving tools unnecessary system access.
+5. **For Developers**: If you're extending Gnosis Evolve, follow secure coding practices and avoid giving tools unnecessary system access.
 
-By installing and using EvolveMCP, you acknowledge these risks and take responsibility for the code executed on your system.
+By installing and using Gnosis Evolve, you acknowledge these risks and take responsibility for the code executed on your system.
 
 ## License Explanation: Sovereign v1.1
 
-EvolveMCP is released under the Sovereign v1.1 license, which balances open use with specific restrictions:
+Gnosis Evolve is released under the Sovereign v1.1 license, which balances open use with specific restrictions:
 
 ### AI and the Evolution of Licensing
 
@@ -376,12 +376,12 @@ The Sovereign license represents our attempt to navigate this unprecedented terr
 
 ### What You CANNOT Do:
 - **Corporate Production**: Corporations cannot deploy this software in production environments or integrate it into commercial products without a separate license.
-- **Resell the Software**: You cannot sell EvolveMCP as a product or service.
+- **Resell the Software**: You cannot sell Gnosis Evolve as a product or service.
 - **Remove Attribution**: You must maintain all copyright and license notices.
 
 ### In Simple Terms:
-This license allows you as an individual to use EvolveMCP freely, even if it helps with your job. However, your employer (if it's a corporation) cannot officially deploy it in production systems or incorporate it into their products without obtaining proper licensing.
+This license allows you as an individual to use Gnosis Evolve freely, even if it helps with your job. However, your employer (if it's a corporation) cannot officially deploy it in production systems or incorporate it into their products without obtaining proper licensing.
 
 This approach represents a fair attempt to balance open access with sustainable development in the rapidly evolving AI landscape. It envisions a future where human creativity, compassion, and embodied wisdom work in concert with the precision, scalability, and analytical power of artificial intelligence - a symbiotic relationship rather than an adversarial one.
 
-For complete details, please refer to the full [LICENSE.md](https://github.com/kordless/EvolveMCP/blob/main/LICENSE.md) file.
+For complete details, please refer to the full [LICENSE.md](https://github.com/kordless/gnosis-evolve/blob/main/LICENSE.md) file.

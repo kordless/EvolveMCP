@@ -112,63 +112,30 @@ If you're familiar with Git:
 
 4. Follow any on-screen instructions to complete the setup
 
-## Step 5: Create Your First Tool
+## Step 5: Using Gnosis Evolve with Claude
 
-1. After setup completes, make sure you're still in PowerShell/Terminal in the Evolve folder
-2. Start Claude with the Evolve tools available:
+1. Start Claude with Evolve:
+   - **Windows**: `.\evolve.ps1 -StartClaude`
+   - **macOS**: `./evolve.sh --restart`
 
-   **Windows**:
-   ```powershell
-   .\evolve.ps1 -StartClaude
-   ```
+2. Using natural language, ask Claude to install tools:
+   - "Install the calculator tool"
+   - "Can you set up the Bitcoin price tracker?"
+   - "I need a tool to check the weather"
 
-   **macOS**:
-   ```bash
-   ./evolve.sh --restart
-   ```
+3. Available contrib tools in categories:
+   - **Core**: math_and_stats, random_generator, file_explorer, file_writer
+   - **Web**: crawl4ai, weather_resource
+   - **Finance**: bitcoin_price
+   - **Docker**: docker_logs, docker_rebuild
 
-3. In Claude, ask it to create a calculator tool:
-   ```
-   evolve_wizard("calc")
-   ```
-   
-   You can also use conversational language like:
-   ```
-   Could you please install the calculator tool for me?
-   ```
+4. No need to use function syntax - just ask naturally:
+   - "What's the current Bitcoin price in euros?"
+   - "Generate 5 random numbers between 10 and 100"
+   - "Show me the weather forecast for Austin, Texas"
+   - "Calculate the square root of 144 plus the cube of 3"
 
-4. Claude will inform you that the calculator tool has been created and registered
-5. Restart Claude to apply the changes:
-
-   **Windows**:
-   ```powershell
-   .\evolve.ps1 -Restart
-   ```
-
-   **macOS**:
-   ```bash
-   ./evolve.sh --restart
-   ```
-
-6. After Claude restarts, you can test the calculator using either direct commands or natural language:
-   ```
-   calculate("2 + 3 * 4")
-   ```
-   
-   Or simply ask:
-   ```
-   What's 2 plus 3 times 4?
-   ```
-
-## Using Conversational Language with Evolve
-
-One of the great features of Evolve is that you don't need to memorize exact command syntax. You can talk to Claude naturally, and it will understand what you're trying to do:
-
-- Instead of `calculate("56 * 89")`, you can ask "What's 56 multiplied by 89?"
-- Instead of `evolve_wizard("status")`, you can ask "Can you show me the status of the Evolve system?"
-- Instead of formal parameter syntax, you can describe what you want in plain English
-
-Claude will interpret your natural language requests and translate them into the appropriate tool calls as long as you provide enough information about what you want to accomplish.
+Claude automatically translates your natural requests into the appropriate tool calls.
 
 ## 📺 Demo Video
 

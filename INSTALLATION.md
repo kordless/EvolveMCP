@@ -54,7 +54,7 @@ Before starting, you'll need:
 
 ### Download from ZIP (Recommended)
 
-1. **[Download the ZIP file directly](https://github.com/kordless/gnosis-evolve/archive/refs/tags/v1.0.6.zip)**
+1. **[Download the ZIP file directly](https://github.com/kordless/gnosis-evolve/archive/refs/tags/v1.0.7.zip)**
 2. Save the file to a location you can easily find (like your Downloads folder)
 3. Extract the archive:
    - **Windows**: Right-click the downloaded zip file and select "Extract All..."
@@ -210,6 +210,7 @@ Some of the most useful tools available include:
 - **bitcoin_price**: Check cryptocurrency prices and history
 - **crawl4ai**: Extract content from websites
 - **random_generator**: Generate dice rolls, random selections, and more
+- **emotional_character_generator**: Create detailed character descriptions with complex emotional states
 
 Ask Claude about available tools anytime with:
 ```
@@ -234,6 +235,25 @@ Other fun activities to try:
 - Custom random selections: "Pick a random movie from my top 10 list"
 
 The combination of Claude's understanding of game rules and the ability to generate truly random results creates an interactive gaming experience unlike any other AI assistant.
+
+### Character Creation for Stories & Games
+
+The emotional_character_generator tool helps create rich, multidimensional characters for your stories, role-playing games, or creative projects:
+
+```
+"Create a character with conflicting emotions of hope and despair"
+"Generate a villain with a complex backstory and emotional trauma"
+"Create a character for my D&D campaign with detailed traits"
+"Design a protagonist with an interesting emotional arc"
+```
+
+Each character comes with:
+- Detailed personality traits and background
+- Complex emotional states with primary and secondary emotions
+- Physical description and distinctive features
+- Motivations and internal conflicts
+
+This tool is perfect for writers, game masters, or anyone working on creative projects that require well-developed characters.
 
 ## Using Conversational Language with Gnosis: Evolve
 

@@ -26,7 +26,7 @@ Gnosis Evolve turns Claude Desktop from a passive assistant into an active devel
 ### Install
 
 **Quick Start (Recommended)**
-1. **[Download the ZIP file directly](https://github.com/kordless/gnosis-evolve/archive/refs/tags/v1.0.6.zip)**
+1. **[Download the ZIP file directly](https://github.com/kordless/gnosis-evolve/archive/refs/tags/v1.0.7.zip)**
 2. Extract the ZIP:
    - **Windows**: Right-click the ZIP and select "Extract All..."
    - **macOS**: Double-click the ZIP file
@@ -66,6 +66,7 @@ For detailed installation instructions, see [INSTALLATION.md](INSTALLATION.md)
 - **random_generator**: Generate random numbers and selections
 - **file_explorer**: Browse files and directories
 - **file_writer**: Create and modify files with versioning
+- **emotional_character_generator**: Create detailed character profiles with emotional states
 
 ### Web
 - **crawl4ai**: Extract content from websites
@@ -86,6 +87,7 @@ Just talk naturally to Claude:
 "What's the weather like in Seattle today?"
 "Generate 5 random numbers between 1 and 100"
 "Track the Bitcoin price in euros and show me a chart"
+"Create a character for my story with complex emotions"
 ```
 
 ## Games & Entertainment

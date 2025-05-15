@@ -1,5 +1,5 @@
-# EvolveMCP: Claude Manager & MCP Bootstrapper
-# A PowerShell utility for managing Claude Desktop and bootstrapping MCP servers
+# Gnosis Evolve MCP: Claude Manager & MCP Bootstrapper
+# A PowerShell utility for managing Claude Desktop and bootstrapping the Model Control Protocol (MCP) servers
 
 [CmdletBinding()]
 param(
@@ -547,7 +547,7 @@ function Setup-Evolve-Server {
 # Main menu function
 function Show-ClaudeManagerMenu {
     # Menu for script actions
-    Write-Host "`n===== CLAUDE MANAGER MENU =====" -ForegroundColor Magenta
+    Write-Host "`n===== GNOSIS EVOLVE MCP MENU =====" -ForegroundColor Magenta
     Write-Host "1. View MCP Logs" -ForegroundColor Cyan
     Write-Host "2. Kill Claude Desktop" -ForegroundColor Cyan
     Write-Host "3. Setup Evolve Server" -ForegroundColor Cyan
@@ -648,8 +648,9 @@ if ($ListTools) {
 # If no parameters, or Menu parameter is specified, show the menu
 if ($Menu -or ($PSBoundParameters.Count -eq 0)) {
     # Start the script by showing the menu
-    Write-Host "EvolveMCP - Claude Manager Tool" -ForegroundColor Yellow
+    Write-Host "Gnosis Evolve MCP - Claude Desktop Augmentation Suite" -ForegroundColor Yellow
     Write-Host "Logs Path: $logsPath" -ForegroundColor Yellow
     Write-Host "Config Path: $configPath" -ForegroundColor Yellow
+    Write-Host "This tool extends Claude with Model Control Protocol (MCP) capabilities" -ForegroundColor Yellow
     Show-ClaudeManagerMenu
 }

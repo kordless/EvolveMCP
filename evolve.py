@@ -127,19 +127,118 @@ def remove_from_config(server_name: str) -> dict:
 def get_claude_processes():
     """Gets information about running Claude processes."""
     result = []
-    for proc in psutil.process_iter(['pid', 'name', 'create_time', 'memory_info']):
+    for proc in psutil.process_iter(['pid', 'name', 'create_time', 'memory_info', 'exe', 'cmdline']):
         try:
             name = proc.info.get('name', '')
-            if name is not None and 'claude' in name.lower():
+            cmdline = ' '.join(proc.info.get('cmdline', [])).lower() if proc.info.get('cmdline') else ''
+            exe = proc.info.get('exe', '').lower() if proc.info.get('exe') else ''
+            
+            # Check if this is a Claude-related process (more comprehensive check)
+            if ((name is not None and ('claude' in name.lower() or 'anthropic' in name.lower())) or
+                ('claude' in cmdline or 'anthropic' in cmdline) or
+                ('claude' in exe or 'anthropic' in exe)):
+                
                 result.append({
                     'pid': proc.info['pid'],
                     'name': name,
                     'uptime': time.time() - proc.info['create_time'],
-                    'memory': proc.info['memory_info'].rss / (1024 * 1024)  # MB
+                    'memory': proc.info['memory_info'].rss / (1024 * 1024),  # MB
+                    'exe': exe,
+                    'cmdline': cmdline
                 })
         except (psutil.NoSuchProcess, psutil.AccessDenied, psutil.ZombieProcess):
             continue
     return result
+
+def terminate_claude_processes(force=False, timeout=5):
+    """
+    Terminate all Claude-related processes, with special handling for system tray icons.
+    
+    Args:
+        force: Whether to use force kill after timeout (default: False)
+        timeout: Seconds to wait before force kill if force=True (default: 5)
+    
+    Returns:
+        Dictionary with termination results
+    """
+    # Find Claude processes
+    processes = get_claude_processes()
+    
+    if not processes:
+        logger.info("No Claude processes found running")
+        return {
+            "status": "success",
+            "message": "No Claude processes found running",
+            "processes": []
+        }
+    
+    logger.info(f"Found {len(processes)} Claude-related processes")
+    for proc in processes:
+        logger.info(f"Process: PID={proc['pid']}, Name={proc['name']}")
+    
+    # First attempt graceful termination on all processes
+    terminated = []
+    for proc in processes:
+        try:
+            pid = proc['pid']
+            process = psutil.Process(pid)
+            logger.info(f"Attempting to terminate process {pid} ({proc['name']})")
+            process.terminate()
+            terminated.append(proc)
+        except (psutil.NoSuchProcess, psutil.AccessDenied, psutil.ZombieProcess) as e:
+            logger.error(f"Error terminating process {proc['pid']}: {str(e)}")
+    
+    # Wait for processes to terminate
+    if terminated:
+        logger.info(f"Waiting {timeout} seconds for graceful termination")
+        _, alive = psutil.wait_procs([psutil.Process(p['pid']) for p in terminated 
+                                    if psutil.pid_exists(p['pid'])], 
+                                    timeout=timeout)
+        
+        # Force kill remaining processes if requested
+        if alive and force:
+            logger.info(f"{len(alive)} processes still alive after timeout, force killing")
+            for process in alive:
+                try:
+                    logger.info(f"Force killing process {process.pid}")
+                    process.kill()
+                except (psutil.NoSuchProcess, psutil.AccessDenied, psutil.ZombieProcess) as e:
+                    logger.error(f"Error force killing process {process.pid}: {str(e)}")
+    
+    # Try using Windows-specific taskkill as a last resort for stubborn processes
+    still_running = [p for p in processes if psutil.pid_exists(p['pid'])]
+    if still_running and sys.platform == 'win32' and force:
+        for proc in still_running:
+            try:
+                logger.info(f"Using taskkill to force kill PID {proc['pid']}")
+                subprocess.run(['taskkill', '/F', '/PID', str(proc['pid'])], capture_output=True, text=True)
+            except Exception as e:
+                logger.error(f"Error with taskkill: {str(e)}")
+    
+    # Refresh system tray on Windows if processes were terminated
+    if terminated and sys.platform == 'win32':
+        try:
+            logger.info("Attempting to refresh system tray to clean up icon resources")
+            subprocess.run(['taskkill', '/F', '/IM', 'explorer.exe'], capture_output=True, text=True)
+            time.sleep(1)  # Wait a moment
+            subprocess.Popen(['explorer.exe'])
+            logger.info("Windows Explorer has been restarted to clear tray icons")
+        except Exception as e:
+            logger.error(f"Error refreshing system tray: {str(e)}")
+    
+    # Final check
+    final_check = get_claude_processes()
+    
+    return {
+        "status": "success" if not final_check else "partial",
+        "message": f"Successfully terminated {len(processes) - len(final_check)} Claude processes" 
+                   if not final_check else f"Terminated some processes, but {len(final_check)} still running",
+        "processes_found": len(processes),
+        "processes_terminated": len(processes) - len(final_check),
+        "processes_remaining": final_check,
+        "tray_refresh_attempted": bool(terminated) and sys.platform == 'win32',
+        "timestamp": time.strftime("%Y-%m-%d %H:%M:%S")
+    }
 
 def ensure_directories():
     """Ensures required directories exist in current directory."""
@@ -1221,6 +1320,24 @@ async def evolve_logs(tool_name: str, max_lines: int = 50) -> Dict[str, Any]:
     
     return result
 
+
+@mcp.tool()
+async def evolve_kill_claude(force: bool = True, timeout: int = 5) -> Dict[str, Any]:
+    """
+    Terminates all Claude-related processes and cleans up system tray icons.
+    
+    This tool properly terminates Claude processes and handles the issue with
+    orphaned system tray icons by refreshing the Windows shell.
+    
+    Args:
+        force: Whether to force kill processes that don't terminate gracefully (default: True)
+        timeout: Seconds to wait before force killing processes (default: 5)
+    
+    Returns:
+        Dictionary with information about terminated processes
+    """
+    result = terminate_claude_processes(force=force, timeout=timeout)
+    return result
 
 @mcp.tool()
 async def evolve_uninstall(tool_name: str, confirm: bool = False) -> Dict[str, Any]:

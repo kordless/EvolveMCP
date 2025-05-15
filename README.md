@@ -3,7 +3,7 @@
 **Build. Extend. Evolve.** Give Claude Desktop superpowers by creating and using its own Python tools.
 
 <div align="center">
-<img src="https://github.com/kordless/gnosis-evolve/blob/main/price.png" width="250" alt="Bitcoin Price Tracker">
+<img src="https://github.com/kordless/gnosis-evolve/blob/main/screenshot.png" width="800" alt="Screenshot">
 
 [![License](https://img.shields.io/badge/license-_Sovereign_v1.1-purple)](https://github.com/kordless/gnosis-evolve/blob/main/LICENSE.md)
 </div>

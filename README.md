@@ -101,9 +101,23 @@ After installing the random_generator tool, have fun with:
 "Deal a blackjack round"
 "Generate a random Yahtzee roll"
 "Flip a coin 100 times and show the distribution"
+"Cast an I Ching hexagram reading"
 ```
 
 Claude can manage the game rules and use the random generator to create fair, unpredictable outcomes - just like playing with real dice or cards!
+
+### I Ching Divination
+
+The random_generator tool can be used to simulate I Ching readings:
+
+```
+"Cast an I Ching hexagram for my question about [your question]"
+```
+
+Claude will:
+1. Generate random coin tosses to build a hexagram
+2. Identify the primary and changing hexagrams
+3. Provide an interpretation relevant to your question
 
 ## Troubleshooting
 

@@ -1,6 +1,6 @@
 # Web Tools
 
-This directory contains web tools for EvolveMCP.
+This directory contains web tools for Gnosis: Evolve.
 
 ## Tools
 

@@ -1,6 +1,6 @@
 # Core Tools
 
-This directory contains core tools for EvolveMCP.
+This directory contains core tools for Gnosis: Evolve.
 
 ## Tools
 
@@ -8,4 +8,4 @@ This directory contains core tools for EvolveMCP.
 - **file_writer**: Writes a file.
 - **diff_file**: Diffs a file..
 - **random_generator**: Generates various types of random numbers and selections with customizable parameters.
-- **math_and_stats**: A calculator and statistical text tool for EvolveMCP.
+- **math_and_stats**: A calculator and statistical text tool for Gnosis: Evolve.

@@ -1,13 +1,13 @@
-# EvolveMCP Contrib Tools
+# Gnosis: Evolve Contrib Tools
 
-This directory contains community-contributed tools for EvolveMCP that can be installed.
+This directory contains community-contributed tools for Gnosis: Evolve that can be installed.
 
 ## Directory Structure
 
-- **core/**: Core tools for EvolveMCP
-- **web/**: Web tools for EvolveMCP
-- **docker/**: Docker tools for EvolveMCP
-- **finance/**: Finance tools for EvolveMCP
+- **core/**: Core tools for Gnosis: Evolve
+- **web/**: Web tools for Gnosis: Evolve
+- **docker/**: Docker tools for Gnosis: Evolve
+- **finance/**: Finance tools for Gnosis: Evolve
 
 ## Installation
 
@@ -21,4 +21,4 @@ To contribute a tool, please follow these guidelines:
 1. Use clear, descriptive docstrings
 2. Include proper error handling
 3. Follow PEP 8 style guidelines
-4. Make sure your tool is compatible with the latest version of EvolveMCP
+4. Make sure your tool is compatible with the latest version of Gnosis: Evolve

@@ -1,6 +1,6 @@
 # Finance Tools
 
-This directory contains finance tools for EvolveMCP.
+This directory contains finance tools for Gnosis: Evolve.
 
 ## Tools
 

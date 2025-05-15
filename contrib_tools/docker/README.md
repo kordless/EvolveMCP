@@ -1,6 +1,6 @@
 # Docker Tools
 
-This directory contains docker tools for EvolveMCP.
+This directory contains docker tools for Gnosis: Evolve.
 
 ## Tools
 

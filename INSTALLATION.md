@@ -35,7 +35,7 @@ Claude is the first client supported by the system, but Gnosis: Evolve is built 
 
 ## ⚠️ Security Warning
 
-**IMPORTANT:** Gnosis: Evolve allows Claude to create and execute Python code on your local machine. Before using this software, please understand the security implications by referring to the Security Implications section at the bottom.
+**IMPORTANT:** Gnosis: Evolve allows Claude to create and execute Python code on your local machine. Before using this software, please understand the security implications by referring to our detailed [SECURITY.md](SECURITY.md) guide.
 
 ## Prerequisites
 
@@ -209,11 +209,31 @@ Some of the most useful tools available include:
 - **weather_resource**: Get weather forecasts from National Weather Service
 - **bitcoin_price**: Check cryptocurrency prices and history
 - **crawl4ai**: Extract content from websites
+- **random_generator**: Generate dice rolls, random selections, and more
 
 Ask Claude about available tools anytime with:
 ```
 What tools are available in the contrib_tools directory?
 ```
+
+### Fun with Games & Entertainment
+
+The random_generator tool opens up possibilities for games and entertainment. After installing it, try:
+
+```
+Let's play craps! I'll be the dealer.
+```
+
+Claude will use the random_generator tool to simulate fair dice rolls and manage the game rules.
+
+Other fun activities to try:
+- Role-playing games with dice rolls: "Roll 3d6 for my character's strength"
+- Card games: "Deal a hand of poker" or "Let's play blackjack"
+- Board games: "Roll the dice for our Monopoly game"
+- Statistical experiments: "Flip a coin 1000 times and show me the distribution"
+- Custom random selections: "Pick a random movie from my top 10 list"
+
+The combination of Claude's understanding of game rules and the ability to generate truly random results creates an interactive gaming experience unlike any other AI assistant.
 
 ## Using Conversational Language with Gnosis: Evolve
 
@@ -380,23 +400,11 @@ This will display all configured MCP servers, including:
 - Whether the script exists
 - For Evolve tools: version and creation date (if available)
 
-## ⚠️ Security Implications
+## ⚠️ Security Considerations
 
-1. **Code Execution Risk**: Any code that runs on your computer has access to your system at the same permission level as the user running it. This includes your files, network, and potentially sensitive information.
+Gnosis: Evolve gives Claude Desktop the ability to create and execute Python code on your local machine. For a comprehensive overview of security implications and best practices, please refer to our detailed [SECURITY.md](SECURITY.md) document.
 
-2. **Review Generated Code**: While Gnosis: Evolve (and Claude) aim to create safe and useful tools, you should review any code that it generates before allowing it to run, especially if you're using it in a professional or sensitive environment.
-
-3. **No Warranty**: This software is provided "as is" without warranty of any kind. The creators are not responsible for any damages or security incidents resulting from its use.
-
-4. **Recommended Precautions**:
-   - Run Gnosis: Evolve in a dedicated user account with limited permissions
-   - Backup important data before using new tools
-   - Consider using a virtual machine or container for additional isolation (we'll be working on making this easier soon)
-   - Keep your operating system and security software up to date
-
-5. **For Developers**: If you're extending Gnosis: Evolve, follow secure coding practices and avoid giving tools unnecessary system access.
-
-By installing and using Gnosis: Evolve, you acknowledge these risks and take responsibility for the code executed on your system.
+By installing and using Gnosis: Evolve, you acknowledge the security risks involved and take responsibility for the code executed on your system.
 
 ## License Explanation: Sovereign v1.1
 

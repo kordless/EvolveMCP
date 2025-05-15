@@ -88,6 +88,21 @@ Just talk naturally to Claude:
 "Track the Bitcoin price in euros and show me a chart"
 ```
 
+## Games & Entertainment
+
+After installing the random_generator tool, have fun with:
+
+```
+"Let's play craps!"
+"Roll some dice for a D&D game"
+"Simulate a poker hand"
+"Deal a blackjack round"
+"Generate a random Yahtzee roll"
+"Flip a coin 100 times and show the distribution"
+```
+
+Claude can manage the game rules and use the random generator to create fair, unpredictable outcomes - just like playing with real dice or cards!
+
 ## Troubleshooting
 
 **View Logs**
@@ -110,7 +125,7 @@ Just talk naturally to Claude:
 
 ## Security Note
 
-Gnosis Evolve allows Claude to execute Python code on your system. Review generated code before running in sensitive environments. [Full security details](#security-implications).
+Gnosis Evolve allows Claude to execute Python code on your system. Review generated code before running in sensitive environments. See [SECURITY.md](SECURITY.md) for comprehensive security guidance.
 
 ## License
 
@@ -119,17 +134,3 @@ Gnosis Evolve uses the Sovereign v1.1 license:
 - **Requires licensing** for corporate production use
 
 See [LICENSE.md](https://github.com/kordless/gnosis-evolve/blob/main/LICENSE.md) for details.
-
----
-
-### Security Implications
-
-1. **Code Execution Risk**: Any code that runs on your computer has access to your system at the same permission level as the user running it.
-
-2. **Review Generated Code**: While Claude aims to create safe tools, review any code it generates before running it in a sensitive environment.
-
-3. **Recommended Precautions**:
-   - Run in a dedicated user account with limited permissions
-   - Backup important data before using new tools
-   - Consider using a virtual machine for additional isolation
-   - Keep your security software up to date

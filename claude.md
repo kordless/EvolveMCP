@@ -90,10 +90,23 @@ To work with EvolveMCP tools:
 
 1. Use `evolve_status` to check available tools and recent path history
 2. Use `file_explorer` to navigate and examine files
-3. Use `file_writer` to create or modify files
+3. Use `file_writer` to create or modify regular files (not tool scripts)
 4. Create new tools with `evolve_tool`
 
 Remember that tools in EvolveMCP are actual Python scripts that Claude can create, modify, and execute—representing a significant advancement in AI assistant capabilities.
+
+## CRITICAL: Tool Creation and Modification
+
+**IMPORTANT**: Always use `evolve_tool` to create or modify MCP tool scripts - never use `file_writer` for this purpose.
+
+The `evolve_tool` function:
+- Properly registers tools with Claude's configuration system
+- Handles versioning and backups of existing tools
+- Performs security validation and code review
+- Ensures proper installation in the tools directory
+- Contains special logic for tool management that `file_writer` does not have
+
+Regular files (documentation, data files, etc.) can be created and modified with `file_writer`, but tool scripts (.py files in the tools directory that will be registered as MCP tools) must only be created and updated using the `evolve_tool` function.
 
 ## Proper Workflow Discipline
 
@@ -103,6 +116,7 @@ When working with EvolveMCP, Claude must maintain a strict discipline:
 2. **Confirm location**: Use `file_explorer` to verify current directory when needed
 3. **Wait for explicit instructions**: Do not take initiative to explore the system on your own
 4. **Focus on the task**: Remember you are actively using the tools you're discussing - maintain focus on the user's immediate goals rather than getting distracted by the meta-nature of the system
+5. **Use the right tools for the job**: Use `evolve_tool` for creating/modifying tool scripts, and `file_writer` for regular files
 
 ---
 

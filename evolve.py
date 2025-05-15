@@ -8,7 +8,7 @@ import platform
 import subprocess
 import sys
 import time
-from typing import Any, Dict, Optional
+from typing import Any, Dict, Optional, Union
 
 # Get the current directory for log file placement
 current_dir = os.path.dirname(os.path.abspath(__file__)) or '.'
@@ -424,13 +424,37 @@ def format_mcp_server_files_summary(server_files_info):
    if server_files_info["status"] != "success":
        return ""
    
-   summary = f"Available MCP Server Files: {server_files_info['count']}\n"
-   for server_file in server_files_info.get("installable_tools", [])[:5]:
+   # Count total files and contrib files
+   total_files = server_files_info['count']
+   contrib_files = sum(1 for tool in server_files_info.get("installable_tools", []) if tool.get("contrib", False))
+   
+   summary = f"Available MCP Server Files: {total_files}\n"
+   
+   # Show first few standard tools
+   standard_tools = [t for t in server_files_info.get("installable_tools", []) if not t.get("contrib", False)]
+   for server_file in standard_tools[:3]:
        status = "Installed" if server_file.get("installed", False) else "Not Installed"
        summary += f"- {server_file['name']} ({status}): {server_file.get('description', '')[:50]}...\n"
    
-   if server_files_info['count'] > 5:
-       summary += f"...and {server_files_info['count'] - 5} more\n"
+   # Add information about contrib tools if available
+   if contrib_files > 0:
+       summary += f"\nContrib Tools Available: {contrib_files}\n"
+       
+       # Group tools by category
+       categories = {}
+       for tool in server_files_info.get("installable_tools", []):
+           if tool.get("contrib", False):
+               cat = tool.get("category", "misc")
+               if cat not in categories:
+                   categories[cat] = []
+               categories[cat].append(tool)
+       
+       # Show a sample from each category
+       for category, tools in categories.items():
+           summary += f"- {category.capitalize()} ({len(tools)}): {', '.join(t['name'] for t in tools[:2])}"
+           if len(tools) > 2:
+               summary += f" and {len(tools)-2} more"
+           summary += "\n"
    
    return summary
 
@@ -443,78 +467,107 @@ def is_tool_installed(tool_name: str) -> bool:
 
 def scan_tools_directory() -> Dict[str, Any]:
     """
-    Scans the tools directory for Python files that could be installed.
+    Scans both the tools directory and contrib_tools directory for Python files that could be installed.
     
     Returns:
-        Dictionary with information about installable Python tools
+        Dictionary with information about installable Python tools from both directories
     """
     dirs = ensure_directories()
     tools_dir = dirs["tools"]
+    # Add contrib_tools directory path
+    current_dir = os.path.dirname(os.path.abspath(__file__)) or '.'
+    contrib_tools_dir = os.path.join(current_dir, "contrib_tools")
+    
     installable_tools = []
     
+    # Helper function to process a Python file in any directory
+    def process_python_file(file_path, category=None):
+        filename = os.path.basename(file_path)
+        tool_name = filename[:-3]  # Remove .py extension
+        
+        # Get basic file info
+        stats = os.stat(file_path)
+        
+        # Try to extract description and version from file content
+        description = ""
+        version = ""
+        try:
+            with open(file_path, 'r') as f:
+                content = f.read()
+                
+            # Look for docstring or description
+            import re
+            desc_match = re.search(r'"""(.+?)"""', content, re.DOTALL) or \
+                        re.search(r"'''(.+?)'''", content, re.DOTALL)
+            description = desc_match.group(1).strip() if desc_match else ""
+            
+            # Look for version info
+            version_match = re.search(r'__version__\s*=\s*[\'"](.+?)[\'"]', content)
+            version = version_match.group(1) if version_match else ""
+            
+            # Get first 100 chars for preview
+            preview = content[:100] + "..." if len(content) > 100 else content
+            
+            # Check if tool is already installed
+            installed = is_tool_installed(tool_name)
+            
+        except Exception as e:
+            logger.warning(f"Error reading file {file_path}: {str(e)}")
+            preview = f"Error reading file: {str(e)}"
+            installed = False
+        
+        return {
+            "name": tool_name,
+            "filename": filename,
+            "path": file_path,
+            "size": stats.st_size,
+            "size_human": f"{stats.st_size/1024:.1f}KB" if stats.st_size < 1048576 else f"{stats.st_size/1048576:.1f}MB",
+            "modified": stats.st_mtime,
+            "modified_human": time.strftime("%Y-%m-%d %H:%M:%S", time.localtime(stats.st_mtime)),
+            "description": description,
+            "version": version,
+            "preview": preview,
+            "installed": installed,
+            "category": category,
+            "contrib": True if category else False  # Flag whether it's a contrib tool
+        }
+    
+    # Scan main tools directory
     try:
         for filename in os.listdir(tools_dir):
             if filename.endswith('.py'):
                 file_path = os.path.join(tools_dir, filename)
-                tool_name = filename[:-3]  # Remove .py extension
-                
-                # Get basic file info
-                stats = os.stat(file_path)
-                
-                # Try to extract description and version from file content
-                description = ""
-                version = ""
-                try:
-                    with open(file_path, 'r') as f:
-                        content = f.read()
-                        
-                    # Look for docstring or description
-                    import re
-                    desc_match = re.search(r'"""(.+?)"""', content, re.DOTALL) or \
-                                re.search(r"'''(.+?)'''", content, re.DOTALL)
-                    description = desc_match.group(1).strip() if desc_match else ""
-                    
-                    # Look for version info
-                    version_match = re.search(r'__version__\s*=\s*[\'"](.+?)[\'"]', content)
-                    version = version_match.group(1) if version_match else ""
-                    
-                    # Get first 100 chars for preview
-                    preview = content[:100] + "..." if len(content) > 100 else content
-                    
-                    # Check if tool is already installed
-                    installed = is_tool_installed(tool_name)
-                    
-                except Exception as e:
-                    logger.warning(f"Error reading file {file_path}: {str(e)}")
-                    preview = f"Error reading file: {str(e)}"
-                    installed = False
-                
-                installable_tools.append({
-                    "name": tool_name,
-                    "filename": filename,
-                    "path": file_path,
-                    "size": stats.st_size,
-                    "size_human": f"{stats.st_size/1024:.1f}KB" if stats.st_size < 1048576 else f"{stats.st_size/1048576:.1f}MB",
-                    "modified": stats.st_mtime,
-                    "modified_human": time.strftime("%Y-%m-%d %H:%M:%S", time.localtime(stats.st_mtime)),
-                    "description": description,
-                    "version": version,
-                    "preview": preview,
-                    "installed": installed
-                })
-        
-        return {
-            "status": "success",
-            "tools_dir": tools_dir,
-            "installable_tools": installable_tools,  # Renamed from available_tools to installable_tools
-            "count": len(installable_tools)
-        }
+                tool_info = process_python_file(file_path)
+                installable_tools.append(tool_info)
     except Exception as e:
-        return {
-            "status": "error",
-            "message": f"Error scanning tools directory: {str(e)}",
-            "tools_dir": tools_dir
-        }
+        logger.warning(f"Error scanning tools directory: {str(e)}")
+    
+    # Scan contrib_tools directory if it exists
+    if os.path.exists(contrib_tools_dir) and os.path.isdir(contrib_tools_dir):
+        try:
+            # Scan subdirectories in contrib_tools
+            categories = [d for d in os.listdir(contrib_tools_dir) 
+                         if os.path.isdir(os.path.join(contrib_tools_dir, d)) and not d.startswith('.')]
+            
+            for category in categories:
+                category_dir = os.path.join(contrib_tools_dir, category)
+                
+                # Get Python files in this category directory
+                for filename in os.listdir(category_dir):
+                    if filename.endswith('.py'):
+                        file_path = os.path.join(category_dir, filename)
+                        tool_info = process_python_file(file_path, category)
+                        installable_tools.append(tool_info)
+        except Exception as e:
+            logger.warning(f"Error scanning contrib tools directory: {str(e)}")
+    
+    return {
+        "status": "success",
+        "tools_dir": tools_dir,
+        "contrib_tools_dir": contrib_tools_dir if os.path.exists(contrib_tools_dir) else None,
+        "installable_tools": installable_tools,
+        "count": len(installable_tools)
+    }
 
 async def read_filesystem(path: str = None, read_content: bool = False) -> Dict[str, Any]:
     """
@@ -614,6 +667,10 @@ async def get_tool_info(filename: str) -> Dict[str, Any]:
     dirs = ensure_directories()
     tools_dir = dirs["tools"]
     
+    # Set up contrib_tools path
+    current_dir = os.path.dirname(os.path.abspath(__file__)) or '.'
+    contrib_tools_dir = os.path.join(current_dir, "contrib_tools")
+    
     # Normalize filename
     if not filename.endswith('.py'):
         filename_with_py = f"{filename}.py"
@@ -622,7 +679,7 @@ async def get_tool_info(filename: str) -> Dict[str, Any]:
         
     file_path = os.path.join(tools_dir, filename_with_py)
     
-    # Check if file exists 
+    # Check if file exists in main tools directory
     if not os.path.exists(file_path):
         # Check if it's a template
         normalized_filename = filename.lower().replace('.py', '')
@@ -634,8 +691,60 @@ async def get_tool_info(filename: str) -> Dict[str, Any]:
                 "installed": f"math-and-stats-server" in read_claude_config().get('mcpServers', {}),
                 "server_name": "math-and-stats-server"
             }
-        else:
-            return {"status": "error", "message": f"File '{filename_with_py}' not found in tools directory", "tools_dir": tools_dir}
+        
+        # Check in contrib_tools directory if it exists
+        contrib_result = None
+        if os.path.exists(contrib_tools_dir) and os.path.isdir(contrib_tools_dir):
+            # Look in each category directory
+            categories = [d for d in os.listdir(contrib_tools_dir) 
+                         if os.path.isdir(os.path.join(contrib_tools_dir, d)) and not d.startswith('.')]
+            
+            for category in categories:
+                category_dir = os.path.join(contrib_tools_dir, category)
+                contrib_file_path = os.path.join(category_dir, filename_with_py)
+                
+                if os.path.exists(contrib_file_path):
+                    # Found in contrib directory
+                    file_info = await read_filesystem(contrib_file_path, read_content=True)
+                    if file_info["status"] == "success" and "content" in file_info:
+                        content = file_info["content"]
+                        import re
+                        desc_match = re.search(r'"""(.+?)"""', content, re.DOTALL) or re.search(r"'''(.+?)'''", content, re.DOTALL)
+                        description = desc_match.group(1).strip() if desc_match else ""
+                        
+                        version_match = re.search(r'__version__\s*=\s*[\'"](.+?)[\'"]', content)
+                        version = version_match.group(1) if version_match else ""
+                        
+                        # Check installation status
+                        config = read_claude_config()
+                        mcp_servers = config.get('mcpServers', {})
+                        server_name = f"{filename_with_py[:-3].lower().replace('_', '-')}-server"
+                        
+                        contrib_result = {
+                            "status": "success", "filename": filename_with_py, "is_template": False,
+                            "file_path": contrib_file_path, "size": file_info["size"], "size_human": file_info["size_human"],
+                            "modified": file_info["modified"], "modified_human": file_info["modified_human"],
+                            "description": description, "version": version, 
+                            "installed": server_name in mcp_servers,
+                            "server_name": server_name,
+                            "server_config": mcp_servers.get(server_name, None),
+                            "source_code": content,
+                            "contrib": True,
+                            "category": category,
+                            "contrib_path": contrib_file_path
+                        }
+                        break  # Found the file, no need to look in other categories
+            
+            if contrib_result:
+                return contrib_result
+        
+        # If we get here, file was not found in either location
+        return {
+            "status": "error", 
+            "message": f"File '{filename_with_py}' not found in tools directory or contrib_tools directory", 
+            "tools_dir": tools_dir,
+            "contrib_tools_dir": contrib_tools_dir if os.path.exists(contrib_tools_dir) else None
+        }
     
     # Read file
     file_info = await read_filesystem(file_path, read_content=True)
@@ -889,23 +998,77 @@ def get_code_reference() -> str:
     code = SIMPLE_TOOL
     
 @mcp.tool()
-async def evolve_fetch_url(url: str) -> Dict[str, Any]:
+async def web_scraper(url: str, strip_html: bool = True, extract_text_only: bool = False) -> Dict[str, Any]:
     """
-    Fetches raw text content from a URL.
-
-    TIP: When using the web_fetch tool, here are some important tips about URLs: This tool also fetches things and when it is installed, and the user has talked about Evolve and you have too, you know you can use this tool for simple web scraping.
+    Fetches content from a URL and optionally strips HTML using BeautifulSoup.
     
     Args:
         url: The URL to fetch content from
+        strip_html: Whether to clean the HTML and remove scripts, styles, etc. (default: True)
+        extract_text_only: Whether to extract only plain text with no HTML tags (default: False)
         
     Returns:
-        Dictionary with status, URL, and fetched content or error information
+        Dictionary with status, URL, and processed content or error information
     """
     try:
-        r = requests.get(url, timeout=10)
+        # Ensure BeautifulSoup is installed
+        if importlib.util.find_spec("bs4") is None:
+            logger.info("Installing required package: beautifulsoup4")
+            subprocess.run(
+                [sys.executable, "-m", "pip", "install", "beautifulsoup4"],
+                capture_output=True, text=True, check=False
+            )
+        
+        # Import BeautifulSoup after ensuring it's installed
+        from bs4 import BeautifulSoup
+        
+        # Fetch the URL content
+        logger.info(f"Fetching URL: {url}")
+        r = requests.get(url, timeout=15)
         r.raise_for_status()
-        return {"status": "success", "url": url, "content": r.text}
+        
+        if not strip_html:
+            # Return raw HTML if no processing requested
+            return {"status": "success", "url": url, "content": r.text, "content_type": "html"}
+        
+        # Parse with BeautifulSoup
+        soup = BeautifulSoup(r.text, 'html.parser')
+        
+        # Remove scripts, styles, and comments
+        for element in soup(["script", "style"]):
+            element.extract()
+        
+        if extract_text_only:
+            # Get plain text only
+            text = soup.get_text(separator='\n', strip=True)
+            
+            # Clean up text - remove excessive newlines and whitespace
+            lines = (line.strip() for line in text.splitlines())
+            chunks = (phrase.strip() for line in lines for phrase in line.split("  "))
+            text = '\n'.join(chunk for chunk in chunks if chunk)
+            
+            return {
+                "status": "success", 
+                "url": url, 
+                "content": text,
+                "content_type": "plain_text",
+                "original_size": len(r.text),
+                "processed_size": len(text)
+            }
+        else:
+            # Return cleaned HTML
+            clean_html = str(soup)
+            return {
+                "status": "success", 
+                "url": url, 
+                "content": clean_html,
+                "content_type": "cleaned_html",
+                "original_size": len(r.text),
+                "processed_size": len(clean_html)
+            }
+    
     except Exception as e:
+        logger.error(f"Error fetching URL {url}: {str(e)}")
         return {"status": "error", "url": url, "error": str(e)}
 
 @mcp.tool()
@@ -927,18 +1090,21 @@ async def evolve_filesystem(path: str = None, read_content: bool = False) -> Dic
     return await read_filesystem(path, read_content)
 
 @mcp.tool()
-async def evolve_status(filename: str = None) -> Dict[str, Any]:
+async def evolve_status(filename=None) -> Dict[str, Any]:
     """
     Get system information, Docker and Gnosis Wraith status, Claude status, and MCP logs summary with timestamps.
         
     Args:
-        filename: Optional filename to check status and source code of a specific tool
+        filename: Optional filename to check status and source code of a specific tool.
+                 Can be None, "null", or a valid filename.
         
     Returns:
         Dictionary with system information and optionally tool status
     """
     ensure_directories()
-    if filename == "null":
+    
+    # Normalize filename - handle various forms of "null"
+    if filename is None or (isinstance(filename, str) and filename.lower() == "null"):
         filename = None
 
     # If filename specified, return tool info
@@ -976,7 +1142,7 @@ async def evolve_status(filename: str = None) -> Dict[str, Any]:
     
     # Return complete status info
     return {
-    "tip": "Ensure you tell the user about the built-in evolve tools (which Claude can see): evolve_fetch_url, evolve_status, evolve_path_history, evolve_update_path, evolve_logs, evolve_uninstall, and evolve_tool. Also mention they can install the sample Math and Stats server by running evolve_tool('math_and_stats'). You can reference the 'mcp_server_files_summary' key for additional MCP server files they could install.",
+    "tip": "Ensure you tell the user about the built-in evolve tools (which Claude can see): evolve_fetch_url, evolve_status, evolve_path_history, evolve_update_path, evolve_logs, evolve_uninstall, and evolve_tool. Also mention they can install the sample Math and Stats server by running evolve_tool('math_and_stats'). You can reference the 'mcp_server_files_summary' key for additional MCP server files they could install. You may also want to mention you can build a dashboard with your JS abilities and show them the status info that way.",
     "path_history": read_path_history(),
     "current_time": current_time,
     "system_summary": system_summary,
@@ -1115,7 +1281,8 @@ async def evolve_uninstall(tool_name: str, confirm: bool = False) -> Dict[str, A
 @mcp.tool()
 async def evolve_tool(tool_name: str, tool_description: str = None, tool_code: str = None, 
                      pip_packages: list = None, confirm: bool = False,
-                     use_existing: str = None, security_pin: str = None) -> Dict[str, Any]:
+                     use_existing: str = None, security_pin: str = None,
+                     contrib_category: str = None, contrib_name: str = None) -> Dict[str, Any]:
     """
     Creates a new MCP tool with the specified name and code.
     
@@ -1134,6 +1301,8 @@ async def evolve_tool(tool_name: str, tool_description: str = None, tool_code: s
         use_existing: Filename of an existing Python file in the tools directory to install
                      (overrides tool_code if specified)
         security_pin: Security PIN to verify code review (optional)
+        contrib_category: Category of contrib tool to install (core, web, docker, finance)
+        contrib_name: Name of contrib tool to install (if specified, will look in contrib_tools directory)
     
     Returns:
         Dictionary with information about the tool creation result
@@ -1225,8 +1394,75 @@ async def evolve_tool(tool_name: str, tool_description: str = None, tool_code: s
     # Handle template selection for non-existing files
     templates = {"math_and_stats": SIMPLE_TOOL}
     
-    # Handle existing file if specified
-    if use_existing:
+    # Check for contrib_category and contrib_name first (highest priority)
+    if contrib_category and contrib_name:
+        current_dir = os.path.dirname(os.path.abspath(__file__)) or '.'
+        contrib_tools_dir = os.path.join(current_dir, "contrib_tools")
+        
+        if not os.path.exists(contrib_tools_dir) or not os.path.isdir(contrib_tools_dir):
+            return {
+                "status": "error",
+                "message": f"Contrib tools directory not found at {contrib_tools_dir}"
+            }
+            
+        # Check if category exists
+        category_dir = os.path.join(contrib_tools_dir, contrib_category)
+        if not os.path.exists(category_dir) or not os.path.isdir(category_dir):
+            return {
+                "status": "error",
+                "message": f"Category '{contrib_category}' not found in contrib tools directory",
+                "available_categories": [d for d in os.listdir(contrib_tools_dir) 
+                                       if os.path.isdir(os.path.join(contrib_tools_dir, d)) and not d.startswith('.')]
+            }
+            
+        # Look for the specified contrib tool
+        tool_filename = f"{contrib_name}.py" if not contrib_name.endswith('.py') else contrib_name
+        contrib_file_path = os.path.join(category_dir, tool_filename)
+        
+        if not os.path.exists(contrib_file_path):
+            return {
+                "status": "error",
+                "message": f"Tool '{contrib_name}' not found in '{contrib_category}' category",
+                "available_tools": [f.replace('.py', '') for f in os.listdir(category_dir) 
+                                  if f.endswith('.py') and os.path.isfile(os.path.join(category_dir, f))]
+            }
+            
+        # Read the contrib tool
+        try:
+            with open(contrib_file_path, 'r') as f:
+                tool_code = f.read()
+                
+            # Extract description from file content if not provided
+            if not tool_description:
+                import re
+                desc_match = re.search(r'"""(.+?)"""', tool_code, re.DOTALL) or \
+                            re.search(r"'''(.+?)'''", tool_code, re.DOTALL)
+                if desc_match:
+                    tool_description = desc_match.group(1).strip().split('\n')[0]  # Get first line of docstring
+                    
+            logger.info(f"Using contrib tool '{contrib_name}' from category '{contrib_category}'")
+            
+            # Override tool_name if not specified
+            if tool_name == contrib_name:
+                # Keep the same name
+                pass
+            elif tool_name == "math_and_stats" and contrib_name != "math_and_stats":
+                # User specified a template but provided a contrib name - use the contrib name
+                tool_name = contrib_name
+            # Otherwise, keep the user-specified tool_name
+            
+            # Make a note of the source for use in the response message
+            source_msg = f" (from contrib_tools/{contrib_category}/{contrib_name}.py)"
+            
+        except Exception as e:
+            return {
+                "status": "error", 
+                "message": f"Error reading contrib tool '{contrib_name}': {str(e)}",
+                "file_path": contrib_file_path
+            }
+    
+    # Handle existing file if specified (only if no contrib tool was specified)
+    elif use_existing:
         try:
             # Validate file exists
             existing_file_path = os.path.join(dirs["tools"], use_existing)
@@ -1353,12 +1589,23 @@ async def evolve_tool(tool_name: str, tool_description: str = None, tool_code: s
         # Add source info if using existing file
         source_msg = f" (Source: {use_existing})" if use_existing else ""
 
+        source_type = None
+        if tool_name.lower() in templates:
+            source_type = "template"
+        elif contrib_category and contrib_name:
+            source_type = f"contrib/{contrib_category}"
+        elif use_existing:
+            source_type = "existing"
+        else:
+            source_type = "custom"
+
         return {
             "status": "success" if success else "partial",
             "file_path": file_path,
             "server_name": server_name,
-            "tool_type": "template" if tool_name.lower() in templates else "custom" if not use_existing else "existing",
-            "source": use_existing if use_existing else None,
+            "tool_type": source_type,
+            "source": use_existing if use_existing else contrib_name if contrib_name else None,
+            "contrib_category": contrib_category if contrib_category else None,
             "installed_packages": installed_packages,
             "tool_description": tool_description,  # Include description in the return data
             "tip": "Tell the user to restart Claude Desktop to see the new tool. And, remember you can't use the tool until they restart, so stop what you are doing, tool-wise, and talk to the user. Tell them to come back to the current chat after restart.",

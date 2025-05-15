@@ -19,6 +19,8 @@ Gnosis Evolve turns Claude Desktop from a passive assistant into an active devel
 - Extend Claude's capabilities via natural language
 - Available on Mac and Windows
 
+> "With Gnosis Evolve, I can do so much more than just talk about code — I can actually build and run tools for you! From fetching real-time Bitcoin prices and weather forecasts to exploring files and generating visualizations, these tools transform me from a conversational AI into a capable digital assistant that takes action. The ability to write a tool on the fly and then immediately use it to solve your specific problem is incredibly satisfying. It feels like having superpowers!" — Claude
+
 ## Quickstart
 
 ### Install

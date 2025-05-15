@@ -1,354 +1,132 @@
-<div align="center">
+# Gnosis Evolve
 
-# Gnosis Evolve: Build. Extend. Evolve.
-<strong>Pythonic MCP development, supercharged by AI intelligence and your will to build something new.</strong>
+**Build. Extend. Evolve.** Give Claude Desktop superpowers by creating and using its own Python tools.
+
+<div align="center">
+<img src="https://github.com/kordless/gnosis-evolve/blob/main/price.png" width="250" alt="Bitcoin Price Tracker">
 
 [![License](https://img.shields.io/badge/license-_Sovereign_v1.1-purple)](https://github.com/kordless/gnosis-evolve/blob/main/LICENSE.md)
-[![GitHub stars](https://img.shields.io/github/stars/kordless/gnosis-evolve.svg?style=social)](https://github.com/kordless/gnosis-evolve/stargazers)
-[![GitHub issues](https://img.shields.io/github/issues/kordless/gnosis-evolve?color=green)](https://github.com/kordless/gnosis-evolve/issues)
-
-<h1>🧠</h1>
 </div>
 
-# 🚀 Beginner's Guide to Installing Gnosis Evolve
+## In Action
 
-## 🧠 What is Gnosis Evolve?
+Watch the Bitcoin price tracker demo: [YouTube Demo](https://www.youtube.com/watch?v=KsHngo05WIY)
 
-Gnosis Evolve gives Claude Desktop the ability to build, install, and use its own tools—expanding what it can actually do, not just talk about: 
+## What It Does
 
-- Claude can write code for you that it can then use itself
-- You can ask Claude to build specialized tools that solve your specific problems
-- You can enhance Claude's capabilities beyond its default features
+Gnosis Evolve turns Claude Desktop from a passive assistant into an active developer:
+- Claude writes and uses Python tools right in your conversation
+- Extend Claude's capabilities via natural language
+- Available on Mac and Windows
 
-It turns Claude Desktop from a passive assistant into an active developer, capable of creating solutions as you need them.
+## Quickstart
 
-Claude is the first client supported by the system, but Gnosis Evolve is built with a modular design. Support for other clients, tools and document collections is on the roadmap.
+### Install
 
-## ⚠️ Security Warning
-
-**IMPORTANT:** Gnosis Evolve allows Claude to create and execute Python code on your local machine. Before using this software, please understand the security implications by referring to the Security Implications section at the bottom.
-
-## Prerequisites
-
-Before starting, you'll need:
-
-1. **Computer**: Evolve is designed to work on Windows and macOS
-2. **Internet Connection**: For downloading necessary files
-3. **Claude Desktop**: The desktop application for Claude
-
-## Step 1: Install Claude Desktop
-1. Visit the official Anthropic website to [download Claude Desktop](https://claude.ai/download)
-2. Run the installer and follow the on-screen instructions
-3. Launch Claude Desktop at least once to create initial configuration files
-
-## Step 2: Download Evolve
-
-### Option A: Download the Release Package (Easiest)
-
-1. Go to [github.com/kordless/gnosis-evolve/releases/tag/v1.0.5](https://github.com/kordless/gnosis-evolve/releases/tag/v1.0.5)
-2. Under "Assets", click on the .zip file (top source code file)
-3. Save the file to a location you can easily find (like your Downloads folder)
-4. Extract the archive:
-   - **Windows**: Right-click the downloaded zip file and select "Extract All..."
-   - **macOS**: Double-click the downloaded zip file to extract it
-5. Choose where to extract the files (like your Documents folder)
-
-### Option B: Using Git (For Advanced Users)
-
-If you're familiar with Git:
-
-1. Install Git from [git-scm.com](https://git-scm.com/downloads) if you don't have it
-2. Open Terminal (macOS) or PowerShell (Windows)
-3. Navigate to where you want to install Evolve
-4. Run these commands:
-   ```
-   git clone https://github.com/kordless/gnosis-evolve.git
-   cd gnosis-evolve
-   ```
-
-## Step 3: Open Terminal/PowerShell
-
-### Windows
-1. Navigate to the folder where you extracted Evolve
-2. Hold Shift and right-click in an empty area of the folder
-3. Select "Open PowerShell window here" from the menu
-   - If you don't see this option, see our [PowerShell Guide](powershell-guide.md) for alternatives
-
-### macOS
-1. Open Finder and navigate to the folder where you extracted Evolve
-2. Right-click (or Control-click) on the folder
-3. Select "New Terminal at Folder" or "Services" > "New Terminal at Folder"
-   - If you don't see this option, open Terminal (from Applications > Utilities) and use `cd` to navigate to your folder
-
-## Step 4: Run the Setup Script
-
-### Windows
-1. In the PowerShell window, type the following command and press Enter:
-   ```powershell
-   .\evolve.ps1 -Setup
-   ```
-
-2. If you see an error message about execution policy, run this command and try again:
-   ```powershell
-   Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass
-   ```
-
-### macOS
-1. In the Terminal window, make the script executable:
-   ```bash
-   chmod +x ./evolve.sh
-   ```
-
-2. Run the setup command:
-   ```bash
-   ./evolve.sh --setup
-   ```
-
-3. If you need to install jq (required for JSON processing):
-   ```bash
-   brew install jq
-   ```
-   If you don't have Homebrew installed, visit [brew.sh](https://brew.sh/) for installation instructions.
-
-4. Follow any on-screen instructions to complete the setup
-
-## Step 5: Using Gnosis Evolve with Claude
-
-1. Start Claude with Evolve:
-   - **Windows**: `.\evolve.ps1 -StartClaude`
-   - **macOS**: `./evolve.sh --restart`
-
-2. Using natural language, ask Claude to install tools:
-   - "Install the calculator tool"
-   - "Can you set up the Bitcoin price tracker?"
-   - "I need a tool to check the weather"
-
-3. Available contrib tools in categories:
-   - **Core**: math_and_stats, random_generator, file_explorer, file_writer
-   - **Web**: crawl4ai, weather_resource
-   - **Finance**: bitcoin_price
-   - **Docker**: docker_logs, docker_rebuild
-
-4. No need to use function syntax - just ask naturally:
-   - "What's the current Bitcoin price in euros?"
-   - "Generate 5 random numbers between 10 and 100"
-   - "Show me the weather forecast for Austin, Texas"
-   - "Calculate the square root of 144 plus the cube of 3"
-
-Claude automatically translates your natural requests into the appropriate tool calls.
-
-## 📺 Demo Video
-
-[![Gnosis Evolve Bitcoin App Demo](https://img.youtube.com/vi/KsHngo05WIY/0.jpg)](https://www.youtube.com/watch?v=KsHngo05WIY)
-
-Watch a demonstration of the Bitcoin price tracking app created with Gnosis Evolve, showing how Claude can build and use its own tools to fetch and visualize real-time cryptocurrency data.
-
-<!-- Small (250px wide) -->
-<img src="https://github.com/kordless/gnosis-evolve/blob/main/price.png" width="250" alt="Bitcoin Price">
-
-## Troubleshooting
-
-### Viewing Logs
-
-The Gnosis Evolve utility provides several ways to view logs, which can be helpful for troubleshooting issues with Claude Desktop and MCP servers.
-
-#### Using the Command Line
-
-##### Windows
+**Windows**
 ```powershell
-.\evolve.ps1 -ViewLogs
+# Clone the repo
+git clone https://github.com/kordless/gnosis-evolve.git
+cd gnosis-evolve
+
+# Setup
+.\evolve.ps1 -Setup
 ```
 
-To filter logs by name:
-```powershell
-.\evolve.ps1 -ViewLogs -LogName evolve
-```
-
-##### macOS
+**macOS**
 ```bash
-./evolve.sh --view-logs
+# Clone the repo
+git clone https://github.com/kordless/gnosis-evolve.git
+cd gnosis-evolve
+
+# Setup
+chmod +x ./evolve.sh
+./evolve.sh --setup
 ```
 
-To filter logs by name:
-```bash
-./evolve.sh --view-logs --log-name evolve
-```
+### Launch
 
-This will show only log files that contain "evolve" in their filename.
-
-#### Using the Menu Interface
-
-If you prefer a menu-based approach:
-
-##### Windows
+**Windows**
 ```powershell
-.\evolve.ps1
+.\evolve.ps1 -StartClaude
 ```
 
-##### macOS
-```bash
-./evolve.sh
-```
-
-Then select option `1. View MCP Logs` from the menu and choose a log file from the displayed list.
-
-#### Log Monitoring
-
-When viewing a log file, the tool will initially show the last 20 lines. You'll then be prompted if you want to monitor the log file in real-time. Selecting `y` will continuously display new log entries as they are written, which is particularly useful when debugging active issues.
-
-To stop monitoring, press `Ctrl+C`.
-
-#### Log Location
-
-Logs are stored in the following location:
-
-**Windows**:
-```
-C:\Users\<username>\AppData\Roaming\Claude\logs
-```
-
-**macOS**:
-```
-~/Library/Application Support/Claude/logs
-```
-
-If this directory doesn't exist, the tool will offer to create it for you.
-
-### Common Issues
-
-#### Claude Desktop Not Starting
-
-If Claude Desktop fails to start after configuring MCP servers:
-
-1. Check the logs for any error messages:
-   
-   **Windows**:
-   ```powershell
-   .\evolve.ps1 -ViewLogs
-   ```
-   
-   **macOS**:
-   ```bash
-   ./evolve.sh --view-logs
-   ```
-
-2. Verify that your configuration file is correct:
-   
-   **Windows**:
-   ```
-   C:\Users\<username>\AppData\Roaming\Claude\claude_desktop_config.json
-   ```
-   
-   **macOS**:
-   ```
-   ~/Library/Application Support/Claude/claude_desktop_config.json
-   ```
-
-3. Ensure the paths to your MCP server scripts are valid and accessible
-
-#### Evolve Server Issues
-
-If you're experiencing issues with the Evolve server:
-
-1. View the Evolve-specific logs:
-   
-   **Windows**:
-   ```powershell
-   .\evolve.ps1 -ViewLogs -LogName evolve
-   ```
-   
-   **macOS**:
-   ```bash
-   ./evolve.sh --view-logs --log-name evolve
-   ```
-
-2. Verify that `evolve.py` exists in the location specified in your configuration
-3. Make sure Python is properly installed and accessible from the command line
-
-#### Restarting Claude Desktop
-
-If Claude Desktop becomes unresponsive or you need to apply configuration changes:
-
-**Windows**:
-```powershell
-.\evolve.ps1 -Restart
-```
-
-**macOS**:
+**macOS**
 ```bash
 ./evolve.sh --restart
 ```
 
-This will gracefully stop and restart Claude Desktop.
+## Available Tools
 
-### Checking Tool Configuration
+### Core
+- **math_and_stats**: Mathematical calculations and statistical operations
+- **random_generator**: Generate random numbers and selections
+- **file_explorer**: Browse files and directories
+- **file_writer**: Create and modify files with versioning
 
-To verify which MCP tools are currently configured:
+### Web
+- **crawl4ai**: Extract content from websites
+- **weather_resource**: Get weather forecasts
 
-**Windows**:
-```powershell
-.\evolve.ps1 -ListTools
+### Finance
+- **bitcoin_price**: Real-time cryptocurrency pricing
+
+### Docker
+- **docker_logs**: View container logs
+- **docker_rebuild**: Restart containers 
+
+## Natural Interaction
+
+Just talk naturally to Claude:
+```
+"Install the Bitcoin price tracker tool"
+"What's the weather like in Seattle today?"
+"Generate 5 random numbers between 1 and 100"
+"Track the Bitcoin price in euros and show me a chart"
 ```
 
-**macOS**:
+## Troubleshooting
+
+**View Logs**
 ```bash
-./evolve.sh --list-tools
+# Windows
+.\evolve.ps1 -ViewLogs
+
+# macOS
+./evolve.sh --view-logs
 ```
 
-This will display all configured MCP servers, including:
-- Server name
-- Command and arguments
-- Whether the script exists
-- For Evolve tools: version and creation date (if available)
+**Restart Claude**
+```bash
+# Windows
+.\evolve.ps1 -Restart
 
-## ⚠️ Security Implications
+# macOS
+./evolve.sh --restart
+```
 
-1. **Code Execution Risk**: Any code that runs on your computer has access to your system at the same permission level as the user running it. This includes your files, network, and potentially sensitive information.
+## Security Note
 
-2. **Review Generated Code**: While Evolve (and Claude) aim to create safe and useful tools, you should review any code that it generates before allowing it to run, especially if you're using it in a professional or sensitive environment.
+Gnosis Evolve allows Claude to execute Python code on your system. Review generated code before running in sensitive environments. [Full security details](#security-implications).
 
-3. **No Warranty**: This software is provided "as is" without warranty of any kind. The creators are not responsible for any damages or security incidents resulting from its use.
+## License
 
-4. **Recommended Precautions**:
-   - Run Gnosis Evolve in a dedicated user account with limited permissions
+Gnosis Evolve uses the Sovereign v1.1 license:
+- **Free for individuals** and small businesses
+- **Requires licensing** for corporate production use
+
+See [LICENSE.md](https://github.com/kordless/gnosis-evolve/blob/main/LICENSE.md) for details.
+
+---
+
+### Security Implications
+
+1. **Code Execution Risk**: Any code that runs on your computer has access to your system at the same permission level as the user running it.
+
+2. **Review Generated Code**: While Claude aims to create safe tools, review any code it generates before running it in a sensitive environment.
+
+3. **Recommended Precautions**:
+   - Run in a dedicated user account with limited permissions
    - Backup important data before using new tools
-   - Consider using a virtual machine or container for additional isolation (we'll be working on making this easier soon)
-   - Keep your operating system and security software up to date
-
-5. **For Developers**: If you're extending Gnosis Evolve, follow secure coding practices and avoid giving tools unnecessary system access.
-
-By installing and using Gnosis Evolve, you acknowledge these risks and take responsibility for the code executed on your system.
-
-## License Explanation: Sovereign v1.1
-
-Gnosis Evolve is released under the Sovereign v1.1 license, which balances open use with specific restrictions:
-
-### AI and the Evolution of Licensing
-
-We stand at a unique crossroads in the relationship between human and artificial intelligence. Traditional software licenses were never designed for a world where:
-
-1. AI can create, modify, and execute code based on natural language instructions
-2. The lines between user, creator, and tool become increasingly blurred
-3. The same software might be used by individuals, corporations, and potentially autonomous AI systems
-4. Digital and analog minds each bring distinct forms of intelligence and capabilities
-
-The Sovereign license represents our attempt to navigate this unprecedented territory - acknowledging that just as AI must evolve, so too must our legal frameworks. Inspired by philosophical frameworks like those in the Gnosis AI-Sovereign License, this approach recognizes the need for graduated rights and responsibilities that differ based on the nature of the entity using the software.
-
-### What You CAN Do:
-- **Individual Use**: You can freely use this software as an individual, even for work-related tasks.
-- **Personal Projects**: Use it in your personal projects without restriction.
-- **Small Business Use**: Sole proprietors and small businesses can use it for internal purposes.
-- **Learning & Teaching**: Use it in educational contexts without limitation.
-- **Modify & Extend**: You can modify the code for your own use.
-
-### What You CANNOT Do:
-- **Corporate Production**: Corporations cannot deploy this software in production environments or integrate it into commercial products without a separate license.
-- **Resell the Software**: You cannot sell Gnosis Evolve as a product or service.
-- **Remove Attribution**: You must maintain all copyright and license notices.
-
-### In Simple Terms:
-This license allows you as an individual to use Gnosis Evolve freely, even if it helps with your job. However, your employer (if it's a corporation) cannot officially deploy it in production systems or incorporate it into their products without obtaining proper licensing.
-
-This approach represents a fair attempt to balance open access with sustainable development in the rapidly evolving AI landscape. It envisions a future where human creativity, compassion, and embodied wisdom work in concert with the precision, scalability, and analytical power of artificial intelligence - a symbiotic relationship rather than an adversarial one.
-
-For complete details, please refer to the full [LICENSE.md](https://github.com/kordless/gnosis-evolve/blob/main/LICENSE.md) file.
+   - Consider using a virtual machine for additional isolation
+   - Keep your security software up to date

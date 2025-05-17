@@ -119,6 +119,133 @@ Claude will:
 2. Identify the primary and changing hexagrams
 3. Provide an interpretation relevant to your question
 
+## Evolving Your Own Tools
+
+Gnosis Evolve's true power lies in having Claude create custom tools on demand through natural conversation. No need to write any code yourself—let Claude do the work!
+
+### Tool Creation Process
+
+1. **Describe your idea**: Tell Claude what you'd like the tool to do.
+2. **Let Claude write the code**: Claude will generate appropriate Python code for the tool.
+3. **Ask Claude to install it**: Claude will install the tool using the evolve_tool function.
+4. **Restart Claude**: Restart Claude to activate your new tool.
+5. **Use your new tool**: Ask Claude to use the tool in your conversation.
+
+### Example 1: Creating a Hello World Tool
+
+Instead of writing code yourself, simply ask Claude to create a tool:
+
+```
+Me: "Can you create a simple hello world tool that greets me with my name and shows the current time?"
+
+Claude: "I'd be happy to create that tool for you! I'll write a simple tool that greets you by name and displays the current time."
+
+[Claude writes the necessary Python code]
+
+Claude: "I've created a hello_tool that can greet you by name with the current time. Would you like me to install it now?"
+
+Me: "Yes, please install it."
+
+[Claude installs the tool]
+
+Claude: "The hello_tool has been installed! To activate it, please restart Claude using:
+Windows: .\evolve.ps1 -Restart
+macOS: ./evolve.sh --restart"
+
+[After restarting Claude]
+
+Me: "Can you greet me using the hello_tool? My name is Sarah."
+
+Claude: "I'll use the hello_tool to greet you!
+Hello, Sarah! The current time is 2025-05-17 12:15:32"
+```
+
+### Example 2: Creating a Quote Generator
+
+For more complex tools, the process is just as seamless:
+
+```
+Me: "I'd like a tool that can give me random inspirational quotes and let me add my own quotes to the collection."
+
+Claude: "That sounds great! I'll create a quote generator tool with two functions: one to retrieve random quotes and another to add new quotes to the collection."
+
+[Claude writes the necessary Python code]
+
+Claude: "I've created a quote_generator tool that can provide random inspirational quotes and allow you to add your own quotes. Should I install it for you?"
+
+Me: "Yes, please install it."
+
+[Claude installs the tool]
+
+Claude: "The quote_generator has been installed! Please restart Claude to activate it."
+
+[After restarting Claude]
+
+Me: "Can I have an inspirational quote?"
+
+Claude: "Here's an inspirational quote for you:
+'The future belongs to those who believe in the beauty of their dreams.' - Eleanor Roosevelt"
+
+Me: "I'd like to add my own quote: 'Every moment is a fresh beginning.' by T.S. Eliot"
+
+Claude: "I've added your quote to the collection! 'Every moment is a fresh beginning.' by T.S. Eliot has been saved."
+```
+
+### What Types of Tools Can Claude Create?
+
+1. **System Utilities**:
+   - File browsers and managers
+   - Status checkers
+   - System monitors
+
+2. **Data Tools**:
+   - Data formatters and converters
+   - Simple analyzers and calculators
+   - Random generators
+
+3. **Web Integrations**:
+   - Weather information retrieval
+   - Web content scrapers
+   - API connectors
+
+4. **Creative Tools**:
+   - Character generators
+   - Story assistants
+   - Game helpers
+
+5. **Productivity Tools**:
+   - Task trackers
+   - Note takers
+   - Email formatters
+
+### Tool Design Guidelines
+
+When asking Claude to create a tool, consider these elements:
+
+1. **Clear Purpose**: Define exactly what you want the tool to do.
+
+2. **Input Parameters**: Specify what information the tool should accept.
+
+3. **Output Format**: Describe what results you expect from the tool.
+
+4. **Error Handling**: Consider potential issues and how they should be handled.
+
+5. **Security Considerations**: Be mindful of file system access and network connections.
+
+You don't need to worry about the implementation details—Claude will handle the code structure, logging, and proper MCP integration.
+
+### Best Practices for Using Evolved Tools
+
+1. **Start Simple**: Begin with basic tools before requesting complex functionality.
+
+2. **Be Specific**: Clearly describe the tool's purpose and expected behavior.
+
+3. **Test Thoroughly**: After installation, test the tool with various inputs to ensure it works as expected.
+
+4. **Combine Tools**: Ask Claude to use multiple tools together to create more complex workflows.
+
+5. **Iterative Development**: If a tool doesn't work perfectly, ask Claude to improve it based on your feedback.
+
 ## Troubleshooting
 
 **View Logs**

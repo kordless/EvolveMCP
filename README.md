@@ -1,4 +1,4 @@
-# Gnosis Evolve
+# Gnosis Evolve v1.0.8
 
 **Build. Extend. Evolve.** Give Claude Desktop superpowers by creating and using its own Python tools.
 
@@ -26,7 +26,7 @@ Gnosis Evolve turns Claude Desktop from a passive assistant into an active devel
 ### Install
 
 **Quick Start (Recommended)**
-1. **[Download the ZIP file directly](https://github.com/kordless/gnosis-evolve/archive/refs/tags/v1.0.7.zip)**
+1. **[Download the ZIP file directly](https://github.com/kordless/gnosis-evolve/archive/refs/tags/v1.0.8.zip)**
 2. Extract the ZIP:
    - **Windows**: Right-click the ZIP and select "Extract All..."
    - **macOS**: Double-click the ZIP file
@@ -88,6 +88,9 @@ Just talk naturally to Claude:
 "Generate 5 random numbers between 1 and 100"
 "Track the Bitcoin price in euros and show me a chart"
 "Create a character for my story with complex emotions"
+"Generate an I Ching character with unique attributes"
+"Find all HTML files with 'gnosis' in the filename"
+"Apply this diff to update my Python script"
 ```
 
 ## Games & Entertainment
@@ -106,18 +109,22 @@ After installing the random_generator tool, have fun with:
 
 Claude can manage the game rules and use the random generator to create fair, unpredictable outcomes - just like playing with real dice or cards!
 
-### I Ching Divination
+### I Ching Tools
 
-The random_generator tool can be used to simulate I Ching readings:
+Gnosis Evolve includes enhanced I Ching capabilities:
 
 ```
 "Cast an I Ching hexagram for my question about [your question]"
+"Generate a character based on the I Ching hexagrams"
+"Create a story protagonist with I Ching attributes"
 ```
 
-Claude will:
-1. Generate random coin tosses to build a hexagram
-2. Identify the primary and changing hexagrams
-3. Provide an interpretation relevant to your question
+The tools will:
+1. Generate random coin tosses to build hexagrams
+2. Identify primary and changing hexagrams
+3. Provide interpretations relevant to your question
+4. Create characters with personality traits and emotional attributes based on hexagram meanings
+5. Combine I Ching wisdom with psychological depth for storytelling
 
 ## Creating Your Own Tools
 

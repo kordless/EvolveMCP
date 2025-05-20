@@ -6,8 +6,8 @@ import logging
 import glob
 from typing import Dict, Any, List, Optional, Union
 
-__version__ = "0.1.7"
-__updated__ = "2025-05-15"
+__version__ = "0.1.8"
+__updated__ = "2025-05-19"
 
 # Define log path in the logs directory parallel to tools
 current_dir = os.path.dirname(os.path.abspath(__file__))
@@ -197,7 +197,10 @@ async def file_explorer(path: str = None, show_hidden: bool = False, pattern: Op
         elif os.path.isdir(path):
             logger.info(f"Path is a directory: {path}")
             
-            def list_directory(dir_path, current_depth=0):
+            # Create a list to collect all files that match the pattern during recursive search
+            all_matches = []
+            
+            def collect_directory_info(dir_path, current_depth=0):
                 """Helper function to list directory contents, potentially recursively"""
                 # Get directory contents
                 try:
@@ -218,17 +221,15 @@ async def file_explorer(path: str = None, show_hidden: bool = False, pattern: Op
                     contents = [item for item in contents if not item.startswith('.')]
                     logger.info(f"After filtering hidden files: {len(contents)} items")
                 
-                # Important: We no longer filter by pattern here before recursion
-                # This enables us to find pattern matches in subdirectories
-                
-                # Get details for each item
-                all_items = []
-                matching_items = []
+                # Process each item in the directory
+                items_in_dir = []
                 
                 for item in contents:
                     item_path = os.path.join(dir_path, item)
                     try:
                         is_dir = os.path.isdir(item_path)
+                        
+                        # Create item info
                         item_info = {
                             "name": item,
                             "path": item_path,
@@ -238,49 +239,55 @@ async def file_explorer(path: str = None, show_hidden: bool = False, pattern: Op
                             "extension": os.path.splitext(item)[1].lower() if not is_dir and os.path.splitext(item)[1] else None
                         }
                         
-                        # Check if this item matches the pattern (if pattern provided)
-                        item_matches = False
-                        if not pattern or (not is_dir and fnmatch.fnmatch(item, pattern)):
-                            item_matches = True
+                        # Check for pattern match if it's a file
+                        if pattern and not is_dir and fnmatch.fnmatch(item, pattern):
+                            logger.info(f"Found matching file: {item_path}")
+                            # Add to global matches list for recursive pattern searches
+                            all_matches.append(item_info)
                         
-                        # Always recurse into subdirectories regardless of pattern match
+                        # Recurse into subdirectories if requested
                         if recursive and is_dir and current_depth < max_depth:
-                            sub_items = list_directory(item_path, current_depth + 1)
-                            
-                            # Store recursive results if there are any
+                            sub_items = collect_directory_info(item_path, current_depth + 1)
                             if isinstance(sub_items, list) and sub_items:
                                 item_info["contents"] = sub_items
-                                # If subdirectory has matching items, consider this dir a match too
-                                if not item_matches:
-                                    item_matches = True
-                            elif isinstance(sub_items, dict) and sub_items.get("error"):
-                                # Handle error case
-                                item_info["error"] = sub_items.get("error")
+                            elif isinstance(sub_items, dict) and "error" in sub_items:
+                                item_info["error"] = sub_items["error"]
                         
-                        # Append to the appropriate list based on pattern matching
-                        all_items.append(item_info)
-                        if item_matches:
-                            matching_items.append(item_info)
+                        # Add item to directory contents
+                        items_in_dir.append(item_info)
+                        
                     except Exception as e:
-                        logger.error(f"Error getting info for {item_path}: {str(e)}")
-                        # Add the item with error information
-                        items.append({
+                        logger.error(f"Error processing {item_path}: {str(e)}")
+                        items_in_dir.append({
                             "name": item,
                             "path": item_path,
                             "error": str(e)
                         })
                 
-                # Sort items: directories first, then files
-                matching_items.sort(key=lambda x: (not x.get("is_directory", False), x.get("name", "").lower()))
-                return matching_items if pattern else all_items
+                # Sort items: directories first, then files alphabetically
+                items_in_dir.sort(key=lambda x: (not x.get("is_directory", False), x.get("name", "").lower()))
+                return items_in_dir
             
-            # List the directory contents
-            items = list_directory(path)
+            # Process the directory
+            directory_contents = collect_directory_info(path)
             
-            # For better user understanding, log how many items we found after recursive search
-            if pattern:
-                logger.info(f"After recursive search with pattern '{pattern}': {len(items)} matching items")
+            # Determine which items to return based on pattern and recursive settings
+            if pattern and recursive:
+                # For recursive pattern searches, return the collected matches
+                logger.info(f"Recursive pattern search found {len(all_matches)} matching files")
+                items = all_matches
+            else:
+                # For non-recursive or no pattern, filter the top-level items 
+                if pattern and not recursive:
+                    # Filter by pattern at top level only
+                    items = [item for item in directory_contents if 
+                             not item.get("is_directory", True) and 
+                             fnmatch.fnmatch(item.get("name", ""), pattern)]
+                else:
+                    # No filtering needed
+                    items = directory_contents
             
+            # Return the directory listing
             return {
                 "type": "directory",
                 "directory": path,
@@ -292,7 +299,7 @@ async def file_explorer(path: str = None, show_hidden: bool = False, pattern: Op
             return {"error": f"Path is neither a file nor a directory: {path}"}
             
     except Exception as e:
-        logger.error(f"Error exploring path: {str(e)}\")")
+        logger.error(f"Error exploring path: {str(e)}")
         import traceback
         logger.error(traceback.format_exc())
         return {"error": f"Error exploring path: {str(e)}"}

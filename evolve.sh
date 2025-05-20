@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Gnosis: Evolve for Claude Desktop - Claude Manager & MCP Bootstrapper
+# EvolveMCP: Claude Manager & MCP Bootstrapper
 # A bash utility for managing Claude Desktop and bootstrapping MCP servers on macOS
 
 # Default values
@@ -467,7 +467,7 @@ list_mcp_tools() {
             script_path=$(jq -r ".mcpServers[\"$server_name\"].args[0]" "$CONFIG_PATH")
         fi
         
-        # Determine if Gnosis tool
+        # Determine if evolve tool
         local is_evolve_tool=false
         if [ -n "$script_path" ]; then
             local file_name=$(basename "$script_path")
@@ -479,7 +479,7 @@ list_mcp_tools() {
         # Display server info with different colors for evolve tools
         if [ "$is_evolve_tool" = true ]; then
             print_color "magenta" "  $server_name" -n
-            print_color "yellow" " (Gnosis Tool)"
+            print_color "yellow" " (Evolve Tool)"
         else
             print_color "cyan" "  $server_name"
         fi
@@ -494,12 +494,12 @@ list_mcp_tools() {
         if [ -n "$script_path" ]; then
             if [ -f "$script_path" ]; then
                 if [ "$is_evolve_tool" = true ]; then
-                    # For Gnosis tools, read metadata from file
+                    # For evolve tools, read metadata from file
                     if [ -r "$script_path" ]; then
                         local version=$(head -6 "$script_path" | grep "# Version:" | sed 's/# Version://' | xargs)
                         local created=$(head -6 "$script_path" | grep "# Created:" | sed 's/# Created://' | xargs)
                         
-                        print_color "green" "    - Status: Script exists (Gnosis tool active)"
+                        print_color "green" "    - Status: Script exists (Evolve tool active)"
                         if [ -n "$version" ]; then 
                             print_color "gray" "    - Version: $version"
                         fi
@@ -521,9 +521,9 @@ list_mcp_tools() {
     done
 }
 
-# Setup Gnosis Server for the first time
+# Setup Evolve Server for the first time
 setup_evolve_server() {
-    print_color "yellow" "Setting up Gnosis: Evolve MCP Server"
+    print_color "yellow" "Setting up Evolve MCP Server"
     
     # Get the current directory to save evolve.py with absolute path
     local current_dir=$(pwd)
@@ -630,8 +630,8 @@ EOF
             print_color "green" "Configured evolve-server."
         fi
         
-        print_color "green" "Config uses absolute path to Gnosis: Evolve script: $evolve_script_path"
-        print_color "green" "Gnosis: Evolve MCP server setup completed successfully!"
+        print_color "green" "Config uses absolute path to evolve.py: $evolve_script_path"
+        print_color "green" "Evolve MCP server setup completed successfully!"
         
         read -p "Would you like to restart Claude now? (y/n) " restart_option
         if [ "$restart_option" = "y" ]; then
@@ -667,7 +667,7 @@ show_claude_manager_menu() {
     print_color "magenta" "\n===== CLAUDE MANAGER MENU ====="
     print_color "cyan" "1. View MCP Logs"
     print_color "cyan" "2. Kill Claude Desktop"
-    print_color "cyan" "3. Setup Gnosis: Evolve Server"
+    print_color "cyan" "3. Setup Evolve Server"
     print_color "cyan" "4. Restart Claude"
     print_color "cyan" "5. List Current MCP Servers"
     print_color "cyan" "6. Exit"
@@ -768,7 +768,7 @@ fi
 # If no parameters specified or MENU is true, show the menu
 if [ "$MENU" = true ] || [ $# -eq 0 ]; then
     # Start the script by showing the menu
-    print_color "yellow" "Gnosis: Evolve - Claude Manager Tool"
+    print_color "yellow" "EvolveMCP - Claude Manager Tool"
     print_color "yellow" "Logs Path: $LOGS_PATH"
     print_color "yellow" "Config Path: $CONFIG_PATH"
     show_claude_manager_menu

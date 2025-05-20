@@ -236,25 +236,6 @@ Other fun activities to try:
 
 The combination of Claude's understanding of game rules and the ability to generate truly random results creates an interactive gaming experience unlike any other AI assistant.
 
-### Character Creation for Stories & Games
-
-The emotional_character_generator tool helps create rich, multidimensional characters for your stories, role-playing games, or creative projects:
-
-```
-"Create a character with conflicting emotions of hope and despair"
-"Generate a villain with a complex backstory and emotional trauma"
-"Create a character for my D&D campaign with detailed traits"
-"Design a protagonist with an interesting emotional arc"
-```
-
-Each character comes with:
-- Detailed personality traits and background
-- Complex emotional states with primary and secondary emotions
-- Physical description and distinctive features
-- Motivations and internal conflicts
-
-This tool is perfect for writers, game masters, or anyone working on creative projects that require well-developed characters.
-
 ## Using Conversational Language with Gnosis: Evolve
 
 One of the great features of Gnosis: Evolve is that you don't need to memorize exact command syntax. You can talk to Claude naturally, and it will understand what you're trying to do:

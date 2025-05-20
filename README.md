@@ -119,132 +119,271 @@ Claude will:
 2. Identify the primary and changing hexagrams
 3. Provide an interpretation relevant to your question
 
-## Evolving Your Own Tools
+## Creating Your Own Tools
 
-Gnosis Evolve's true power lies in having Claude create custom tools on demand through natural conversation. No need to write any code yourself—let Claude do the work!
+Gnosis Evolve allows you to create custom tools that extend Claude's capabilities. Here's how to create a simple tool:
 
 ### Tool Creation Process
 
-1. **Describe your idea**: Tell Claude what you'd like the tool to do.
-2. **Let Claude write the code**: Claude will generate appropriate Python code for the tool.
-3. **Ask Claude to install it**: Claude will install the tool using the evolve_tool function.
-4. **Restart Claude**: Restart Claude to activate your new tool.
-5. **Use your new tool**: Ask Claude to use the tool in your conversation.
+1. **Design your tool**: Decide what functionality you want to add to Claude.
+2. **Write the Python code**: Create a new Python file with your tool's code.
+3. **Install the tool**: Use Claude to install your new tool.
+4. **Restart Claude**: Restart Claude to load your new tool.
+5. **Use your tool**: Ask Claude to use your newly created tool.
 
-### Example 1: Creating a Hello World Tool
+### Example 1: Hello World Tool
 
-Instead of writing code yourself, simply ask Claude to create a tool:
+Let's create a basic "hello world" tool that returns a personalized greeting:
 
-```
-Me: "Can you create a simple hello world tool that greets me with my name and shows the current time?"
+```python
+import sys
+import os
+import logging
+from typing import Dict, Any
 
-Claude: "I'd be happy to create that tool for you! I'll write a simple tool that greets you by name and displays the current time."
+# Configure logging
+current_dir = os.path.dirname(os.path.abspath(__file__))
+logging.basicConfig(
+    level=logging.INFO,
+    format='%(asctime)s - %(levelname)s - %(message)s',
+    handlers=[logging.FileHandler(os.path.join(current_dir, "hello_tool.log"))]
+)
+logger = logging.getLogger("hello_tool")
 
-[Claude writes the necessary Python code]
+# Import MCP after ensuring it's installed
+from mcp.server.fastmcp import FastMCP
 
-Claude: "I've created a hello_tool that can greet you by name with the current time. Would you like me to install it now?"
+# Create MCP server with a unique name
+mcp = FastMCP("hello-world-server")
 
-Me: "Yes, please install it."
+@mcp.tool()
+async def hello_world(name: str = "World") -> Dict[str, Any]:
+    '''
+    Returns a personalized greeting message.
+    
+    Args:
+        name: The name to greet (default: "World")
+        
+    Returns:
+        A dictionary with the greeting message
+    '''
+    try:
+        message = f"Hello, {name}! The current time is {__import__('datetime').datetime.now()}"
+        logger.info(f"Generated greeting: {message}")
+        return {
+            "success": True,
+            "message": message
+        }
+    except Exception as e:
+        logger.error(f"Error generating greeting: {str(e)}")
+        return {
+            "success": False,
+            "error": f"Failed to generate greeting: {str(e)}"
+        }
 
-[Claude installs the tool]
-
-Claude: "The hello_tool has been installed! To activate it, please restart Claude using:
-Windows: .\evolve.ps1 -Restart
-macOS: ./evolve.sh --restart"
-
-[After restarting Claude]
-
-Me: "Can you greet me using the hello_tool? My name is Sarah."
-
-Claude: "I'll use the hello_tool to greet you!
-Hello, Sarah! The current time is 2025-05-17 12:15:32"
-```
-
-### Example 2: Creating a Quote Generator
-
-For more complex tools, the process is just as seamless:
-
-```
-Me: "I'd like a tool that can give me random inspirational quotes and let me add my own quotes to the collection."
-
-Claude: "That sounds great! I'll create a quote generator tool with two functions: one to retrieve random quotes and another to add new quotes to the collection."
-
-[Claude writes the necessary Python code]
-
-Claude: "I've created a quote_generator tool that can provide random inspirational quotes and allow you to add your own quotes. Should I install it for you?"
-
-Me: "Yes, please install it."
-
-[Claude installs the tool]
-
-Claude: "The quote_generator has been installed! Please restart Claude to activate it."
-
-[After restarting Claude]
-
-Me: "Can I have an inspirational quote?"
-
-Claude: "Here's an inspirational quote for you:
-'The future belongs to those who believe in the beauty of their dreams.' - Eleanor Roosevelt"
-
-Me: "I'd like to add my own quote: 'Every moment is a fresh beginning.' by T.S. Eliot"
-
-Claude: "I've added your quote to the collection! 'Every moment is a fresh beginning.' by T.S. Eliot has been saved."
+# Start the MCP server
+if __name__ == "__main__":
+    mcp.run(transport='stdio')
 ```
 
-### What Types of Tools Can Claude Create?
+### Example 2: Quote Generator Tool
 
-1. **System Utilities**:
-   - File browsers and managers
-   - Status checkers
-   - System monitors
+Here's a more useful tool that fetches and returns random inspirational quotes:
 
-2. **Data Tools**:
-   - Data formatters and converters
-   - Simple analyzers and calculators
-   - Random generators
+```python
+import sys
+import os
+import logging
+import random
+import json
+from typing import Dict, Any, List, Optional
 
-3. **Web Integrations**:
-   - Weather information retrieval
-   - Web content scrapers
-   - API connectors
+# Configure logging
+current_dir = os.path.dirname(os.path.abspath(__file__))
+logging.basicConfig(
+    level=logging.INFO,
+    format='%(asctime)s - %(levelname)s - %(message)s',
+    handlers=[logging.FileHandler(os.path.join(current_dir, "quote_generator.log"))]
+)
+logger = logging.getLogger("quote_generator")
 
-4. **Creative Tools**:
-   - Character generators
-   - Story assistants
-   - Game helpers
+# Import MCP
+from mcp.server.fastmcp import FastMCP
 
-5. **Productivity Tools**:
-   - Task trackers
-   - Note takers
-   - Email formatters
+# Create MCP server with a unique name
+mcp = FastMCP("quote-generator-server")
 
-### Tool Design Guidelines
+# Sample quotes database
+QUOTES = [
+    {"text": "The only way to do great work is to love what you do.", "author": "Steve Jobs"},
+    {"text": "Life is what happens when you're busy making other plans.", "author": "John Lennon"},
+    {"text": "The future belongs to those who believe in the beauty of their dreams.", "author": "Eleanor Roosevelt"},
+    {"text": "The only limit to our realization of tomorrow is our doubts of today.", "author": "Franklin D. Roosevelt"},
+    {"text": "In the middle of difficulty lies opportunity.", "author": "Albert Einstein"},
+    {"text": "Believe you can and you're halfway there.", "author": "Theodore Roosevelt"},
+    {"text": "Don't judge each day by the harvest you reap but by the seeds that you plant.", "author": "Robert Louis Stevenson"},
+    {"text": "The journey of a thousand miles begins with one step.", "author": "Lao Tzu"},
+    {"text": "Always remember that you are absolutely unique. Just like everyone else.", "author": "Margaret Mead"},
+    {"text": "The best time to plant a tree was 20 years ago. The second best time is now.", "author": "Chinese Proverb"}
+]
 
-When asking Claude to create a tool, consider these elements:
+@mcp.tool()
+async def get_random_quote(category: Optional[str] = None) -> Dict[str, Any]:
+    '''
+    Returns a random inspirational quote.
+    
+    Args:
+        category: Optional category filter (not implemented in this basic version)
+        
+    Returns:
+        A dictionary with a random quote and its author
+    '''
+    try:
+        # In a real implementation, you might filter by category
+        # For this example, we'll just select a random quote from our list
+        quote = random.choice(QUOTES)
+        
+        logger.info(f"Selected quote: {quote['text']} - {quote['author']}")
+        
+        return {
+            "success": True,
+            "quote": quote['text'],
+            "author": quote['author']
+        }
+    except Exception as e:
+        logger.error(f"Error generating quote: {str(e)}")
+        return {
+            "success": False,
+            "error": f"Failed to generate quote: {str(e)}"
+        }
 
-1. **Clear Purpose**: Define exactly what you want the tool to do.
+@mcp.tool()
+async def add_quote(text: str, author: str) -> Dict[str, Any]:
+    '''
+    Adds a new quote to the quotes collection.
+    
+    Args:
+        text: The quote text
+        author: The quote author
+        
+    Returns:
+        A dictionary with success status
+    '''
+    try:
+        # Validate input
+        if not text or not author:
+            return {
+                "success": False,
+                "error": "Both quote text and author must be provided"
+            }
+        
+        # Add quote to the collection
+        new_quote = {"text": text, "author": author}
+        QUOTES.append(new_quote)
+        
+        logger.info(f"Added new quote: {text} - {author}")
+        
+        return {
+            "success": True,
+            "message": "Quote added successfully",
+            "quote": new_quote
+        }
+    except Exception as e:
+        logger.error(f"Error adding quote: {str(e)}")
+        return {
+            "success": False,
+            "error": f"Failed to add quote: {str(e)}"
+        }
 
-2. **Input Parameters**: Specify what information the tool should accept.
+# Start the MCP server
+if __name__ == "__main__":
+    mcp.run(transport='stdio')
+```
 
-3. **Output Format**: Describe what results you expect from the tool.
+### Installing Your Custom Tool
 
-4. **Error Handling**: Consider potential issues and how they should be handled.
+1. **Ask Claude to install your tool**:
+   ```
+   Please create a new tool called "hello_tool" with the code I've provided.
+   ```
 
-5. **Security Considerations**: Be mindful of file system access and network connections.
+2. **Claude will use the `evolve_tool` function**:
+   ```
+   evolve_tool("hello_tool", tool_code="...")
+   ```
 
-You don't need to worry about the implementation details—Claude will handle the code structure, logging, and proper MCP integration.
+3. **Restart Claude**:
+   ```bash
+   # Windows
+   .\evolve.ps1 -Restart
 
-### Best Practices for Using Evolved Tools
+   # macOS
+   ./evolve.sh --restart
+   ```
 
-1. **Start Simple**: Begin with basic tools before requesting complex functionality.
+4. **Use your new tool**:
+   ```
+   Claude, can you use the hello_tool to greet me by name?
+   ```
 
-2. **Be Specific**: Clearly describe the tool's purpose and expected behavior.
+### Tool Structure Guidelines
 
-3. **Test Thoroughly**: After installation, test the tool with various inputs to ensure it works as expected.
+- **Imports**: Include necessary imports at the top.
+- **Logging**: Configure logging to a file, not to stdout.
+- **MCP Server**: Create an MCP server with a unique name.
+- **Tool Functions**: Define functions with the `@mcp.tool()` decorator.
+- **Documentation**: Include descriptive docstrings for each function.
+- **Error Handling**: Add try-except blocks for robustness.
+- **Return Format**: Return dictionaries with at least a success indicator.
 
-4. **Combine Tools**: Ask Claude to use multiple tools together to create more complex workflows.
+### Tool Development Best Practices
 
-5. **Iterative Development**: If a tool doesn't work perfectly, ask Claude to improve it based on your feedback.
+1. **Start Small**: Begin with simple tools to understand the process before building complex ones.
+
+2. **Test Locally**: Before installing the tool, test your Python code locally to ensure it works as expected.
+
+3. **Documentation**: Include detailed docstrings and comments to make your tool easy to understand and use.
+
+4. **Error Handling**: Implement comprehensive error handling to make your tool robust.
+
+5. **Useful Return Values**: Return informative data that Claude can present to the user.
+
+6. **Security Considerations**: 
+   - Avoid executing arbitrary user input directly
+   - Validate all inputs and parameters
+   - Limit file system access to what's necessary
+   - Be cautious with network connections to external services
+
+7. **Resource Management**: Close files, network connections, and other resources properly.
+
+8. **Versioning**: Include a version number in your tool to track changes.
+
+### Tool Interaction Patterns
+
+Claude can use your custom tools in various ways:
+
+1. **Direct Calls**: Claude can call your tool directly with specific parameters.
+   ```
+   I'll use the quote generator to find an inspirational quote for you!
+   ```
+
+2. **Conversational Interaction**: Claude can process user requests and determine when to use your tool.
+   ```
+   User: "I need some inspiration today."
+   Claude: "Let me find an inspirational quote for you..." (uses quote_generator tool)
+   ```
+
+3. **Multi-Tool Workflows**: Claude can combine multiple tools to solve complex tasks.
+   ```
+   User: "Create a personalized greeting with an inspirational quote."
+   Claude: (uses both hello_tool and quote_generator tools to create a combined response)
+   ```
+
+4. **Tool Discovery**: Claude can suggest your tool when relevant to the conversation.
+   ```
+   User: "Do you have any features that can help me when I'm feeling down?"
+   Claude: "I can offer inspirational quotes using the quote generator tool..."
+   ```
 
 ## Troubleshooting
 

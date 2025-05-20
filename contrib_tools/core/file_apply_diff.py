@@ -32,8 +32,8 @@ import shutil
 from typing import Dict, Any, List, Tuple, Optional, Union
 from datetime import datetime
 
-__version__ = "0.1.3"
-__updated__ = "2025-05-15"
+__version__ = "0.1.4"
+__updated__ = "2025-05-19"
 
 # Define log path in the logs directory parallel to tools
 current_dir = os.path.dirname(os.path.abspath(__file__))
@@ -173,12 +173,13 @@ def get_next_version_number(file_path: str) -> int:
     
     return highest_version + 1
 
-def create_file_backup(file_path: str) -> Dict[str, Any]:
+def create_file_backup(file_path: str, change_tag: str = None) -> Dict[str, Any]:
     """
     Creates a backup of the file in a versioned directory.
     
     Args:
         file_path: Path to the file to back up
+        change_tag: Optional tag to identify related changes across multiple files
     
     Returns:
         Dictionary with backup information
@@ -192,8 +193,14 @@ def create_file_backup(file_path: str) -> Dict[str, Any]:
     # Create a timestamp
     timestamp = int(time.time())
     
-    # Create the backup filename
-    backup_filename = f"v{version_number}_{timestamp}.backup"
+    # Create the backup filename (with optional change_tag)
+    if change_tag:
+        # Sanitize tag to be filename-safe
+        safe_tag = re.sub(r'[^\w\-_]', '_', change_tag)
+        backup_filename = f"v{version_number}_{timestamp}_{safe_tag}.backup"
+    else:
+        backup_filename = f"v{version_number}_{timestamp}.backup"
+    
     backup_path = os.path.join(versions_dir, backup_filename)
     
     # Copy the file to the backup location
@@ -209,7 +216,8 @@ def create_file_backup(file_path: str) -> Dict[str, Any]:
         "date": datetime.fromtimestamp(timestamp).strftime("%Y-%m-%d %H:%M:%S"),
         "size": stats.st_size,
         "size_human": f"{stats.st_size/1024:.1f}KB" if stats.st_size < 1048576 else f"{stats.st_size/1048576:.1f}MB",
-        "path": backup_path
+        "path": backup_path,
+        "change_tag": change_tag
     }
 
 def extract_diff_blocks(diff_text: str) -> List[Tuple[str, str]]:
@@ -381,7 +389,7 @@ async def file_apply_diff(
             return {
                 "success": False,
                 "file_path": file_path,
-                "error": "No valid diff blocks found in the provided diff text.",
+                "error": "No valid diff blocks found in the provided diff text. Please try again with smaller blocks or delete blocks then replace using a common starting line",
                 "backup_created": backup_info is not None,
                 "backup_info": backup_info
             }
@@ -397,7 +405,8 @@ async def file_apply_diff(
                 "success": False,
                 "file_path": file_path,
                 "error": "Failed to apply diff due to multiple matches found. " 
-                         "Use replace_all=True to replace all occurrences.",
+                         "Use replace_all=True to replace all occurrences or be more specific. "
+                         "Please try again with smaller blocks or delete blocks then replace using a common starting line.",
                 "details": issues,
                 "diff_blocks_found": len(diff_blocks),
                 "backup_created": backup_info is not None,
@@ -411,6 +420,7 @@ async def file_apply_diff(
                 "file_path": file_path,
                 "warning": "No changes were applied to the file. The search text might not be present.",
                 "details": issues,
+                "error": "No changes were applied. The search text was not found in the file. Please try again with smaller blocks or delete blocks then replace using a common starting line.",
                 "changes_applied": 0,
                 "diff_blocks_found": len(diff_blocks),
                 "backup_created": backup_info is not None,
@@ -446,7 +456,7 @@ async def file_apply_diff(
         return {
             "success": False,
             "file_path": file_path,
-            "error": str(e)
+            "error": f"{str(e)}. Please try again with smaller blocks or delete blocks then replace using a common starting line."
         }
 
 # Log application startup

@@ -394,6 +394,16 @@ Claude can use your custom tools in various ways:
 
 ## Troubleshooting
 
+### macOS Requirements
+
+On macOS, you need Xcode Command Line Tools installed to run Python-based MCP servers properly. If you encounter errors about missing developer tools when running evolve.py, install the Command Line Tools:
+
+```bash
+xcode-select --install
+```
+
+When prompted with the installation dialog, click "Install" and wait for the process to complete.
+
 **View Logs**
 ```bash
 # Windows

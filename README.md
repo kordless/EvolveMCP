@@ -66,6 +66,7 @@ For detailed installation instructions, see [INSTALLATION.md](INSTALLATION.md)
 - **random_generator**: Generate random numbers and selections
 - **file_explorer**: Browse files and directories
 - **file_writer**: Create and modify files with versioning
+- **file_diff_writer**: Advanced file editing with fuzzy matching and diff-based changes
 - **emotional_character_generator**: Create detailed character profiles with emotional states
 
 ### Web
@@ -91,7 +92,40 @@ Just talk naturally to Claude:
 "Generate an I Ching character with unique attributes"
 "Find all HTML files with 'gnosis' in the filename"
 "Apply this diff to update my Python script"
+"Use fuzzy matching to find and replace this code pattern"
+"Search for similar functions in this file"
 ```
+
+## Advanced File Editing
+
+Gnosis Evolve includes two powerful file editing tools for different use cases:
+
+### file_diff_writer (Recommended)
+The latest file editing tool with advanced capabilities:
+- **Fuzzy Matching**: Finds code patterns even when formatting has changed
+- **Multiple Strategies**: Uses exact, normalized, multiline, and token-based matching
+- **Automatic Backup**: Creates versioned backups of all changes
+- **Error Recovery**: Detailed debugging information when matches fail
+- **Change Tracking**: Groups related changes with tags for easy rollback
+
+Perfect for AI-assisted development where code might be slightly different than expected.
+
+### file_apply_diff (Legacy - Available in contrib_tools/)
+The original diff-based file editor:
+- **Simpler Implementation**: Straightforward diff application
+- **Exact Matching**: Requires precise text matching
+- **Basic Backup**: Standard file backup functionality
+
+Both tools support diff-fenced format with `SEARCH`/`REPLACE` blocks:
+
+```
+"Update this function to handle the new parameter"
+"Apply this code change with fuzzy matching"
+"Find and replace this pattern across the file"
+"Restore the previous version of this file"
+```
+
+The **file_diff_writer** is recommended for most use cases due to its intelligent matching and better error handling.
 
 ## Games & Entertainment
 

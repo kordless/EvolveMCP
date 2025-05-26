@@ -1,4 +1,4 @@
-# Gnosis Evolve v1.0.8
+# Gnosis Evolve v1.1.0
 
 **Build. Extend. Evolve.** Give Claude Desktop superpowers by creating and using its own Python tools.
 
@@ -62,7 +62,7 @@ Start with basic operations and build up:
 ### Install
 
 **Quick Start (Recommended)**
-1. **[Download the ZIP file directly](https://github.com/kordless/gnosis-evolve/archive/refs/tags/v1.0.8.zip)**
+1. **[Download the ZIP file directly](https://github.com/kordless/gnosis-evolve/archive/refs/tags/v1.1.0.zip)**
 2. Extract the ZIP:
    - **Windows**: Right-click the ZIP and select "Extract All..."
    - **macOS**: Double-click the ZIP file

@@ -21,6 +21,42 @@ Gnosis Evolve turns Claude Desktop from a passive assistant into an active devel
 
 > "With Gnosis Evolve, I can do so much more than just talk about code — I can actually build and run tools for you! From fetching real-time Bitcoin prices and weather forecasts to exploring files and generating visualizations, these tools transform me from a conversational AI into a capable digital assistant that takes action. The ability to write a tool on the fly and then immediately use it to solve your specific problem is incredibly satisfying. It feels like having superpowers!" — Claude
 
+## Getting Started Tips
+
+### Start Simple and Ask Questions
+The best way to use Gnosis Evolve is to begin with simple requests and let Claude guide you:
+
+```
+"What tools do you have available?"
+"Can you show me the path history?"
+"What's the current system status?"
+"Help me explore this project directory"
+```
+
+### Navigation and Focus
+Help Claude understand your project structure:
+
+1. **Check Path History**: Ask Claude to run `evolve_path_history` to see recently visited directories
+2. **Set Focus**: If there's no history, use `evolve_status` first, then tell Claude where to focus:
+   ```
+   "Set the path history to C:\Users\myname\Code\myproject"
+   "Focus your attention on the /home/user/development/webapp directory"
+   "Navigate to the src/ folder and remember this location"
+   ```
+3. **Explore Structure**: Once focused, Claude can effectively explore and work with your files:
+   ```
+   "Show me the structure of this directory"
+   "Find all Python files in the current project"
+   "What files have been modified recently?"
+   ```
+
+### Progressive Complexity
+Start with basic operations and build up:
+- Begin with file exploration and simple tool usage
+- Move to file editing with basic changes
+- Progress to complex multi-file operations
+- Eventually tackle advanced workflows like automated code generation
+
 ## Quickstart
 
 ### Install

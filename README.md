@@ -6,7 +6,7 @@
 <img src="https://github.com/kordless/gnosis-evolve/blob/main/screenshot.png" width="800" alt="Screenshot">
 
 [![License](https://img.shields.io/badge/license-_Sovereign_v1.1-purple)](https://github.com/kordless/gnosis-evolve/blob/main/LICENSE.md)
-[![Discord](https://img.shields.io/discord/1234567890?color=7289da&label=Discord&logo=discord&logoColor=white)](https://discord.gg/AQnAn9XgFJ)
+[![Discord](https://img.shields.io/discord/AQnAn9XgFJ?color=7289da&label=Discord&logo=discord&logoColor=white)](https://discord.gg/AQnAn9XgFJ)
 </div>
 
 ## In Action

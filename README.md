@@ -1,4 +1,4 @@
-# Gnosis Evolve v1.1.0
+# Gnosis: Evolve v1.1.0
 
 **Build. Extend. Evolve.** Give Claude Desktop superpowers by creating and using its own Python tools.
 
@@ -6,12 +6,14 @@
 <img src="https://github.com/kordless/gnosis-evolve/blob/main/screenshot.png" width="800" alt="Screenshot">
 
 [![License](https://img.shields.io/badge/license-_Sovereign_v1.1-purple)](https://github.com/kordless/gnosis-evolve/blob/main/LICENSE.md)
-[![Discord](https://img.shields.io/discord/AQnAn9XgFJ?color=7289da&label=Discord&logo=discord&logoColor=white)](https://discord.gg/AQnAn9XgFJ)
 </div>
 
 ## In Action
 
 Watch the Bitcoin price tracker demo: [YouTube Demo](https://www.youtube.com/watch?v=KsHngo05WIY)
+
+## Join the Gnosis Community
+[![Discord](https://img.shields.io/discord/1234567890?color=7289da&label=Discord&logo=discord&logoColor=white)](https://discord.gg/AQnAn9XgFJ)
 
 ## What It Does
 

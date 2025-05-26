@@ -366,7 +366,10 @@ def read_path_history(max_entries: int = 10) -> Dict[str, Any]:
             
         recent_history = history[-max_entries:] if max_entries > 0 else history
         
-        return {"status": "success", "message": f"Found {len(history)} path history entries", "history": recent_history, "current": current_dir, "history_dates": [entry.get("timestamp", "unknown") for entry in recent_history]}
+        return {"status": "success", "message": f"Found {len(history)} path history entries", 
+                "history": recent_history, "current": current_dir, 
+                "history_dates": [entry.get("timestamp", "unknown") for entry in recent_history],
+                "tip": "IMPORTANT: All path history items contain absolute paths and must be used as-is without modification"}
     except Exception as e:
         logger.error(f"Error reading path history: {str(e)}")
         return {"status": "error", "message": f"Error reading path history: {str(e)}", "history": [], "current": current_dir}
@@ -746,10 +749,22 @@ async def read_filesystem(path: str = None, read_content: bool = False) -> Dict[
             
             if read_content:
                 try:
-                    with open(path, 'r') as f:
-                        result["content"] = f.read()
-                except UnicodeDecodeError:
-                    result["content_error"] = "Unable to read content: File appears to be binary"
+                    # Try multiple encodings to handle Unicode properly
+                    encodings = ['utf-8', 'utf-8-sig', 'latin-1']
+                    content = None
+                    for encoding in encodings:
+                        try:
+                            with open(path, 'r', encoding=encoding) as f:
+                                content = f.read()
+                            result["content"] = content
+                            result["encoding_used"] = encoding
+                            break  # Successfully read the file, exit the loop
+                        except UnicodeDecodeError:
+                            continue  # Try the next encoding
+                        
+                    # If all encodings failed
+                    if content is None:
+                        result["content_error"] = "Unable to read content: Unicode decode error with all attempted encodings"
                 except Exception as e:
                     result["content_error"] = f"Unable to read content: {str(e)}"
             

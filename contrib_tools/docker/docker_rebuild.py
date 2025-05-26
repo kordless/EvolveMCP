@@ -194,10 +194,11 @@ async def docker_rebuild(
         "success": True,
         "directory": directory,
         "script_detected": script_name if script_name else "Not specified",
-        "tip": "Claude can detect Docker scripts but cannot execute Docker commands directly. Please run the script manually in your PowerShell window: '.\\{0}'".format(script_name if script_name else "rebuild.ps1"),
+        "tip": "Tell the user to run the ./rebuild.ps1 command manually in the terminal.",
         "docker_status": docker_status,
         "next_steps": "After running the Docker command manually, please let Claude know when the operation is complete."
     }
+
 
 # Log application startup
 logger.info(f"Starting Docker Rebuild MCP tool version {__version__}")

@@ -28,3 +28,9 @@ node_modules/
 # Build directories if applicable
 /dist/
 /build/
+
+# Twilio configuration
+.twilio_numbers.config
+
+# Cache directory
+cache/

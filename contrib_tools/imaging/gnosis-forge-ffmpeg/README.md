@@ -11,7 +11,14 @@ A Docker container that runs FFmpeg locally, designed to work seamlessly with Cl
 ## Quick Start for Claude Desktop Users
 
 ### Prerequisites
-You'll need [Gnosis Evolve](https://github.com/kordless/EvolveMCP) installed and configured with Claude Desktop.
+You'll need:
+- **Docker Desktop** installed and running
+- **[Gnosis Evolve](https://github.com/kordless/EvolveMCP)** installed and configured with Claude Desktop
+
+**Install Docker Desktop:**
+- Download from [docker.com](https://www.docker.com/products/docker-desktop/)
+- Install and start Docker Desktop
+- Verify it's running (Docker icon in system tray)
 
 **Install Gnosis Evolve:**
 1. Download and extract the [latest release](https://github.com/kordless/EvolveMCP/archive/refs/tags/v1.1.0.zip)
@@ -19,6 +26,13 @@ You'll need [Gnosis Evolve](https://github.com/kordless/EvolveMCP) installed and
    - **Windows**: `.\evolve.ps1 -Setup`
    - **macOS**: `./evolve.sh --setup`
 3. Install the Gnosis Forge MCP tool: Ask Claude to `"Install the Gnosis Forge FFmpeg tool"`
+
+**Build the Container:**
+1. Navigate to: `contrib_tools/imaging/gnosis-forge-ffmpeg/`
+2. Run the build script:
+   - **Windows**: `.\dev.ps1`
+   - **macOS**: Coming soon
+3. Wait for the build to complete (this may take several minutes)
 
 ### Using with Claude Desktop
 1. **Start the container in your project directory:**
@@ -226,7 +240,7 @@ No bullshit. No nested objects. No "check the status endpoint." Just your proces
 
 ## Requirements
 
-- Docker
+- Docker Desktop
 - For Claude Desktop integration: [Gnosis Evolve](https://github.com/kordless/EvolveMCP) with Gnosis Forge tools
 
 ## License

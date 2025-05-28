@@ -2,7 +2,7 @@
 
 ## What This Is
 
-A Docker container that runs FFmpeg locally, designed to work seamlessly with Claude Desktop and EvolveMCP. 
+A Docker container that runs FFmpeg locally, designed to work seamlessly with Claude Desktop and [Gnosis Evolve](https://github.com/kordless/EvolveMCP). 
 
 **For Claude Desktop users:** Start the container in your working directory, and Claude can process your images/videos directly using natural language.
 
@@ -10,13 +10,24 @@ A Docker container that runs FFmpeg locally, designed to work seamlessly with Cl
 
 ## Quick Start for Claude Desktop Users
 
+### Prerequisites
+You'll need [Gnosis Evolve](https://github.com/kordless/EvolveMCP) installed and configured with Claude Desktop.
+
+**Install Gnosis Evolve:**
+1. Download and extract the [latest release](https://github.com/kordless/EvolveMCP/archive/refs/tags/v1.1.0.zip)
+2. Run setup:
+   - **Windows**: `.\evolve.ps1 -Setup`
+   - **macOS**: `./evolve.sh --setup`
+3. Install the Gnosis Forge MCP tool: Ask Claude to `"Install the Gnosis Forge FFmpeg tool"`
+
+### Using with Claude Desktop
 1. **Start the container in your project directory:**
 ```bash
 cd /path/to/your/images
 docker run -p 6789:6789 -v $(pwd):/workspace gnosis-forge-ffmpeg
 ```
 
-2. **Talk to Claude Desktop (with EvolveMCP):**
+2. **Talk to Claude Desktop:**
 ```
 "Resize photo.jpg to 800px wide"
 "Convert vacation.mp4 to a GIF" 
@@ -47,7 +58,7 @@ That's it. Claude handles the FFmpeg commands, the container processes your file
 ```
 
 ### Behind the Scenes
-- Claude uses the **Gnosis Forge MCP Tool** from EvolveMCP
+- Claude uses the **Gnosis Forge MCP Tool** from [Gnosis Evolve](https://github.com/kordless/EvolveMCP)
 - Container mounts your current directory as `/workspace`
 - All processing happens locally on your machine
 - Results appear directly in your working directory
@@ -103,7 +114,7 @@ curl -X POST localhost:6789/process \
 |-----------|-------------------|--------------|------------------|
 | Image resize | 847ms (Pillow) | 23ms | **37x faster** |
 | Video transcode | 12.3s (MoviePy) | 2.1s | **6x faster** |
-| Format conversion | 234ms (ImageMagick) | 19ms | **12x faster** |
+| Format conversion | 234ms (ImageMagik) | 19ms | **12x faster** |
 | Batch processing | Doesn't scale | Linear scale | **∞x better** |
 
 *Benchmarks run on a potato laptop. Your mileage will vary (upward).*
@@ -216,7 +227,7 @@ No bullshit. No nested objects. No "check the status endpoint." Just your proces
 ## Requirements
 
 - Docker
-- For Claude Desktop integration: EvolveMCP with Gnosis Forge tools
+- For Claude Desktop integration: [Gnosis Evolve](https://github.com/kordless/EvolveMCP) with Gnosis Forge tools
 
 ## License
 

@@ -1,4 +1,4 @@
-# Imaging Tools - EvolveMCP Contrib
+# Imaging Tools - Gnosis Evolve Contrib
 
 Image processing, generation, and manipulation tools for AI agents and developers.
 
@@ -125,7 +125,7 @@ Will provide:
 - PDF generation from web pages
 - Visual regression testing
 
-## Installation in EvolveMCP
+## Installation in Gnosis Evolve
 
 ### Using evolve_tool command:
 
@@ -142,7 +142,7 @@ python evolve.py tool gnosis-forge-ffmpeg --contrib_category imaging --contrib_n
 ```
 
 ### Manual Installation:
-1. Copy the tool files to your EvolveMCP tools directory
+1. Copy the tool files to your Evolve tools directory
 2. Add to Claude's MCP configuration
 3. Restart Claude Desktop
 

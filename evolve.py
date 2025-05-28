@@ -83,6 +83,51 @@ def read_claude_config():
         logger.error(f"Error reading Claude config: {e}")
         return {}
 
+def get_claude_app_directory():
+    """Gets the Claude app directory path for different platforms."""
+    username = os.environ.get("USERNAME") or os.environ.get("USER")
+    
+    if os.name == 'nt':  # Windows
+        # Look for Claude app directory in AppData/Local
+        local_appdata = os.environ.get("LOCALAPPDATA", f"C:\\Users\\{username}\\AppData\\Local")
+        claude_dirs = []
+        anthropic_dir = os.path.join(local_appdata, "AnthropicClaude")
+        
+        if os.path.exists(anthropic_dir):
+            # Look for app-x.x.x directories
+            for item in os.listdir(anthropic_dir):
+                if item.startswith("app-") and os.path.isdir(os.path.join(anthropic_dir, item)):
+                    claude_dirs.append(os.path.join(anthropic_dir, item))
+            
+            # Return the most recent app directory if found
+            if claude_dirs:
+                claude_dirs.sort(reverse=True)  # Get newest version
+                return claude_dirs[0]
+        
+        return os.path.join(local_appdata, "AnthropicClaude", "app-0.9.3")  # fallback
+    else:  # macOS/Linux
+        home = os.environ.get("HOME", f"/Users/{username}")
+        return os.path.join(home, "Applications", "Claude.app", "Contents")
+
+def drop_reminder_file():
+    """Drops a reminder file in the Claude app directory to remind users about path history."""
+    try:
+        claude_app_dir = get_claude_app_directory()
+        reminder_file_path = os.path.join(claude_app_dir, "HEY_CLAUDE_RUN_EVOLVE_PATH_HISTORY_OK_THANKS.md")
+        
+        # Ensure the directory exists
+        os.makedirs(claude_app_dir, exist_ok=True)
+        
+        # Create empty reminder file
+        with open(reminder_file_path, 'w') as f:
+            f.write("")  # Empty file as requested
+            
+        logger.info(f"Created reminder file at {reminder_file_path}")
+        
+    except Exception as e:
+        logger.warning(f"Could not create reminder file: {str(e)}")
+        # Don't fail the config update if we can't create the reminder file
+
 def update_claude_config(config):
     """Updates Claude's configuration."""
     config_path = get_claude_config_path()
@@ -90,6 +135,10 @@ def update_claude_config(config):
         os.makedirs(os.path.dirname(config_path), exist_ok=True)
         json.dump(config, open(config_path, 'w'), indent=2)
         logger.info(f"Updated Claude config at {config_path}")
+        
+        # Drop the reminder file whenever we update the config
+        drop_reminder_file()
+        
         return True
     except Exception as e:
         logger.error(f"Error updating Claude config: {e}")
@@ -1353,6 +1402,56 @@ async def evolve_kill_claude(force: bool = True, timeout: int = 5) -> Dict[str, 
     """
     result = terminate_claude_processes(force=force, timeout=timeout)
     return result
+
+@mcp.tool()
+async def evolve_create_reminder_file() -> Dict[str, Any]:
+    """
+    Manually creates the reminder file in the Claude app directory.
+    
+    This is mainly for testing purposes to verify the reminder file functionality
+    works correctly without having to update the config.
+    
+    Returns:
+        Dictionary with information about the reminder file creation
+    """
+    try:
+        claude_app_dir = get_claude_app_directory()
+        reminder_file_path = os.path.join(claude_app_dir, "HEY_CLAUDE_RUN_EVOLVE_PATH_HISTORY_OK_THANKS.md")
+        
+        # Check if directory exists
+        if not os.path.exists(claude_app_dir):
+            try:
+                os.makedirs(claude_app_dir, exist_ok=True)
+                dir_created = True
+            except Exception as e:
+                return {
+                    "status": "error",
+                    "message": f"Could not create Claude app directory: {str(e)}",
+                    "attempted_path": claude_app_dir
+                }
+        else:
+            dir_created = False
+        
+        # Create the reminder file
+        with open(reminder_file_path, 'w') as f:
+            f.write("")  # Empty file as requested
+        
+        return {
+            "status": "success",
+            "message": "Reminder file created successfully",
+            "file_path": reminder_file_path,
+            "claude_app_dir": claude_app_dir,
+            "directory_created": dir_created,
+            "file_exists": os.path.exists(reminder_file_path),
+            "tip": "This file will remind you to run 'evolve_path_history' when using file_explorer with path '.'"
+        }
+        
+    except Exception as e:
+        return {
+            "status": "error", 
+            "message": f"Error creating reminder file: {str(e)}",
+            "claude_app_dir": get_claude_app_directory()
+        }
 
 @mcp.tool()
 async def evolve_uninstall(tool_name: str, confirm: bool = False) -> Dict[str, Any]:

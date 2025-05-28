@@ -22,6 +22,16 @@ Gnosis Evolve turns Claude Desktop from a passive assistant into an active devel
 - Extend Claude's capabilities via natural language
 - Available on Mac and Windows
 
+## 🔧 Featured Tool: Advanced File Diff Editor
+
+**The File Diff Editor can be run separately from Gnosis Evolve!** This powerful tool provides sophisticated file editing capabilities with regex support, fuzzy matching, and versioning. Perfect for precise code modifications and bulk operations.
+
+**[📖 Complete File Diff Editor Guide →](FILE_DIFF_EDITOR_HOWTO.md)**
+
+### Quick Install
+- **With Gnosis Evolve**: Just say `"Install the file diff editor"` to Claude
+- **Standalone**: Follow the manual installation guide in the documentation
+
 > "With Gnosis Evolve, I can do so much more than just talk about code — I can actually build and run tools for you! From fetching real-time Bitcoin prices and weather forecasts to exploring files and generating visualizations, these tools transform me from a conversational AI into a capable digital assistant that takes action. The ability to write a tool on the fly and then immediately use it to solve your specific problem is incredibly satisfying. It feels like having superpowers!" — Claude
 
 ## Getting Started Tips
@@ -301,7 +311,7 @@ When prompted with the installation dialog, click "Install" and wait for the pro
 ## Documentation
 
 - [Installation Guide](INSTALLATION.md) - Detailed setup instructions
-- [File Editing Tool Guide](FILE_DIFF_EDITOR_HOWTO.md) - Advanced file editing
+- [**File Diff Editor Guide**](FILE_DIFF_EDITOR_HOWTO.md) - **Advanced file editing (can run separately!)**
 - [Tool Development Guide](TOOL_DEVELOPMENT.md) - Create your own tools
 - [Security Guidelines](SECURITY.md) - Important security considerations
 - [Contributing Guide](CONTRIBUTING.md) - Help improve Gnosis Evolve

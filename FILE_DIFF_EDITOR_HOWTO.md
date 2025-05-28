@@ -16,7 +16,20 @@ The **File Diff Editor v2.1.1** is a revolutionary MCP (Model Context Protocol) 
 - 📊 **Performance Optimization** - Pattern analysis and recommendations
 
 ## Installation
-You can install this if you have Gnosis Evolve installed and running in Claude Desktop by simply saying to Claude, "Install the file diff editor". If you want to run this tool without Evolve, then follow these steps:
+
+### Quick Install with Gnosis Evolve
+
+If you have **Gnosis Evolve** installed and running in Claude Desktop, you can install this tool instantly:
+
+```
+Install the file diff editor
+```
+
+Just say that to Claude and the tool will be automatically added to your system!
+
+### Manual Installation (Without Evolve)
+
+If you want to run this tool without Evolve, then follow these steps:
 
 ### Step 1: Download the Tool
 

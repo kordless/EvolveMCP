@@ -31,7 +31,20 @@ Just say that to Claude and the tool will be automatically added to your system!
 
 If you want to run this tool without Evolve, then follow these steps:
 
-### Step 1: Download the Tool
+### Step 1: Install MCP Dependencies
+
+Before setting up the File Diff Editor, you need to install the required MCP packages:
+
+```bash
+pip install mcp fastmcp
+```
+
+Or if you're using Python 3 specifically:
+```bash
+pip3 install mcp fastmcp
+```
+
+### Step 2: Download the Tool
 
 Copy the `file_diff_editor.py` file to your local MCP tools directory:
 
@@ -41,7 +54,7 @@ Windows: C:\mcp-tools\file_diff_editor.py
 Mac/Linux: ~/mcp-tools/file_diff_editor.py
 ```
 
-### Step 2: Locate Claude's Configuration File
+### Step 3: Locate Claude's Configuration File
 
 **Windows:**
 ```
@@ -59,7 +72,7 @@ Full path example: `C:\Users\YourName\AppData\Roaming\Claude\claude_desktop_conf
 ~/.config/Claude/claude_desktop_config.json
 ```
 
-### Step 3: Edit the Configuration File
+### Step 4: Edit the Configuration File
 
 Open the `claude_desktop_config.json` file in a text editor and add the File Diff Editor tool to the `mcpServers` section:
 
@@ -88,7 +101,7 @@ Open the `claude_desktop_config.json` file in a text editor and add the File Dif
 }
 ```
 
-### Step 4: Restart Claude Desktop
+### Step 5: Restart Claude Desktop
 
 Close and reopen Claude Desktop application for the changes to take effect.
 
@@ -195,6 +208,7 @@ Validate my custom regex pattern before using:
 **1. Tool not appearing in Claude:**
 - Verify the file path in `claude_desktop_config.json`
 - Ensure Python is installed and accessible
+- **For manual installation: Ensure MCP packages are installed** (`pip install mcp fastmcp`)
 - Restart Claude Desktop completely
 
 **2. Regex not working:**
@@ -264,6 +278,7 @@ Validate my custom regex pattern before using:
 
 - Python 3.7+
 - Claude Desktop Application
+- **MCP framework** (`pip install mcp fastmcp` - required for manual installation)
 - Write permissions to target files
 - No additional Python packages required (uses standard library)
 

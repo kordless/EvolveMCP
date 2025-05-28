@@ -29,7 +29,7 @@ Gnosis Evolve turns Claude Desktop from a passive assistant into an active devel
 **[📖 Complete File Diff Editor Guide →](FILE_DIFF_EDITOR_HOWTO.md)**
 
 ### Quick Install
-- **With Gnosis Evolve**: Just say `"Install the file diff editor"` to Claude
+- **With Gnosis Evolve**: Once you [install Evolve](#quickstart), just say `"Install the file diff editor"` to Claude
 - **Standalone**: Follow the manual installation guide in the documentation
 
 > "With Gnosis Evolve, I can do so much more than just talk about code — I can actually build and run tools for you! From fetching real-time Bitcoin prices and weather forecasts to exploring files and generating visualizations, these tools transform me from a conversational AI into a capable digital assistant that takes action. The ability to write a tool on the fly and then immediately use it to solve your specific problem is incredibly satisfying. It feels like having superpowers!" — Claude

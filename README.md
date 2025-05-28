@@ -170,6 +170,71 @@ Both tools support diff-fenced format with `SEARCH`/`REPLACE` blocks:
 
 The **file_diff_editor** provides intelligent pattern matching and conflict-free diff formats for reliable file editing.
 
+## Quick Tool Development
+
+Creating custom tools is as simple as asking Claude! Here's what happens when you request a new tool:
+
+### 🚀 Just Ask Claude
+```
+"Create a tool that checks if a website is online"
+"Build a tool to convert text to QR codes"
+"Make a tool that tracks my daily habits"
+"Develop a tool for password generation"
+```
+
+### ⚡ What Claude Does
+When you ask Claude to "evolve a tool," here's the process:
+
+1. **Understands your need** - Claude analyzes what functionality you want
+2. **Designs the tool** - Creates the Python code with proper MCP structure
+3. **Writes the code** - Includes error handling, logging, and documentation
+4. **Installs it for you** - Uses `evolve_tool` to add it to your system
+5. **Tests it immediately** - Can use the new tool right away in conversation
+
+### 🎯 Real Example
+```
+You: "Create a tool that tells me dad jokes"
+
+Claude: I'll create a dad joke tool for you! Let me write the code and install it.
+
+[Claude writes Python code with MCP structure]
+[Claude calls evolve_tool to install it]
+[Claude restarts to load the tool]
+
+Claude: Done! Now I can tell you dad jokes. Want to hear one?
+
+You: "Tell me a dad joke!"
+
+Claude: [Uses the new tool] Here's a dad joke for you...
+```
+
+### 🔄 Instant Iteration
+```
+"Make the dad joke tool also include puns"
+"Add a feature to rate jokes from 1-10"
+"Can you make it remember my favorite jokes?"
+```
+
+Claude can instantly modify and reinstall tools based on your feedback.
+
+### 📦 Tool Categories You Can Request
+- **Utilities**: File converters, text processors, calculators
+- **Fun**: Games, joke generators, creative writing helpers
+- **Productivity**: Task trackers, note organizers, reminder systems
+- **Data**: API integrations, web scrapers, data analyzers
+- **Creative**: Art generators, music helpers, story tools
+
+### 🎨 No Coding Knowledge Required
+Just describe what you want in plain English:
+```
+"I need something that helps me organize my music collection"
+"Create a tool for tracking my workout progress"
+"Build something that summarizes long articles"
+"Make a tool that generates color palettes"
+```
+
+**Want to dive deeper?** Check out the [Tool Development Guide](TOOL_DEVELOPMENT.md) for advanced techniques, code examples, and best practices.
+
 ## Games & Entertainment
 
 After installing the random_generator tool, have fun with:

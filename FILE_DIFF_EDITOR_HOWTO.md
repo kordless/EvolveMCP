@@ -25,7 +25,7 @@ If you have **Gnosis Evolve** installed and running in Claude Desktop, you can i
 Install the file diff editor
 ```
 
-Just say that to Claude and the tool will be automatically added to your system!
+Just say that to Claude and the tool will be automatically added to your system! You will need to restart Claude after to load the new tool server.
 
 ### Manual Installation (Without Evolve)
 

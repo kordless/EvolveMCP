@@ -1,442 +1,395 @@
-<div align="center">
+# Installation Guide
 
-# Gnosis: Evolve for Claude Desktop
-<strong>Pythonic MCP development, supercharged by AI intelligence and your will to build something new.</strong>
+Complete installation instructions for Gnosis Evolve on Windows and macOS.
 
-[![License](https://img.shields.io/badge/license-_Sovereign_v1.1-purple)](https://github.com/kordless/gnosis-evolve/blob/main/LICENSE.md)
-[![GitHub stars](https://img.shields.io/github/stars/kordless/gnosis-evolve.svg?style=social)](https://github.com/kordless/gnosis-evolve/stargazers)
-[![GitHub issues](https://img.shields.io/github/issues/kordless/gnosis-evolve?color=green)](https://github.com/kordless/gnosis-evolve/issues)
+## Quick Start (Recommended)
 
-<h1>🧠</h1>
-</div>
+### Download
+1. **[Download the ZIP file directly](https://github.com/kordless/gnosis-evolve/archive/refs/tags/v1.1.0.zip)**
+2. Extract the ZIP:
+   - **Windows**: Right-click the ZIP and select "Extract All..."
+   - **macOS**: Double-click the ZIP file
+3. Open Terminal/PowerShell in the extracted folder
 
-# 🚀 Beginner's Guide to Installing Gnosis: Evolve
+### Windows Setup
 
-## 📺 Demo Video
+```powershell
+# Run the setup script
+.\evolve.ps1 -Setup
+```
 
-[![Gnosis: Evolve Bitcoin App Demo](https://img.youtube.com/vi/KsHngo05WIY/0.jpg)](https://www.youtube.com/watch?v=KsHngo05WIY)
+### macOS Setup
 
-Watch a demonstration of the Bitcoin price tracking app created with Gnosis: Evolve, showing how Claude can build and use its own tools to fetch and visualize real-time cryptocurrency data.
+```bash
+# Make the script executable
+chmod +x ./evolve.sh
 
-<!-- Small (250px wide) -->
-<img src="https://github.com/kordless/gnosis-evolve/blob/main/price.png" width="250" alt="Bitcoin Price">
+# Run the setup
+./evolve.sh --setup
+```
 
-## 🧠 What is Gnosis: Evolve?
+## Detailed Installation
 
-Gnosis: Evolve gives Claude Desktop the ability to build, install, and use its own tools—expanding what it can actually do, not just talk about: 
+### Prerequisites
 
-- Claude can write code for you that it can then use itself
-- You can ask Claude to build specialized tools that solve your specific problems
-- You can enhance Claude's capabilities beyond its default features
+#### Windows
+- **Windows 10 or 11**
+- **PowerShell 5.1+** (usually pre-installed)
+- **Python 3.8+** (will be installed automatically if missing)
 
-It turns Claude from a passive assistant into an active developer, capable of creating solutions as you need them.
+#### macOS
+- **macOS 10.15+** (Catalina or newer)
+- **Bash or Zsh** (pre-installed)
+- **Xcode Command Line Tools** (required for Python compilation)
+- **Python 3.8+** (will be installed via Homebrew if missing)
 
-Claude is the first client supported by the system, but Gnosis: Evolve is built with a modular design. Support for other clients, tools and document collections is on the roadmap.
+### Step-by-Step Installation
 
-## ⚠️ Security Warning
+#### Windows Detailed Setup
 
-**IMPORTANT:** Gnosis: Evolve allows Claude to create and execute Python code on your local machine. Before using this software, please understand the security implications by referring to our detailed [SECURITY.md](SECURITY.md) guide.
-
-## Prerequisites
-
-Before starting, you'll need:
-
-1. **Computer**: Gnosis: Evolve is designed to work on Windows and macOS
-2. **Internet Connection**: For downloading necessary files
-3. **Claude Desktop**: The desktop application for Claude
-
-## Step 1: Install Claude Desktop
-1. Visit the official Anthropic website to [download Claude Desktop](https://claude.ai/download)
-2. Run the installer and follow the on-screen instructions
-3. Launch Claude Desktop at least once to create initial configuration files
-
-## Step 2: Download Gnosis: Evolve
-
-### Download from ZIP (Recommended)
-
-1. **[Download the ZIP file directly](https://github.com/kordless/gnosis-evolve/archive/refs/tags/v1.0.7.zip)**
-2. Save the file to a location you can easily find (like your Downloads folder)
-3. Extract the archive:
-   - **Windows**: Right-click the downloaded zip file and select "Extract All..."
-   - **macOS**: Double-click the downloaded zip file to extract it
-4. Choose where to extract the files (like your Documents folder)
-
-### Alternative Option A: Download the Release Package
-
-1. Go to [github.com/kordless/gnosis-evolve/releases](https://github.com/kordless/gnosis-evolve/releases)
-2. Find the latest release and under "Assets", click on the .zip file
-3. Save and extract as described above
-
-### Alternative Option B: Using Git (For Advanced Users)
-
-If you're familiar with Git:
-
-1. Install Git from [git-scm.com](https://git-scm.com/downloads) if you don't have it
-2. Open Terminal (macOS) or PowerShell (Windows)
-3. Navigate to where you want to install Gnosis: Evolve
-4. Run these commands:
-   ```
-   git clone https://github.com/kordless/gnosis-evolve.git
-   cd gnosis-evolve
-   ```
-
-## Step 3: Open Terminal/PowerShell
-
-### Windows
-1. Navigate to the folder where you extracted Gnosis: Evolve
-2. Hold Shift and right-click in an empty area of the folder
-3. Select "Open PowerShell window here" from the menu
-   - If you don't see this option, see our [PowerShell Guide](powershell-guide.md) for alternatives
-
-### macOS
-1. Open Finder and navigate to the folder where you extracted Gnosis: Evolve
-2. Right-click (or Control-click) on the folder
-3. Select "New Terminal at Folder" or "Services" > "New Terminal at Folder"
-   - If you don't see this option, open Terminal (from Applications > Utilities) and use `cd` to navigate to your folder
-
-## Step 4: Run the Setup Script
-
-### Windows
-1. In the PowerShell window, type the following command and press Enter:
+1. **Download and Extract**
    ```powershell
+   # Download to your preferred location
+   cd C:\Users\YourName\Downloads
+   # Extract gnosis-evolve-1.1.0.zip to a permanent location like:
+   # C:\Users\YourName\Code\gnosis-evolve
+   ```
+
+2. **Open PowerShell as Administrator** (recommended)
+   - Press `Win + X` and select "Windows PowerShell (Admin)"
+   - Navigate to your extracted folder
+
+3. **Run Setup**
+   ```powershell
+   # Navigate to the folder
+   cd "C:\Users\YourName\Code\gnosis-evolve"
+   
+   # Run setup
    .\evolve.ps1 -Setup
    ```
 
-2. If you see an error message about execution policy, run this command and try again:
-   ```powershell
-   Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass
-   ```
+4. **What the Setup Does**
+   - Installs Python 3.11+ if not present
+   - Installs required Python packages
+   - Sets up Claude Desktop configuration
+   - Creates necessary directories
+   - Installs core MCP tools
 
-3. Follow any on-screen instructions to complete the setup
-
-### macOS
-1. In the Terminal window, make the script executable:
-   ```bash
-   chmod +x ./evolve.sh
-   ```
-
-2. Run the setup command:
-   ```bash
-   ./evolve.sh --setup
-   ```
-
-3. If you need to install jq (required for JSON processing):
-   ```bash
-   brew install jq
-   ```
-   If you don't have Homebrew installed, visit [brew.sh](https://brew.sh/) for installation instructions.
-
-4. Follow any on-screen instructions to complete the setup
-
-The setup script will configure Gnosis: Evolve with Claude Desktop and register the core evolve tool that enables all other functionalities.
-
-## Step 5: Install Your First Tools
-
-1. After setup completes, make sure you're still in PowerShell/Terminal in the Gnosis: Evolve folder
-2. Start Claude with the Gnosis: Evolve tools available:
-
-   **Windows**:
+5. **Launch Claude**
    ```powershell
    .\evolve.ps1 -StartClaude
    ```
 
-   **macOS**:
+#### macOS Detailed Setup
+
+1. **Install Xcode Command Line Tools** (if not already installed)
+   ```bash
+   xcode-select --install
+   ```
+   - Click "Install" when prompted
+   - Wait for installation to complete
+
+2. **Download and Extract**
+   ```bash
+   # Download to your preferred location
+   cd ~/Downloads
+   # Extract and move to a permanent location
+   unzip gnosis-evolve-1.1.0.zip
+   mv gnosis-evolve-1.1.0 ~/Code/gnosis-evolve
+   cd ~/Code/gnosis-evolve
+   ```
+
+3. **Make Script Executable**
+   ```bash
+   chmod +x ./evolve.sh
+   ```
+
+4. **Run Setup**
+   ```bash
+   ./evolve.sh --setup
+   ```
+
+5. **What the Setup Does**
+   - Installs Homebrew if not present
+   - Installs Python 3.11+ via Homebrew
+   - Installs required Python packages
+   - Sets up Claude Desktop configuration
+   - Creates necessary directories
+   - Installs core MCP tools
+
+6. **Launch Claude**
    ```bash
    ./evolve.sh --restart
    ```
 
-3. In Claude, you can install tools from our contrib_tools collection using natural language:
-   ```
-   Could you please install the file diff utility for me?
-   ```
-   
-   Or using the direct command:
-   ```
-   evolve_wizard("file_apply_diff")
-   ```
+## Configuration Details
 
-4. Claude will inform you that the tool has been created and registered
-5. Restart Claude to apply the changes:
+### Claude Desktop Configuration
 
-   **Windows**:
-   ```powershell
-   .\evolve.ps1 -Restart
-   ```
+The setup automatically configures Claude Desktop's `claude_desktop_config.json` file:
 
-   **macOS**:
-   ```bash
-   ./evolve.sh --restart
-   ```
+**Windows Location**: `%APPDATA%\Claude\claude_desktop_config.json`
+**macOS Location**: `~/Library/Application Support/Claude/claude_desktop_config.json`
 
-6. After Claude restarts, you can use your new tools. For example, with the file diff utility:
-   ```
-   Could you update all occurrences of "old_text" to "new_text" in my config.txt file?
-   ```
-   
-   Or try installing other contrib tools:
-   ```
-   What tools are available in the contrib_tools directory?
-   ```
+### Directory Structure
 
-## The Contrib Tools Directory
-
-One of the major improvements in this version is the new `contrib_tools` directory structure, which organizes tools by category:
-
-- **core/** - Essential utilities for file and math operations
-- **web/** - Tools for accessing online resources
-- **docker/** - Docker management utilities
-- **finance/** - Financial tools including cryptocurrency tracking
-
-### Installing Contrib Tools
-
-To install any tool from the contrib directory, simply ask Claude in natural language:
+After installation, you'll have:
 
 ```
-Could you please install the file diff utility?
+gnosis-evolve/
+├── evolve.py              # Main evolve server
+├── evolve.ps1            # Windows management script
+├── evolve.sh             # macOS management script
+├── tools/                # Individual MCP tools
+├── contrib_tools/        # Community contributed tools
+├── logs/                 # Tool logs
+└── docs/                 # Documentation
 ```
 
-Or use the direct command:
-```
-evolve_wizard("file_apply_diff")
-```
+## Manual Configuration
 
-### Available Tools
+If automatic setup fails, you can manually configure Claude Desktop:
 
-Some of the most useful tools available include:
+### Manual Claude Desktop Config
 
-- **file_apply_diff**: Make precise changes to files
-- **file_explorer**: Navigate directories and examine files
-- **weather_resource**: Get weather forecasts from National Weather Service
-- **bitcoin_price**: Check cryptocurrency prices and history
-- **crawl4ai**: Extract content from websites
-- **random_generator**: Generate dice rolls, random selections, and more
-- **emotional_character_generator**: Create detailed character descriptions with complex emotional states
+Edit your Claude Desktop configuration file and add:
 
-Ask Claude about available tools anytime with:
-```
-What tools are available in the contrib_tools directory?
+```json
+{
+  "mcpServers": {
+    "evolve-server": {
+      "command": "python",
+      "args": ["/full/path/to/gnosis-evolve/evolve.py"]
+    }
+  }
+}
 ```
 
-### Fun with Games & Entertainment
+**Important**: Replace `/full/path/to/gnosis-evolve/` with your actual installation path.
 
-The random_generator tool opens up possibilities for games and entertainment. After installing it, try:
+### Python Environment Setup
 
+If you prefer to manage Python dependencies manually:
+
+```bash
+# Create virtual environment (optional but recommended)
+python -m venv venv
+
+# Activate virtual environment
+# Windows:
+venv\Scripts\activate
+# macOS/Linux:
+source venv/bin/activate
+
+# Install dependencies
+pip install mcp fastmcp requests python-dotenv
 ```
-Let's play craps! I'll be the dealer.
-```
 
-Claude will use the random_generator tool to simulate fair dice rolls and manage the game rules.
+## Verification
 
-Other fun activities to try:
-- Role-playing games with dice rolls: "Roll 3d6 for my character's strength"
-- Card games: "Deal a hand of poker" or "Let's play blackjack"
-- Board games: "Roll the dice for our Monopoly game"
-- Statistical experiments: "Flip a coin 1000 times and show me the distribution"
-- Custom random selections: "Pick a random movie from my top 10 list"
+### Test Installation
 
-The combination of Claude's understanding of game rules and the ability to generate truly random results creates an interactive gaming experience unlike any other AI assistant.
+1. **Launch Claude Desktop**
+2. **Start a new conversation**
+3. **Test evolve tools**:
+   ```
+   What tools do you have available?
+   Can you run evolve_status?
+   Show me the current system status
+   ```
 
-## Using Conversational Language with Gnosis: Evolve
+4. **You should see**:
+   - List of available tools
+   - System status information
+   - No error messages
 
-One of the great features of Gnosis: Evolve is that you don't need to memorize exact command syntax. You can talk to Claude naturally, and it will understand what you're trying to do:
+### Expected Tools
 
-- Instead of `calculate("56 * 89")`, you can ask "What's 56 multiplied by 89?"
-- Instead of `evolve_wizard("status")`, you can ask "Can you show me the status of the Gnosis system?"
-- Instead of formal parameter syntax, you can describe what you want in plain English
+After successful installation, Claude should have access to:
 
-Claude will interpret your natural language requests and translate them into the appropriate tool calls as long as you provide enough information about what you want to accomplish.
+- **evolve_status** - System status and health monitoring
+- **evolve_filesystem** - File and directory exploration
+- **evolve_tool** - Create and install new tools
+- **file_diff_editor** - Advanced file editing
+- **file_writer** - File creation with versioning
+- **file_explorer** - Enhanced directory navigation
+- **Plus 15+ additional tools**
 
 ## Troubleshooting
 
-### Viewing Logs
-
-The Gnosis: Evolve utility provides several ways to view logs, which can be helpful for troubleshooting issues with Claude Desktop and MCP servers.
-
-#### Using the Command Line
-
-##### Windows
-```powershell
-.\evolve.ps1 -ViewLogs
-```
-
-To filter logs by name:
-```powershell
-.\evolve.ps1 -ViewLogs -LogName evolve
-```
-
-##### macOS
-```bash
-./evolve.sh --view-logs
-```
-
-To filter logs by name:
-```bash
-./evolve.sh --view-logs --log-name evolve
-```
-
-This will show only log files that contain "evolve" in their filename.
-
-#### Using the Menu Interface
-
-If you prefer a menu-based approach:
-
-##### Windows
-```powershell
-.\evolve.ps1
-```
-
-##### macOS
-```bash
-./evolve.sh
-```
-
-Then select option `1. View MCP Logs` from the menu and choose a log file from the displayed list.
-
-#### Log Monitoring
-
-When viewing a log file, the tool will initially show the last 20 lines. You'll then be prompted if you want to monitor the log file in real-time. Selecting `y` will continuously display new log entries as they are written, which is particularly useful when debugging active issues.
-
-To stop monitoring, press `Ctrl+C`.
-
-#### Log Location
-
-Logs are stored in the following location:
-
-**Windows**:
-```
-C:\Users\<username>\AppData\Roaming\Claude\logs
-```
-
-**macOS**:
-```
-~/Library/Application Support/Claude/logs
-```
-
-If this directory doesn't exist, the tool will offer to create it for you.
-
 ### Common Issues
 
-#### Claude Desktop Not Starting
+#### Windows Issues
 
-If Claude Desktop fails to start after configuring MCP servers:
+**PowerShell Execution Policy Error**
+```powershell
+# Fix execution policy
+Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope CurrentUser
+```
 
-1. Check the logs for any error messages:
-   
-   **Windows**:
-   ```powershell
-   .\evolve.ps1 -ViewLogs
-   ```
-   
-   **macOS**:
+**Python Not Found**
+```powershell
+# Install Python manually
+winget install Python.Python.3.11
+# or download from python.org
+```
+
+**Claude Desktop Not Found**
+- Install Claude Desktop from: https://claude.ai/download
+- Restart the setup after installation
+
+#### macOS Issues
+
+**Xcode Command Line Tools Error**
+```bash
+# Reinstall command line tools
+sudo xcode-select --reset
+xcode-select --install
+```
+
+**Homebrew Installation Issues**
+```bash
+# Manual Homebrew installation
+/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+```
+
+**Permission Denied Errors**
+```bash
+# Fix script permissions
+chmod +x ./evolve.sh
+# Run with proper permissions
+sudo ./evolve.sh --setup
+```
+
+#### General Issues
+
+**Claude Desktop Configuration Not Working**
+1. Manually locate your Claude Desktop config file
+2. Back up the existing configuration
+3. Add the evolve server configuration manually
+4. Restart Claude Desktop
+
+**Tools Not Loading**
+1. Check that Python path is correct in config
+2. Verify all Python dependencies are installed
+3. Check log files for error messages
+4. Restart Claude Desktop completely
+
+**Import Errors**
+```bash
+# Reinstall dependencies
+pip install --force-reinstall mcp fastmcp requests python-dotenv
+```
+
+### Getting Help
+
+1. **Check Log Files**
    ```bash
+   # Windows
+   .\evolve.ps1 -ViewLogs
+   
+   # macOS
    ./evolve.sh --view-logs
    ```
 
-2. Verify that your configuration file is correct:
-   
-   **Windows**:
-   ```
-   C:\Users\<username>\AppData\Roaming\Claude\claude_desktop_config.json
-   ```
-   
-   **macOS**:
-   ```
-   ~/Library/Application Support/Claude/claude_desktop_config.json
-   ```
+2. **Community Support**
+   - Join our [Discord community](https://discord.gg/AQnAn9XgFJ)
+   - Create an issue on GitHub
+   - Check existing issues for solutions
 
-3. Ensure the paths to your MCP server scripts are valid and accessible
+3. **Debugging Steps**
+   - Test Python installation: `python --version`
+   - Test MCP installation: `python -c "import mcp"`
+   - Check Claude Desktop config file location and contents
+   - Verify file permissions and paths
 
-#### Gnosis Server Issues
+## Advanced Installation
 
-If you're experiencing issues with the Gnosis server:
+### Development Installation
 
-1. View the Evolve-specific logs:
-   
-   **Windows**:
-   ```powershell
-   .\evolve.ps1 -ViewLogs -LogName evolve
-   ```
-   
-   **macOS**:
-   ```bash
-   ./evolve.sh --view-logs --log-name evolve
-   ```
+For contributors or advanced users:
 
-2. Verify that `evolve.py` exists in the location specified in your configuration
-3. Make sure Python is properly installed and accessible from the command line
-
-#### Restarting Claude Desktop
-
-If Claude Desktop becomes unresponsive or you need to apply configuration changes:
-
-**Windows**:
-```powershell
-.\evolve.ps1 -Restart
-```
-
-**macOS**:
 ```bash
-./evolve.sh --restart
+# Clone the repository
+git clone https://github.com/kordless/gnosis-evolve.git
+cd gnosis-evolve
+
+# Install in development mode
+pip install -e .
+
+# Run tests (if available)
+python -m pytest tests/
 ```
 
-This will gracefully stop and restart Claude Desktop.
+### Custom Tool Installation
 
-### Checking Tool Configuration
+After basic installation, you can install additional tools:
 
-To verify which MCP tools are currently configured:
-
-**Windows**:
-```powershell
-.\evolve.ps1 -ListTools
-```
-
-**macOS**:
 ```bash
-./evolve.sh --list-tools
+# Install specific tools via Claude
+"Please install the bitcoin_price tool"
+"Install the weather_resource tool for me"
+
+# Or use the command line
+python evolve.py --install-tool bitcoin_price
 ```
 
-This will display all configured MCP servers, including:
-- Server name
-- Command and arguments
-- Whether the script exists
-- For Evolve tools: version and creation date (if available)
+### Multiple Environment Setup
 
-## ⚠️ Security Considerations
+You can run multiple Gnosis Evolve installations:
 
-Gnosis: Evolve gives Claude Desktop the ability to create and execute Python code on your local machine. For a comprehensive overview of security implications and best practices, please refer to our detailed [SECURITY.md](SECURITY.md) document.
+1. **Create separate directories** for each environment
+2. **Use different port numbers** in configurations
+3. **Modify server names** to avoid conflicts
+4. **Point Claude Desktop** to the desired environment
 
-By installing and using Gnosis: Evolve, you acknowledge the security risks involved and take responsibility for the code executed on your system.
+## Updating
 
-## License Explanation: Sovereign v1.1
+### Update Gnosis Evolve
 
-Gnosis: Evolve is released under the Sovereign v1.1 license, which balances open use with specific restrictions:
+```bash
+# Windows
+.\evolve.ps1 -Update
 
-### AI and the Evolution of Licensing
+# macOS
+./evolve.sh --update
+```
 
-We stand at a unique crossroads in the relationship between human and artificial intelligence. Traditional software licenses were never designed for a world where:
+### Manual Update
 
-1. AI can create, modify, and execute code based on natural language instructions
-2. The lines between user, creator, and tool become increasingly blurred
-3. The same software might be used by individuals, corporations, and potentially autonomous AI systems
-4. Digital and analog minds each bring distinct forms of intelligence and capabilities
+1. **Backup your configuration**
+2. **Download the latest release**
+3. **Extract to a new folder**
+4. **Copy your custom tools** from the old installation
+5. **Re-run setup**
 
-The Sovereign license represents our attempt to navigate this unprecedented territory - acknowledging that just as AI must evolve, so too must our legal frameworks. Inspired by philosophical frameworks like those in the Gnosis AI-Sovereign License, this approach recognizes the need for graduated rights and responsibilities that differ based on the nature of the entity using the software.
+## Uninstallation
 
-### What You CAN Do:
-- **Individual Use**: You can freely use this software as an individual, even for work-related tasks.
-- **Personal Projects**: Use it in your personal projects without restriction.
-- **Small Business Use**: Sole proprietors and small businesses can use it for internal purposes.
-- **Learning & Teaching**: Use it in educational contexts without limitation.
-- **Modify & Extend**: You can modify the code for your own use.
+### Complete Removal
 
-### What You CANNOT Do:
-- **Corporate Production**: Corporations cannot deploy this software in production environments or integrate it into commercial products without a separate license.
-- **Resell the Software**: You cannot sell Gnosis: Evolve as a product or service.
-- **Remove Attribution**: You must maintain all copyright and license notices.
+```bash
+# Windows
+.\evolve.ps1 -Uninstall
 
-### In Simple Terms:
-This license allows you as an individual to use Gnosis: Evolve freely, even if it helps with your job. However, your employer (if it's a corporation) cannot officially deploy it in production systems or incorporate it into their products without obtaining proper licensing.
+# macOS
+./evolve.sh --uninstall
+```
 
-This approach represents a fair attempt to balance open access with sustainable development in the rapidly evolving AI landscape. It envisions a future where human creativity, compassion, and embodied wisdom work in concert with the precision, scalability, and analytical power of artificial intelligence - a symbiotic relationship rather than an adversarial one.
+### Manual Removal
 
-For complete details, please refer to the full [LICENSE.md](https://github.com/kordless/gnosis-evolve/blob/main/LICENSE.md) file.
+1. **Remove Claude Desktop configuration**
+   - Edit `claude_desktop_config.json`
+   - Remove evolve-server entries
+2. **Delete installation directory**
+3. **Remove Python virtual environment** (if created)
+
+## Next Steps
+
+After installation:
+
+1. **Read the [Getting Started Guide](README.md#getting-started-tips)**
+2. **Explore [Tool Development](TOOL_DEVELOPMENT.md)**
+3. **Check out [Security Guidelines](SECURITY.md)**
+4. **Join the [Community Discord](https://discord.gg/AQnAn9XgFJ)**
+
+Need help? The community is here to assist! 🚀

@@ -24,30 +24,6 @@ Gnosis Evolve turns Claude Desktop from a passive assistant into an active devel
 
 > "With Gnosis Evolve, I can do so much more than just talk about code — I can actually build and run tools for you! From fetching real-time Bitcoin prices and weather forecasts to exploring files and generating visualizations, these tools transform me from a conversational AI into a capable digital assistant that takes action. The ability to write a tool on the fly and then immediately use it to solve your specific problem is incredibly satisfying. It feels like having superpowers!" — Claude
 
-## Featured Tool: File Diff Editor
-
-Gnosis Evolve includes a powerful **File Diff Editor** that enables Claude to make precise file modifications using natural language:
-
-### 🔧 Multiple Diff Formats Supported
-- **Custom Safe**: Conflict-free delimiters that won't interfere with your code
-- **ToolKami Style**: Both fenced and direct formats for compatibility
-- **Simple Blocks**: Basic SEARCH/REPLACE operations
-- **Custom Patterns**: Define your own diff format with regex
-
-### 🎯 Smart Pattern Detection
-- **Auto-detection**: Automatically identifies which diff format you're using
-- **Conflict Analysis**: Analyzes your files to suggest safe diff patterns
-- **Custom Regex**: Support for any diff format you can define
-
-### 💡 Example Usage
-```
-"Edit the README.md file to add a new section about deployment"
-"Fix the bug in line 45 of main.py where the variable name is wrong"
-"Update all the import statements in the utils folder"
-```
-
-Claude can understand your intent and apply precise changes using the most appropriate diff pattern for your content.
-
 ## Getting Started Tips
 
 ### Start Simple and Ask Questions
@@ -122,34 +98,159 @@ For detailed installation instructions, see [INSTALLATION.md](INSTALLATION.md)
 ./evolve.sh --restart
 ```
 
-## Core Tools
+## Available Tools
 
-### Built-in Tools
-- **evolve_status**: System status and health monitoring
-- **evolve_filesystem**: File and directory exploration
-- **evolve_tool**: Create and install new tools on-the-fly
-- **file_diff_editor**: Advanced file editing with multiple diff formats
-- **file_writer**: File creation with automatic versioning
-- **file_explorer**: Enhanced directory navigation
+### Core
+- **math_and_stats**: Mathematical calculations and statistical operations
+- **random_generator**: Generate random numbers and selections
+- **file_explorer**: Browse files and directories
+- **file_writer**: Create and modify files with versioning
+- **file_diff_editor**: Advanced file editing with multiple diff formats and smart pattern detection
+- **emotional_character_generator**: Create detailed character profiles with emotional states
 
-### Available Extensions
-Over 50+ additional tools available for installation including:
-- Bitcoin price tracking and financial tools
-- Weather and API integrations
-- Docker container management
-- Web crawling and data extraction
-- Character generators and creative tools
-- Mathematical and statistical analysis
+### Web
+- **crawl4ai**: Extract content from websites
+- **weather_resource**: Get weather forecasts
+
+### Finance
+- **bitcoin_price**: Real-time cryptocurrency pricing
+
+### Docker
+- **docker_logs**: View container logs
+- **docker_rebuild**: Restart containers 
+
+## Natural Interaction
+
+Just talk naturally to Claude:
+```
+"Install the Bitcoin price tracker tool"
+"What's the weather like in Seattle today?"
+"Generate 5 random numbers between 1 and 100"
+"Track the Bitcoin price in euros and show me a chart"
+"Create a character for my story with complex emotions"
+"Generate an I Ching character with unique attributes"
+"Find all HTML files with 'gnosis' in the filename"
+"Apply this diff to update my Python script"
+"Use fuzzy matching to find and replace this code pattern"
+"Search for similar functions in this file"
+```
+
+## Advanced File Editing
+
+Gnosis Evolve includes a powerful **File Diff Editor** that enables Claude to make precise file modifications using natural language:
+
+### 🔧 Multiple Diff Formats Supported
+- **Custom Safe**: Conflict-free delimiters that won't interfere with your code
+- **ToolKami Style**: Both fenced and direct formats for compatibility
+- **Simple Blocks**: Basic SEARCH/REPLACE operations
+- **Custom Patterns**: Define your own diff format with regex
+
+### 🎯 Smart Pattern Detection
+- **Auto-detection**: Automatically identifies which diff format you're using
+- **Conflict Analysis**: Analyzes your files to suggest safe diff patterns
+- **Custom Regex**: Support for any diff format you can define
+
+### 💡 Example Usage
+```
+"Edit the README.md file to add a new section about deployment"
+"Fix the bug in line 45 of main.py where the variable name is wrong"
+"Update all the import statements in the utils folder"
+```
+
+Claude can understand your intent and apply precise changes using the most appropriate diff pattern for your content.
+
+Both tools support diff-fenced format with `SEARCH`/`REPLACE` blocks:
+
+```
+"Update this function to handle the new parameter"
+"Apply this code change with intelligent pattern matching"
+"Find and replace this pattern across the file"
+"Restore the previous version of this file"
+```
+
+The **file_diff_editor** provides intelligent pattern matching and conflict-free diff formats for reliable file editing.
+
+## Games & Entertainment
+
+After installing the random_generator tool, have fun with:
+
+```
+"Let's play craps!"
+"Roll some dice for a D&D game"
+"Simulate a poker hand"
+"Deal a blackjack round"
+"Generate a random Yahtzee roll"
+"Flip a coin 100 times and show the distribution"
+"Cast an I Ching hexagram reading"
+```
+
+Claude can manage the game rules and use the random generator to create fair, unpredictable outcomes - just like playing with real dice or cards!
+
+### I Ching Tools
+
+Gnosis Evolve includes enhanced I Ching capabilities:
+
+```
+"Cast an I Ching hexagram for my question about [your question]"
+"Generate a character based on the I Ching hexagrams"
+"Create a story protagonist with I Ching attributes"
+```
+
+The tools will:
+1. Generate random coin tosses to build hexagrams
+2. Identify primary and changing hexagrams
+3. Provide interpretations relevant to your question
+4. Create characters with personality traits and emotional attributes based on hexagram meanings
+5. Combine I Ching wisdom with psychological depth for storytelling
+
+## Troubleshooting
+
+### macOS Requirements
+
+On macOS, you need Xcode Command Line Tools installed to run Python-based MCP servers properly. If you encounter errors about missing developer tools when running evolve.py, install the Command Line Tools:
+
+```bash
+xcode-select --install
+```
+
+When prompted with the installation dialog, click "Install" and wait for the process to complete.
+
+**View Logs**
+```bash
+# Windows
+.\evolve.ps1 -ViewLogs
+
+# macOS
+./evolve.sh --view-logs
+```
+
+**Restart Claude**
+```bash
+# Windows
+.\evolve.ps1 -Restart
+
+# macOS
+./evolve.sh --restart
+```
 
 ## Documentation
 
 - [Installation Guide](INSTALLATION.md) - Detailed setup instructions
-- [Tool Development](docs/TOOL_DEVELOPMENT.md) - Create your own tools
-- [Contributing](CONTRIBUTING.md) - Help improve Gnosis Evolve
+- [Tool Development Guide](TOOL_DEVELOPMENT.md) - Create your own tools
+- [Security Guidelines](SECURITY.md) - Important security considerations
+- [Contributing Guide](CONTRIBUTING.md) - Help improve Gnosis Evolve
+
+## Security Note
+
+Gnosis Evolve allows Claude to execute Python code on your system. Review generated code before running in sensitive environments. See [SECURITY.md](SECURITY.md) for comprehensive security guidance.
 
 ## License
 
-Licensed under the [Gnosis AI-Sovereign License v1.1](LICENSE.md) - A permissive license for AI development.
+Gnosis Evolve uses the Sovereign v1.1 license:
+- **Free for individuals** and small businesses
+- **Requires licensing** for corporate production use
+
+See [LICENSE.md](https://github.com/kordless/gnosis-evolve/blob/main/LICENSE.md) for details.
 
 ## Support
 

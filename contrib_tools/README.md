@@ -8,6 +8,7 @@ This directory contains community-contributed tools for Gnosis: Evolve that can 
 - **web/**: Web tools for Gnosis: Evolve
 - **docker/**: Docker tools for Gnosis: Evolve
 - **finance/**: Finance tools for Gnosis: Evolve
+- **imaging/**: Image processing and visual manipulation tools
 
 ## Installation
 

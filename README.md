@@ -301,6 +301,7 @@ When prompted with the installation dialog, click "Install" and wait for the pro
 ## Documentation
 
 - [Installation Guide](INSTALLATION.md) - Detailed setup instructions
+- [File Editing Tool Guide](FILE_DIFF_EDITOR_HOWTO.md) - Advanced file editing
 - [Tool Development Guide](TOOL_DEVELOPMENT.md) - Create your own tools
 - [Security Guidelines](SECURITY.md) - Important security considerations
 - [Contributing Guide](CONTRIBUTING.md) - Help improve Gnosis Evolve

@@ -232,14 +232,14 @@ async def get_documentation():
             <div class="grid">
                 <div>
                     <h3>Binary Upload (Multipart)</h3>
-                    <div class="example">curl -X POST http://localhost:8000/process \\
+                    <div class="example">curl -X POST http://localhost:6789/process \\
   -F "file=@input.jpg" \\
   -F "ffmpeg_command=ffmpeg -i input.jpg -vf 'scale=320:-1' output.jpg"</div>
                 </div>
                 
                 <div>
                     <h3>JSON with Base64</h3>
-                    <div class="example">curl -X POST http://localhost:8000/process \\
+                    <div class="example">curl -X POST http://localhost:6789/process \\
   -H "Content-Type: application/json" \\
   -d '{
     "ffmpeg_command": "ffmpeg -i input.jpg -vf \\"scale=320:-1\\" output.jpg",
@@ -250,7 +250,7 @@ async def get_documentation():
                 
                 <div>
                     <h3>Binary with Headers</h3>
-                    <div class="example">curl -X POST http://localhost:8000/process \\
+                    <div class="example">curl -X POST http://localhost:6789/process \\
   -H "Content-Type: image/jpeg" \\
   -H "X-FFmpeg-Command: ffmpeg -i input.jpg -vf 'scale=320:-1' output.jpg" \\
   --data-binary @input.jpg</div>
@@ -631,4 +631,4 @@ async def process_media(
 
 if __name__ == "__main__":
     import uvicorn
-    uvicorn.run(app, host="0.0.0.0", port=8000)
+    uvicorn.run(app, host="0.0.0.0", port=6789)

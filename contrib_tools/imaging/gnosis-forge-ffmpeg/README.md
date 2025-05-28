@@ -1,17 +1,16 @@
-# Gnosis Forge FFmpeg: Local FFmpeg Container + Claude Desktop Integration
+# Gnosis Forge FFmpeg: Local Media Processing API
 
 ## What This Is
 
-A Docker container that runs FFmpeg locally, designed to work seamlessly with Claude Desktop and [Gnosis Evolve](https://github.com/kordless/EvolveMCP). 
+A Docker container that runs FFmpeg locally, providing a clean REST API for media processing operations. Designed to work seamlessly with Claude Desktop via [Gnosis Evolve](https://github.com/kordless/EvolveMCP).
 
 **For Claude Desktop users:** Start the container in your working directory, and Claude can process your images/videos directly using natural language.
 
-**For developers:** A clean REST API wrapper around FFmpeg 7.1 with comprehensive codec support.
+**For developers:** A comprehensive REST API wrapper around FFmpeg 7.1 with extensive codec support and multiple input methods.
 
 ## Quick Start for Claude Desktop Users
 
 ### Prerequisites
-You'll need:
 - **Docker Desktop** installed and running
 - **[Gnosis Evolve](https://github.com/kordless/EvolveMCP)** installed and configured with Claude Desktop
 
@@ -28,7 +27,7 @@ You'll need:
 3. Install the Gnosis Forge MCP tool: Ask Claude to `"Install the Gnosis Forge FFmpeg tool"`
 
 **Build the Container:**
-1. Navigate to: `contrib_tools/imaging/gnosis-forge-ffmpeg/`
+1. Navigate to: `gnosis-forge/ffmpeg/`
 2. Run the build script:
    - **Windows**: `.\dev.ps1`
    - **macOS**: Coming soon
@@ -66,80 +65,60 @@ That's it. Claude handles the FFmpeg commands, the container processes your file
 "Extract frame 30 from video.mp4 as thumbnail.jpg"
 "Resize movie.mp4 to 720p"
 
-# Batch operations
-"Resize all JPG files in this folder to 800px wide"
-"Convert all PNG files to WebP format"
+# Complex filter chains
+"Apply blur and sharpen with brightness adjustment"
+"Create thumbnail with rounded corners and shadow"
 ```
-
-### Behind the Scenes
-- Claude uses the **Gnosis Forge MCP Tool** from [Gnosis Evolve](https://github.com/kordless/EvolveMCP)
-- Container mounts your current directory as `/workspace`
-- All processing happens locally on your machine
-- Results appear directly in your working directory
-- No cloud uploads, no API keys, no privacy concerns
 
 ---
 
 ## For Developers: The REST API
 
-*Everything below is for direct API integration and development.*
+## Why This Exists
 
-## You've Been Processing Media Wrong Your Entire Career
+**The Problem:** Every developer has been there. You need to resize an image, transcode a video, or apply a filter. So you:
 
-Every developer has been there. You need to resize an image, transcode a video, or apply a simple filter. So you:
+1. Install multiple conflicting Python libraries
+2. Write boilerplate code for what should be simple operations
+3. Deal with dependency hell and version conflicts
+4. Discover your "simple" image processing now requires 3GB of dependencies
 
-1. Install 47 different Python libraries that conflict with each other
-2. Write 200 lines of boilerplate to do what should be a single function call  
-3. Pray that ImageMagick doesn't segfault on your production server again
-4. Discover that your "simple" image processing now requires 3GB of dependencies
-
-**Stop. This madness ends now.**
+**Our Solution:** One Docker container. Full FFmpeg power. Clean API. Zero dependencies.
 
 ## What This Actually Is
 
-Gnosis Forge FFmpeg is a containerized REST API that wraps the most powerful media processing engine ever created (FFmpeg 7.1) behind an interface so clean it makes you question why everything else is such garbage.
+A containerized REST API that wraps FFmpeg 7.1 behind a clean interface designed for both direct use and AI agent consumption.
 
-- **One Docker container.** That's it. No dependency hell.
-- **Three ways to send data.** Because flexibility shouldn't require reading 47 docs.
-- **Every codec that matters.** H.264, H.265, VP9, AV1, WebP, and formats you forgot existed.
-- **Security that doesn't suck.** Command validation without breaking functionality.
-- **Performance that scales.** From prototype to production without architectural rewrites.
+- **One Docker container** - No dependency management
+- **Three input methods** - Multipart uploads, JSON+Base64, or binary+headers
+- **Full FFmpeg capabilities** - Every codec, filter, and operation FFmpeg supports
+- **Security built-in** - Command validation and sandboxed execution
+- **AI-friendly design** - Clear documentation and consistent responses
 
-## The Problem This Solves
+## Performance Characteristics
 
-```bash
-# What you do now (and hate every second of it):
-pip install pillow opencv-python imageio moviepy wand
-# (30 minutes of dependency resolution hell later...)
-from PIL import Image
-import cv2
-import numpy as np
-# (another 50 lines of boilerplate you copy-paste from StackOverflow)
+Based on comprehensive benchmarking with our test suite (`python benchmark.py`):
 
-# What you should be doing:
-curl -X POST localhost:6789/process \
-  -F "file=@input.jpg" \
-  -F "ffmpeg_command=ffmpeg -i input.jpg -vf 'scale=800:-1' output.jpg"
-```
+| Operation Type | Average Time | Notes |
+|---------------|--------------|-------|
+| Image resize | ~175ms | Includes API overhead, validation, encoding |
+| Filter effects | ~190-220ms | Blur, sharpen, brightness, contrast |
+| Complex chains | ~190ms | Multiple filters in single operation |
+| Simple operations | ~160ms | Basic crops, rotations |
 
-## Benchmarks That Will Make You Weep
+**Performance Focus:** We prioritize capability and reliability over raw speed. Operations include full validation, proper error handling, and support for any FFmpeg operation - not just the basics.
 
-| Operation | Your Current Setup | Gnosis Forge | Performance Gain |
-|-----------|-------------------|--------------|------------------|
-| Image resize | 847ms (Pillow) | 23ms | **37x faster** |
-| Video transcode | 12.3s (MoviePy) | 2.1s | **6x faster** |
-| Format conversion | 234ms (ImageMagik) | 19ms | **12x faster** |
-| Batch processing | Doesn't scale | Linear scale | **∞x better** |
+**GPU Acceleration:** Container supports NVIDIA GPU acceleration when available, significantly improving performance for video operations.
 
-*Benchmarks run on a potato laptop. Your mileage will vary (upward).*
+**Comparison:** While specialized libraries like Pillow may be faster for basic operations, they can't handle the full spectrum of media processing tasks that FFmpeg enables.
 
 ## Three Ways to Use the API
 
 ### 1. Multipart Upload (For Humans)
 ```bash
 curl -X POST localhost:6789/process \
-  -F "file=@input.mp4" \
-  -F "ffmpeg_command=ffmpeg -i input.mp4 -vf 'scale=1920:1080' -c:v libx264 -preset fast output.mp4"
+  -F "file=@input.jpg" \
+  -F "ffmpeg_command=ffmpeg -i input.jpg -vf 'scale=800:-1' output.jpg"
 ```
 
 ### 2. JSON + Base64 (For APIs)
@@ -179,73 +158,76 @@ docker run -d \
   gnosis-forge-ffmpeg
 ```
 
-### Shell Access (For Debugging)
+### With GPU Support
 ```bash
-# Get container ID
-docker ps | grep gnosis-forge
-
-# Shell into the running container
-docker exec -it <container_id> /bin/bash
-
-# Or one-liner
-docker exec -it $(docker ps -q --filter "ancestor=gnosis-forge-ffmpeg") /bin/bash
+docker run -d \
+  --name gnosis-forge \
+  --gpus all \
+  -p 6789:6789 \
+  -v /path/to/media:/workspace \
+  gnosis-forge-ffmpeg
 ```
 
-## FFmpeg Operations That Actually Matter
+## FFmpeg Operations That Matter
 
 ```bash
-# Resize with perfect aspect ratio preservation
-ffmpeg -i input.jpg -vf "scale=800:-1" output.jpg
+# Image Operations
+ffmpeg -i input.jpg -vf "scale=800:-1" output.jpg                    # Resize maintaining aspect
+ffmpeg -i input.jpg -vf "crop=400:400:100:50" output.jpg            # Crop 400x400 from position
+ffmpeg -i input.jpg -vf "rotate=PI/4:fillcolor=white" output.jpg     # Rotate 45 degrees
 
-# Convert anything to anything (yes, really)
-ffmpeg -i input.whatever -f webp -quality 85 output.webp
+# Format Conversions
+ffmpeg -i input.jpg -f webp -quality 85 output.webp                 # Convert to WebP
+ffmpeg -i input.png -f jpeg -q:v 2 output.jpg                       # PNG to JPEG
 
-# Apply filters that don't suck
-ffmpeg -i input.jpg -vf "unsharp=5:5:1.0:5:5:0.0" output.jpg
+# Filter Effects
+ffmpeg -i input.jpg -vf "boxblur=2:1" output.jpg                    # Blur effect  
+ffmpeg -i input.jpg -vf "unsharp=5:5:1.0:5:5:0.0" output.jpg       # Sharpen
+ffmpeg -i input.jpg -vf "eq=brightness=0.2:contrast=1.5" output.jpg  # Brightness/contrast
 
-# Watermark without selling your soul to Adobe
-ffmpeg -i input.mp4 -i watermark.png -filter_complex "overlay=W-w-10:H-h-10" output.mp4
-
-# Extract frames with surgical precision
-ffmpeg -i input.mp4 -vf "select='eq(n,42)'" -vframes 1 frame.jpg
-
-# Create GIFs that don't look like garbage
-ffmpeg -i input.mp4 -vf "fps=15,scale=320:-1:flags=lanczos,split[s0][s1];[s0]palettegen[p];[s1][p]paletteuse" output.gif
+# Complex Operations
+ffmpeg -i input.jpg -vf "scale=400:400,boxblur=1:1,eq=brightness=0.1" output.jpg  # Chain multiple filters
+ffmpeg -i video.mp4 -vf "fps=10,scale=320:-1:flags=lanczos" output.gif           # Video to optimized GIF
 ```
-
-## Why This Exists
-
-We built this because:
-- **FFmpeg is perfect** (fight us)
-- **Local processing is faster and more private**
-- **Claude Desktop deserves better media tools**
-- **Containers solve deployment** (when done right)
-- **Performance matters** (always)
-- **Developers deserve better** (this is that better)
 
 ## What You Get Back
 
 ```json
 {
   "success": true,
-  "output_image": "base64_encoded_result_that_actually_works",
+  "output_image": "base64_encoded_result",
   "output_filename": "output.jpg",
   "content_type": "image/jpeg",
-  "processing_time": 0.023,
+  "processing_time": 0.175,
   "message": "Processing completed successfully"
 }
 ```
 
-No bullshit. No nested objects. No "check the status endpoint." Just your processed media and the metadata you need.
+Clean, consistent responses with all the data you need.
+
+## Benchmarking & Validation
+
+Run the included benchmark suite to validate performance on your hardware:
+
+```bash
+python benchmark.py
+```
+
+This generates detailed timing data and compares against common alternatives. Results are saved to `benchmark_results.json` for analysis.
+
+## Security Model
+
+- **Command Validation**: FFmpeg commands are validated against a whitelist
+- **Sandboxed Execution**: All processing happens in isolated containers
+- **Temporary Files**: Automatic cleanup after processing
+- **Resource Limits**: Built-in protection against resource abuse
+- **No Shell Access**: Commands are executed safely without shell interpretation
 
 ## Requirements
 
 - Docker Desktop
-- For Claude Desktop integration: [Gnosis Evolve](https://github.com/kordless/EvolveMCP) with Gnosis Forge tools
-
-## License
-
-MIT License. Use it, abuse it, make money with it.
+- For Claude Desktop integration: [Gnosis Evolve](https://github.com/kordless/EvolveMCP)
+- Optional: NVIDIA GPU for accelerated processing
 
 ## Part of the Gnosis Ecosystem
 
@@ -256,4 +238,4 @@ MIT License. Use it, abuse it, make money with it.
 
 ---
 
-**Local FFmpeg processing. Claude Desktop integration. Zero complexity.**
+**Local media processing. Full FFmpeg capabilities. AI-ready design.**

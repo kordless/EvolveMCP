@@ -7,7 +7,7 @@ param(
 )
 
 $ServiceName = "gnosis-forge"
-$Port = 8000
+$Port = 6789
 
 function Write-ColorOutput {
     param(
@@ -113,7 +113,7 @@ function Run-Container {
     Write-ColorOutput "" "White"
     
     try {
-        docker run --rm -p "${Port}:8000" --name $ServiceName -v "${PWD}:/app/workspace" $ServiceName
+        docker run --rm -p "${Port}:6789" --name $ServiceName -v "${PWD}:/app/workspace" $ServiceName
     }
     catch {
         Write-ColorOutput "[ERROR] Failed to run container: $($_.Exception.Message)" "Red"

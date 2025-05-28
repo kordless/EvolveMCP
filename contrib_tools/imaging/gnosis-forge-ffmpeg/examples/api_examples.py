@@ -9,7 +9,7 @@ import json
 from pathlib import Path
 
 # Base URL for the service
-BASE_URL = "http://localhost:8000"  # Change for production
+BASE_URL = "http://localhost:6789"  # Change for production
 
 def test_health():
     """Test the health endpoint."""

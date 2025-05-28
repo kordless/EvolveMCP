@@ -112,11 +112,11 @@ RUN pip install --no-cache-dir \
 # Copy the application code
 COPY . /app
 
-# Make port 8000 available to the world outside this container
-EXPOSE 8000
+# Make port 6789 available to the world outside this container
+EXPOSE 6789
 
 # Define environment variable
 ENV PYTHONPATH=/app
 
 # Run app using Uvicorn
-CMD ["uvicorn", "app:app", "--host", "0.0.0.0", "--port", "8000"]
+CMD ["uvicorn", "app:app", "--host", "0.0.0.0", "--port", "6789"]

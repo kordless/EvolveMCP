@@ -1,0 +1,488 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🌟 Gnosis System Status Dashboard</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: linear-gradient(135deg, #1e0033 0%, #2d1b69 25%, #4a148c 50%, #6a1b9a 75%, #8e24aa 100%);
+            min-height: 100vh;
+            color: #ffffff;
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        /* Animated background particles */
+        .bg-particles {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        .particle {
+            position: absolute;
+            width: 4px;
+            height: 4px;
+            background: rgba(142, 36, 170, 0.7);
+            border-radius: 50%;
+            animation: float 6s ease-in-out infinite;
+            box-shadow: 0 0 10px rgba(142, 36, 170, 0.5);
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0px) rotate(0deg); opacity: 0.7; }
+            50% { transform: translateY(-20px) rotate(180deg); opacity: 1; }
+        }
+
+        .container {
+            position: relative;
+            z-index: 2;
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+            position: relative;
+        }
+
+        .main-title {
+            font-size: 3.5rem;
+            font-weight: 800;
+            background: linear-gradient(45deg, #e1bee7, #ce93d8, #ba68c8, #ab47bc);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 10px;
+            text-shadow: 0 0 30px rgba(171, 71, 188, 0.5);
+            animation: glow 2s ease-in-out infinite alternate;
+        }
+
+        @keyframes glow {
+            from { filter: drop-shadow(0 0 20px rgba(171, 71, 188, 0.7)); }
+            to { filter: drop-shadow(0 0 40px rgba(186, 104, 200, 0.9)); }
+        }
+
+        .subtitle {
+            font-size: 1.2rem;
+            color: #e1bee7;
+            opacity: 0.9;
+            margin-bottom: 30px;
+        }
+
+        .status-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 25px;
+            margin-bottom: 30px;
+        }
+
+        .status-card {
+            background: rgba(74, 20, 140, 0.4);
+            backdrop-filter: blur(10px);
+            border: 2px solid rgba(142, 36, 170, 0.3);
+            border-radius: 20px;
+            padding: 25px;
+            position: relative;
+            overflow: hidden;
+            transition: all 0.3s ease;
+            box-shadow: 0 8px 32px rgba(74, 20, 140, 0.3);
+        }
+
+        .status-card:hover {
+            transform: translateY(-5px);
+            border-color: rgba(206, 147, 216, 0.6);
+            box-shadow: 0 20px 60px rgba(142, 36, 170, 0.4);
+        }
+
+        .status-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(206, 147, 216, 0.1), transparent);
+            transition: left 0.5s;
+        }
+
+        .status-card:hover::before {
+            left: 100%;
+        }
+
+        .card-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .card-icon {
+            font-size: 2rem;
+            margin-right: 15px;
+            filter: drop-shadow(0 0 10px rgba(171, 71, 188, 0.7));
+        }
+
+        .card-title {
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: #e1bee7;
+        }
+
+        .metric {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin: 12px 0;
+            padding: 8px 0;
+            border-bottom: 1px solid rgba(142, 36, 170, 0.2);
+        }
+
+        .metric:last-child {
+            border-bottom: none;
+        }
+
+        .metric-label {
+            font-weight: 500;
+            color: #ce93d8;
+        }
+
+        .metric-value {
+            font-weight: 700;
+            color: #ffffff;
+            background: rgba(142, 36, 170, 0.3);
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 0.9rem;
+        }
+
+        .status-online {
+            color: #4caf50;
+            background: rgba(76, 175, 80, 0.2);
+        }
+
+        .status-warning {
+            color: #ff9800;
+            background: rgba(255, 152, 0, 0.2);
+        }
+
+        .mcp-servers {
+            background: rgba(74, 20, 140, 0.4);
+            backdrop-filter: blur(10px);
+            border: 2px solid rgba(142, 36, 170, 0.3);
+            border-radius: 20px;
+            padding: 25px;
+            margin-top: 25px;
+        }
+
+        .server-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .server-item {
+            background: rgba(106, 27, 154, 0.3);
+            padding: 10px 15px;
+            border-radius: 12px;
+            border: 1px solid rgba(171, 71, 188, 0.3);
+            font-size: 0.9rem;
+            font-weight: 500;
+            text-align: center;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .server-item:hover {
+            background: rgba(142, 36, 170, 0.4);
+            transform: scale(1.02);
+            box-shadow: 0 4px 20px rgba(171, 71, 188, 0.3);
+        }
+
+        .pulse {
+            animation: pulse 2s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.8; transform: scale(1.02); }
+            100% { opacity: 1; transform: scale(1); }
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background: rgba(74, 20, 140, 0.5);
+            border-radius: 4px;
+            overflow: hidden;
+            margin: 8px 0;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #8e24aa, #ab47bc, #ba68c8);
+            border-radius: 4px;
+            transition: width 0.3s ease;
+            position: relative;
+        }
+
+        .progress-fill::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+            animation: shimmer 2s infinite;
+        }
+
+        @keyframes shimmer {
+            0% { left: -100%; }
+            100% { left: 100%; }
+        }
+
+        .footer {
+            text-align: center;
+            margin-top: 40px;
+            padding: 20px;
+            border-top: 1px solid rgba(142, 36, 170, 0.3);
+            color: #ce93d8;
+            font-size: 0.9rem;
+        }
+
+        @media (max-width: 768px) {
+            .main-title { font-size: 2.5rem; }
+            .status-grid { grid-template-columns: 1fr; }
+            .container { padding: 15px; }
+        }
+    </style>
+</head>
+<body>
+    <div class="bg-particles" id="particles"></div>
+    
+    <div class="container">
+        <div class="header">
+            <h1 class="main-title">🌟 GNOSIS SYSTEM STATUS</h1>
+            <p class="subtitle">Real-time system monitoring and MCP server dashboard</p>
+        </div>
+
+        <div class="status-grid">
+            <div class="status-card pulse">
+                <div class="card-header">
+                    <div class="card-icon">🖥️</div>
+                    <div class="card-title">System Overview</div>
+                </div>
+                <div class="metric">
+                    <span class="metric-label">Operating System</span>
+                    <span class="metric-value">Windows 10.0.19045</span>
+                </div>
+                <div class="metric">
+                    <span class="metric-label">Python Version</span>
+                    <span class="metric-value">3.11.11</span>
+                </div>
+                <div class="metric">
+                    <span class="metric-label">Memory Usage</span>
+                    <span class="metric-value status-warning">70.7% (22.5GB used)</span>
+                </div>
+                <div class="progress-bar">
+                    <div class="progress-fill" style="width: 70.7%"></div>
+                </div>
+                <div class="metric">
+                    <span class="metric-label">Docker Status</span>
+                    <span class="metric-value status-online">✅ Installed</span>
+                </div>
+            </div>
+
+            <div class="status-card pulse">
+                <div class="card-header">
+                    <div class="card-icon">🤖</div>
+                    <div class="card-title">Claude Desktop</div>
+                </div>
+                <div class="metric">
+                    <span class="metric-label">Status</span>
+                    <span class="metric-value status-online">✅ Running</span>
+                </div>
+                <div class="metric">
+                    <span class="metric-label">Process Count</span>
+                    <span class="metric-value">8 processes</span>
+                </div>
+                <div class="metric">
+                    <span class="metric-label">Uptime</span>
+                    <span class="metric-value">2h 7m 8s</span>
+                </div>
+                <div class="metric">
+                    <span class="metric-label">Current Time</span>
+                    <span class="metric-value">2025-05-28 18:25:53</span>
+                </div>
+            </div>
+
+            <div class="status-card pulse">
+                <div class="card-header">
+                    <div class="card-icon">🔧</div>
+                    <div class="card-title">MCP Servers</div>
+                </div>
+                <div class="metric">
+                    <span class="metric-label">Active Servers</span>
+                    <span class="metric-value status-online">✅ 21 Running</span>
+                </div>
+                <div class="metric">
+                    <span class="metric-label">Log Files</span>
+                    <span class="metric-value">87 files</span>
+                </div>
+                <div class="metric">
+                    <span class="metric-label">Available Tools</span>
+                    <span class="metric-value">62 tools</span>
+                </div>
+                <div class="metric">
+                    <span class="metric-label">Contrib Categories</span>
+                    <span class="metric-value">Core, Web, Docker, Finance, Imaging</span>
+                </div>
+            </div>
+
+            <div class="status-card pulse">
+                <div class="card-header">
+                    <div class="card-icon">🕸️</div>
+                    <div class="card-title">Gnosis Services</div>
+                </div>
+                <div class="metric">
+                    <span class="metric-label">Gnosis Wraith</span>
+                    <span class="metric-value status-warning">🟡 TBD (localhost:5678)</span>
+                </div>
+                <div class="metric">
+                    <span class="metric-label">Gnosis Forge</span>
+                    <span class="metric-value status-online">✅ Available (localhost:6789)</span>
+                </div>
+                <div class="metric">
+                    <span class="metric-label">Gnosis Evolve</span>
+                    <span class="metric-value status-online">✅ Active</span>
+                </div>
+                <div class="metric">
+                    <span class="metric-label">Path History</span>
+                    <span class="metric-value">47 entries</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="mcp-servers">
+            <div class="card-header">
+                <div class="card-icon">⚡</div>
+                <div class="card-title">Active MCP Servers (21)</div>
+            </div>
+            <div class="server-list">
+                <div class="server-item">evolve-server</div>
+                <div class="server-item">random-generator-server</div>
+                <div class="server-item">file-writer-server</div>
+                <div class="server-item">weather-resource-server</div>
+                <div class="server-item">bitcoin-price-server</div>
+                <div class="server-item">math-and-stats-server</div>
+                <div class="server-item">docker-logs-server</div>
+                <div class="server-item">docker-rebuild-server</div>
+                <div class="server-item">file-explorer-server</div>
+                <div class="server-item">emotional-character-generator-server</div>
+                <div class="server-item">character-saver-server</div>
+                <div class="server-item">iching-character-generator-server</div>
+                <div class="server-item">forex-quanto-tools-server</div>
+                <div class="server-item">symbolic-reduction-server</div>
+                <div class="server-item">enhanced-lights-server</div>
+                <div class="server-item">twilio-numbers-server</div>
+                <div class="server-item">wraith-crawler-server</div>
+                <div class="server-item">crawl4ai-server</div>
+                <div class="server-item">safe-file-copy-server</div>
+                <div class="server-item">file-diff-editor-server</div>
+                <div class="server-item">gnosis-forge-server</div>
+            </div>
+        </div>
+
+        <div class="footer">
+            <p>🌟 Gnosis Ecosystem • Build. Extend. Evolve. • Powered by Claude Desktop & MCP</p>
+            <p>System Status: All systems operational • Last updated: 2025-05-28 18:25:53</p>
+        </div>
+    </div>
+
+    <script>
+        // Create animated background particles
+        function createParticles() {
+            const container = document.getElementById('particles');
+            const particleCount = 50;
+            
+            for (let i = 0; i < particleCount; i++) {
+                const particle = document.createElement('div');
+                particle.className = 'particle';
+                particle.style.left = Math.random() * 100 + '%';
+                particle.style.top = Math.random() * 100 + '%';
+                particle.style.animationDelay = Math.random() * 6 + 's';
+                particle.style.animationDuration = (3 + Math.random() * 6) + 's';
+                container.appendChild(particle);
+            }
+        }
+
+        // Add sparkle effect to server items
+        function addSparkles() {
+            const serverItems = document.querySelectorAll('.server-item');
+            serverItems.forEach((item, index) => {
+                setTimeout(() => {
+                    item.style.animation = 'pulse 2s ease-in-out infinite';
+                    item.style.animationDelay = (index * 0.1) + 's';
+                }, index * 100);
+            });
+        }
+
+        // Update memory usage animation
+        function animateProgress() {
+            const progressFills = document.querySelectorAll('.progress-fill');
+            progressFills.forEach(fill => {
+                const width = fill.style.width;
+                fill.style.width = '0%';
+                setTimeout(() => {
+                    fill.style.width = width;
+                }, 500);
+            });
+        }
+
+        // Initialize everything
+        document.addEventListener('DOMContentLoaded', () => {
+            createParticles();
+            addSparkles();
+            setTimeout(animateProgress, 1000);
+            
+            // Refresh sparkles every 10 seconds
+            setInterval(addSparkles, 10000);
+        });
+
+        // Add hover effects to cards
+        document.querySelectorAll('.status-card').forEach(card => {
+            card.addEventListener('mouseenter', () => {
+                card.style.transform = 'translateY(-8px) scale(1.02)';
+            });
+            
+            card.addEventListener('mouseleave', () => {
+                card.style.transform = 'translateY(0) scale(1)';
+            });
+        });
+
+        // Dynamic title glow effect
+        const title = document.querySelector('.main-title');
+        let glowIntensity = 0;
+        setInterval(() => {
+            glowIntensity = (glowIntensity + 1) % 360;
+            title.style.filter = `hue-rotate(${glowIntensity}deg) drop-shadow(0 0 30px rgba(171, 71, 188, 0.8))`;
+        }, 100);
+    </script>
+</body>
+</html>

@@ -3,7 +3,7 @@ Gnosis Forge MCP Tool - FFmpeg API Interface
 ============================================
 
 A comprehensive MCP tool for communicating with the Gnosis Forge FFmpeg API container
-running locally on localhost:8000. This tool provides full access to FFmpeg's powerful
+running locally on localhost:6789. This tool provides full access to FFmpeg's powerful
 media processing capabilities through a clean REST API interface.
 
 Features:
@@ -14,7 +14,7 @@ Features:
 - Comprehensive error handling and validation
 - Multiple input methods (form data, JSON, binary with headers)
 
-The Gnosis Forge container must be running locally on port 8000 for this tool to function.
+The Gnosis Forge container must be running locally on port 6789 for this tool to function.
 """
 
 import sys
@@ -570,7 +570,7 @@ async def check_forge_status(ctx: Context = None) -> Dict[str, Any]:
     
     Returns: {connected, service?, version?, status?, base_url, message, error?, troubleshooting?}
     This tool verifies that the Gnosis Forge container is running and accessible
-    on localhost:8000, and returns service information.
+    on localhost:6789, and returns service information.
     
     Args:
         ctx: Context object for logging

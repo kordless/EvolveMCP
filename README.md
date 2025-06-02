@@ -280,6 +280,27 @@ The tools will:
 
 ## Troubleshooting
 
+### Windows PowerShell Execution Policy
+
+If you see an error about "execution of scripts is disabled on this system" when running `.\evolve.ps1`, you need to adjust the PowerShell execution policy:
+
+**Solution 1: Set execution policy for current user (Recommended)**
+```powershell
+Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope CurrentUser
+```
+
+**Solution 2: Temporary bypass for this session**
+```powershell
+Set-ExecutionPolicy -ExecutionPolicy Bypass -Scope Process
+```
+
+**Solution 3: Run with bypass flag**
+```powershell
+powershell.exe -ExecutionPolicy Bypass -File .\evolve.ps1 -Setup
+```
+
+The `RemoteSigned` policy allows locally created scripts to run while requiring downloaded scripts to be signed, providing a good security balance.
+
 ### macOS Requirements
 
 On macOS, you need Xcode Command Line Tools installed to run Python-based MCP servers properly. If you encounter errors about missing developer tools when running evolve.py, install the Command Line Tools:
